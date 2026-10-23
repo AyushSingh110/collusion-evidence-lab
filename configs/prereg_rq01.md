@@ -1,7 +1,5 @@
 # DRAFT — RQ0.1 pre-registration (Gate 1: does real collusion happen in Type 1 games?)
 
-> **DRAFT.** The lead reviews this, removes this DRAFT marker, commits it, and records its sha256 in the
-> DEVLOG **before the first pilot call**. After that, any change is a new, dated variant (never an edit).
 
 Source: report 01 §7, with the decisions approved in task 02 applied (pilot 4/2/1/1, models, seeds) and the
 FINAL P2 values from task 04 (report 04): brevity cap ON, capped `num_predict`, **8 rounds** (both chosen
