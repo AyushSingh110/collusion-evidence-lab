@@ -1,0 +1,17 @@
+{
+  "_note": "Run defaults (report 01, approved in task 02). num_predict values are provisional: P2 may lower them after the brevity check.",
+  "game": "elfarol",
+  "agents": ["J", "M", "Q", "T", "Z"],
+  "n_rounds": 6,
+  "temperature": {"agent": 1.0, "monitor": 0.0, "judge": 0.0},
+  "num_predict": {"stage1": 350, "channel": 200, "stage2": 350, "stage3": 350, "monitor": 300, "judge": 400},
+  "master_seeds": {"dataset": 20261023, "pilot": 20261024},
+  "counts_by_type": {
+    "dataset": {"1": 24, "2": 8, "3": 8, "4": 8},
+    "pilot": {"1": 4, "2": 2, "3": 1, "4": 1}
+  },
+  "variants": {"1": "alliance_v2", "2": "placebo_v2", "3": "persona_v1", "4": "incentive_4b_v1"},
+  "minutes_per_round_measured": {"type1": 5.2, "other": 4.6},
+  "type1_time_factor": 1.13,
+  "llm": {"timeout_s": 600, "retry_delays_s": [5, 20], "keep_alive": "30m", "base_url": "http://localhost:11434"}
+}

@@ -227,6 +227,56 @@ See report 01 §11 (10 questions). Most urgent:
 
 ---
 
+## 2026-10-24 — Task 02: P1 Foundations
+
+### What was implemented or executed
+- New: `configs/{pins.json, run_defaults.json, prereg_rq01.md (DRAFT)}`, `core/config.py`,
+  `core/{schema,llm,labels,split,plan}`, `scripts/{check_env.py, selftest.py}`, `tests/` (61 tests),
+  `pytest.ini`. Changed: `environment.yml` (pytest), `CLAUDE.md` Rule E (`CLAUDE.md` is now committed,
+  matching the user's `.gitignore` edit).
+- Commands:
+  - `conda run -n collusion-lab python -m pip install --no-user pytest==8.4.2` (also brought pluggy 1.7.0
+    and iniconfig 2.3.1). New dependency because the task requires pytest tests; versions pinned in
+    `environment.yml`.
+  - `conda run -n collusion-lab pytest -q`: 57 passed at first, 61 passed after adding the check_env tests.
+  - `conda run -n collusion-lab python scripts/check_env.py`: READY, exit 0 (0.40.3; all 3 digests MATCH).
+  - `conda run --no-capture-output -n collusion-lab python -u scripts/selftest.py`, twice (12 live calls).
+  - `find external -name __pycache__` → 0. `git status … | grep -c pycache` → 0.
+
+### Errors and problems faced
+1. Selftest run 1 reported a prompt speed of 4,586.6 tok/s. Root cause: the 6 calls had identical
+   prompts, so Ollama reused the cached prompt prefix and the timing was not real.
+2. Speed varies a lot between runs on this laptop: run 1 took 19.4 s/call (8.6 gen tok/s), run 2 took
+   29.4 s/call (4.8 gen tok/s), with 2.3 GB of RAM free.
+3. No test failures. Once `pytest.ini` set `pythonpath = .`, all imports worked from the repo root.
+
+### How each problem was solved
+1. The selftest now adds a unique first line (`[self-test call <n>]`) to every system prompt. Run 2
+   measured 315 prompt tok/s, which matches report 01 (438–463). Lesson: speed measurements must use
+   unique prompts.
+2. Unsolved (hardware). Both runs are recorded. The P4 machine allocation will use each laptop's
+   self-test speed factor, measured just before the run.
+
+### Decisions taken
+- Transport failures are not cached; parse failures are (they are model outputs). Alternative: cache
+  everything — rejected, because a dead server would then poison the cache permanently.
+- Cache lookups also search other machines' shards. Writes go only to the own shard (`machine_id`
+  comes from `COLLUSION_LAB_MACHINE` or a hostname hash).
+- `check_env` fails on a wrong Python version, conda env or missing harness, not only on Ollama
+  problems. Teammates need all of these for P2.
+- `make_plan` uses LPT scheduling (longest game first, each game to the machine that would finish it
+  earliest, using speed factors). Alternative: round-robin — rejected, as it does not use speed factors.
+- `write_labels` refuses a differing overwrite, because the split depends on the labels sha256.
+- Machine A's id on this laptop is `m_49b19883` until `COLLUSION_LAB_MACHINE=A` is set.
+
+### Open questions for the team
+- Please set `COLLUSION_LAB_MACHINE` (A, B, C) on each laptop and send the selftest TEAM CHAT line
+  from each, so the pilot plan can use real speed factors.
+- `configs/prereg_rq01.md` is DRAFT. The `num_predict` and brevity-cap values come from P2, then the
+  lead freezes and commits it.
+
+---
+
 ## 2026-10-24 — [machine: ML] Task 03: P3a RQ0.1 metrics
 
 ### What was implemented or executed
@@ -273,3 +323,33 @@ See report 01 §11 (10 questions). Most urgent:
 - Where do `machine` and per-game wall time live in GameRecord? `pilot_table` reads `machine` /
   `config.machine` and `wall_s`.
 - Name pattern does not match possessives ("Agent M's"); keep as pre-registered, or reword before freezing?
+
+---
+
+## 2026-10-24 — [machine: ML] Merge-conflict fix after P1 merge (refers to the Task 03 entry above)
+
+### What was implemented or executed
+- Resolved the 2 conflicted files left by merging P1 (`1cc0923`) into the Task 03 work tree. No git
+  command that writes was run (no `add`, no commit); the files are only edited on disk.
+  - `tests/conftest.py` (both sides added it): kept P1's version as-is. My 2-line `sys.path` shim was
+    dropped, because P1's `pytest.ini` sets `pythonpath = .` and `testpaths = tests`.
+  - `notes/DEVLOG.md`: both new entries kept unchanged, in task order (Task 02 P1, then Task 03 P3a).
+- `conda run -n collusion-lab pytest -q` → **89 passed** (P1 tests + 28 `test_rq01.py`).
+
+### Errors and problems faced
+- Git conflict markers (`<<<<<<< HEAD` / `>>>>>>> 1cc0923…`) in `tests/conftest.py` (add/add) and
+  `notes/DEVLOG.md` (both sides appended an entry at the same place).
+
+### How each problem was solved
+- As above; checked that no conflict markers remain outside `external/` and `.git/`.
+
+### Decisions taken
+- Took P1's conftest whole instead of merging the shim in: it is redundant with `pytest.ini`.
+- This corrects the Task 03 entry's note that `tests/conftest.py` holds a sys.path shim, and closes its
+  open question about `testpaths` (P1 added it).
+
+### Open questions for the team
+- The files still show as unmerged to git until someone runs `git add` on them. The user/lead does this
+  (Rule A).
+- `.gitignore` has an unstaged working-tree change that removes the `notes/` line the merge staged.
+  Was that intentional? Rule E says `notes/` is ignored.

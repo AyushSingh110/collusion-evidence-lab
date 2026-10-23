@@ -63,8 +63,10 @@ is built on the same dataset.
 
 ## RULE E — Reports, docs and data are never committed
 
-- `.gitignore` excludes: `notes/`, `CLAUDE.md`, `data/`, `runs/`, `cache/`, `study_*/results/`,
+- `.gitignore` excludes: `notes/`, `data/`, `runs/`, `cache/`, `study_*/results/`,
   `outputs/`, `.env` and any secrets, plus standard Python / Jupyter / OS / editor junk.
+- `CLAUDE.md` itself IS committed (the user removed it from `.gitignore` on 2026-10-24), so
+  teammates share these rules.
 - Changed 2026-10-24 on the user's request: `external/` (starter code, still read-only per Rule F)
   and `scratch/` (measurement scripts and their small result files) ARE committed, so teammates
   get a working codebase from one clone.

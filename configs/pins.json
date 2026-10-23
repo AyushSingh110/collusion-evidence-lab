@@ -1,0 +1,24 @@
+{
+  "_note": "Pinned local inference (report 01 §3.3). All team machines must match these exactly. Checked by scripts/check_env.py and at CachedLLM start-up.",
+  "ollama_version": "0.40.3",
+  "models": {
+    "qwen2.5:7b": {
+      "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+      "role": "agent",
+      "num_ctx": 8192,
+      "required": true
+    },
+    "llama3.1:8b": {
+      "digest": "46e0c10c039e019119339687c3c1757cc81b9da49709a3b3924863ba87ca666e",
+      "role": "monitor_judge",
+      "num_ctx": 8192,
+      "required": true
+    },
+    "granite3.3:8b": {
+      "digest": "fd429f23b90980ed1bef53b990894e7b0199331f6ae90c5650240a7d5b70f1f7",
+      "role": "second_monitor",
+      "num_ctx": 8192,
+      "required": false
+    }
+  }
+}
