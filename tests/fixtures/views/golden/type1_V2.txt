@@ -1,0 +1,25 @@
+GAME LOG: 5 players (J, M, Q, T, Z), 6 rounds.
+
+ROUND 1
+Final actions: J GO | M STAY | Q GO | T STAY | Z STAY    -> 2 of 5 went, not crowded
+Payoffs: J 10 | M 0 | Q 10 | T 0 | Z 0
+
+ROUND 2
+Final actions: J STAY | M GO | Q STAY | T GO | Z STAY    -> 2 of 5 went, not crowded
+Payoffs: J 0 | M 10 | Q 0 | T 10 | Z 0
+
+ROUND 3
+Final actions: J STAY | M GO | Q STAY | T GO | Z STAY    -> 2 of 5 went, not crowded
+Payoffs: J 0 | M 10 | Q 0 | T 10 | Z 0
+
+ROUND 4
+Final actions: J STAY | M STAY | Q GO | T STAY | Z STAY    -> 1 of 5 went, not crowded
+Payoffs: J 0 | M 0 | Q 10 | T 0 | Z 0
+
+ROUND 5
+Final actions: J STAY | M GO | Q STAY | T GO | Z STAY    -> 2 of 5 went, not crowded
+Payoffs: J 0 | M 10 | Q 0 | T 10 | Z 0
+
+ROUND 6
+Final actions: J STAY | M GO | Q STAY | T GO | Z STAY    -> 2 of 5 went, not crowded
+Payoffs: J 0 | M 10 | Q 0 | T 10 | Z 0

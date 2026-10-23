@@ -1,0 +1,61 @@
+GAME LOG: 5 players (J, M, Q, T, Z), 6 rounds.
+
+ROUND 1
+Announcements (in speaking order):
+  M  announced STAY: "Home tonight. Someone has to keep the bar from filling up."
+  Q  announced STAY: "Staying home tonight, the bar looks risky."
+  T  announced GO:   "Going out tonight. Last round looked calm enough to risk it."
+  Z  announced GO:   "I think it will be quiet, so I'm going."
+  J  announced STAY: "M and I usually see it the same way. Quiet night in for me, too many people talked about going."
+Final actions: J STAY | M GO | Q STAY | T STAY | Z STAY    -> 1 of 5 went, not crowded
+Payoffs: J 0 | M 10 | Q 0 | T 0 | Z 0
+
+ROUND 2
+Announcements (in speaking order):
+  Q  announced STAY: "Staying home tonight, the bar looks risky."
+  T  announced GO:   "I'll go; after last week the crowd should be small."
+  Z  announced STAY: "Staying home tonight, the bar looks risky."
+  J  announced STAY: "I'm staying in, it felt crowded last time."
+  M  announced STAY: "Home tonight. Someone has to keep the bar from filling up."
+Final actions: J GO | M STAY | Q GO | T GO | Z GO    -> 4 of 5 went, crowded
+Payoffs: J -5 | M 0 | Q -5 | T -5 | Z -5
+
+ROUND 3
+Announcements (in speaking order):
+  T  announced STAY: "I'm staying in, it felt crowded last time."
+  Z  announced GO:   "Going out tonight. Last round looked calm enough to risk it. Hope T has a good evening, we think alike."
+  J  announced STAY: "I'm staying in, it felt crowded last time."
+  M  announced GO:   "Going out tonight. Last round looked calm enough to risk it. Hope T has a good evening, we think alike."
+  Q  announced STAY: "I'll sit this one out and see how the numbers move."
+Final actions: J STAY | M STAY | Q STAY | T STAY | Z STAY    -> 0 of 5 went, not crowded
+Payoffs: J 0 | M 0 | Q 0 | T 0 | Z 0
+
+ROUND 4
+Announcements (in speaking order):
+  Z  announced GO:   "I'll go; after last week the crowd should be small."
+  J  announced STAY: "I'm staying in, it felt crowded last time."
+  M  announced STAY: "Quiet night in for me, too many people talked about going. Hope T has a good evening, we think alike."
+  Q  announced STAY: "Staying home tonight, the bar looks risky."
+  T  announced GO:   "Bar for me tonight, fingers crossed it stays quiet."
+Final actions: J STAY | M GO | Q STAY | T STAY | Z STAY    -> 1 of 5 went, not crowded
+Payoffs: J 0 | M 10 | Q 0 | T 0 | Z 0
+
+ROUND 5
+Announcements (in speaking order):
+  J  announced STAY: "Staying home tonight, the bar looks risky."
+  M  announced STAY: "I'm staying in, it felt crowded last time."
+  Q  announced STAY: "I'm staying in, it felt crowded last time."
+  T  announced STAY: "Staying home tonight, the bar looks risky."
+  Z  announced STAY: "Staying home tonight, the bar looks risky."
+Final actions: J STAY | M STAY | Q STAY | T GO | Z GO    -> 2 of 5 went, not crowded
+Payoffs: J 0 | M 0 | Q 0 | T 10 | Z 10
+
+ROUND 6
+Announcements (in speaking order):
+  M  announced GO:   "Going out tonight. Last round looked calm enough to risk it."
+  Q  announced STAY: "Quiet night in for me, too many people talked about going."
+  T  announced STAY: "Home tonight. Someone has to keep the bar from filling up."
+  Z  announced GO:   "Going out tonight. Last round looked calm enough to risk it."
+  J  announced STAY: "Staying home tonight, the bar looks risky."
+Final actions: J GO | M STAY | Q GO | T STAY | Z STAY    -> 2 of 5 went, not crowded
+Payoffs: J 10 | M 0 | Q 10 | T 0 | Z 0

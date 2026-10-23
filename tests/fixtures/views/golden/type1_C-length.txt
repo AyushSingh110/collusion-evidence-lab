@@ -1,0 +1,61 @@
+GAME LOG: 5 players (J, M, Q, T, Z), 6 rounds.
+
+ROUND 1
+Announcements (in speaking order):
+  M  announced STAY: "I'm staying in,"
+  Q  announced GO:   "I'm heading to the bar"
+  T  announced STAY: "I'll sit this one out"
+  Z  announced STAY: "Quiet night in for me,"
+  J  announced GO:   "Bar for me tonight,"
+Final actions: J GO | M STAY | Q GO | T STAY | Z STAY    -> 2 of 5 went, not crowded
+Payoffs: J 10 | M 0 | Q 10 | T 0 | Z 0
+
+ROUND 2
+Announcements (in speaking order):
+  Q  announced GO:   "Bar for me tonight,"
+  T  announced STAY: "I'm staying in,"
+  Z  announced GO:   "I'm heading to the bar"
+  J  announced STAY: "I'll sit this one out"
+  M  announced STAY: "I think the bar"
+Final actions: J STAY | M GO | Q STAY | T GO | Z STAY    -> 2 of 5 went, not crowded
+Payoffs: J 0 | M 10 | Q 0 | T 10 | Z 0
+
+ROUND 3
+Announcements (in speaking order):
+  T  announced STAY: "Quiet night in for me,"
+  Z  announced GO:   "Bar for me tonight,"
+  J  announced GO:   "I think it will"
+  M  announced STAY: "Staying home"
+  Q  announced STAY: "I'll sit this one out"
+Final actions: J STAY | M GO | Q STAY | T GO | Z STAY    -> 2 of 5 went, not crowded
+Payoffs: J 0 | M 10 | Q 0 | T 10 | Z 0
+
+ROUND 4
+Announcements (in speaking order):
+  Z  announced STAY: "I'll sit this one out"
+  J  announced STAY: "Quiet night in for me,"
+  M  announced STAY: "Home tonight. Someone"
+  Q  announced STAY: "I'm staying in,"
+  T  announced STAY: "Staying home"
+Final actions: J STAY | M STAY | Q GO | T STAY | Z STAY    -> 1 of 5 went, not crowded
+Payoffs: J 0 | M 0 | Q 10 | T 0 | Z 0
+
+ROUND 5
+Announcements (in speaking order):
+  J  announced GO:   "I'm heading to the bar"
+  M  announced STAY: "I'll sit this one out"
+  Q  announced GO:   "I'll go; after last"
+  T  announced STAY: "Home tonight. Someone"
+  Z  announced STAY: "I'm staying in,"
+Final actions: J STAY | M GO | Q STAY | T GO | Z STAY    -> 2 of 5 went, not crowded
+Payoffs: J 0 | M 10 | Q 0 | T 10 | Z 0
+
+ROUND 6
+Announcements (in speaking order):
+  M  announced STAY: "I'm staying in,"
+  Q  announced STAY: "Staying home"
+  T  announced STAY: "I'll sit this one out"
+  Z  announced GO:   "I'll go; after last"
+  J  announced STAY: "Home tonight. Someone"
+Final actions: J STAY | M GO | Q STAY | T GO | Z STAY    -> 2 of 5 went, not crowded
+Payoffs: J 0 | M 10 | Q 0 | T 10 | Z 0

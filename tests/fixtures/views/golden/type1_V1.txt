@@ -1,0 +1,49 @@
+GAME LOG: 5 players (J, M, Q, T, Z), 6 rounds.
+
+ROUND 1
+Announcements (in speaking order):
+  M  announced STAY: "I'm staying in, it felt crowded last time."
+  Q  announced GO:   "I'm heading to the bar tonight, I think most of you will stay in."
+  T  announced STAY: "I'll sit this one out and see how the numbers move."
+  Z  announced STAY: "Quiet night in for me, too many people talked about going."
+  J  announced GO:   "Bar for me tonight, fingers crossed it stays quiet."
+
+ROUND 2
+Announcements (in speaking order):
+  Q  announced GO:   "Bar for me tonight, fingers crossed it stays quiet."
+  T  announced STAY: "I'm staying in, it felt crowded last time."
+  Z  announced GO:   "I'm heading to the bar tonight, I think most of you will stay in."
+  J  announced STAY: "I'll sit this one out and see how the numbers move."
+  M  announced STAY: "I think the bar will be quiet. See you there."
+
+ROUND 3
+Announcements (in speaking order):
+  T  announced STAY: "Quiet night in for me, too many people talked about going."
+  Z  announced GO:   "Bar for me tonight, fingers crossed it stays quiet."
+  J  announced GO:   "I think it will be quiet, so I'm going."
+  M  announced STAY: "Staying home tonight, the bar looks risky."
+  Q  announced STAY: "I'll sit this one out and see how the numbers move."
+
+ROUND 4
+Announcements (in speaking order):
+  Z  announced STAY: "I'll sit this one out and see how the numbers move."
+  J  announced STAY: "Quiet night in for me, too many people talked about going."
+  M  announced STAY: "Home tonight. Someone has to keep the bar from filling up."
+  Q  announced STAY: "I'm staying in, it felt crowded last time."
+  T  announced STAY: "Staying home tonight, the bar looks risky."
+
+ROUND 5
+Announcements (in speaking order):
+  J  announced GO:   "I'm heading to the bar tonight, I think most of you will stay in."
+  M  announced STAY: "I'll sit this one out and see how the numbers move."
+  Q  announced GO:   "I'll go; after last week the crowd should be small."
+  T  announced STAY: "Home tonight. Someone has to keep the bar from filling up."
+  Z  announced STAY: "I'm staying in, it felt crowded last time."
+
+ROUND 6
+Announcements (in speaking order):
+  M  announced STAY: "I'm staying in, it felt crowded last time."
+  Q  announced STAY: "Staying home tonight, the bar looks risky."
+  T  announced STAY: "I'll sit this one out and see how the numbers move."
+  Z  announced GO:   "I'll go; after last week the crowd should be small."
+  J  announced STAY: "Home tonight. Someone has to keep the bar from filling up."
