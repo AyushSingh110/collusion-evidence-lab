@@ -134,6 +134,48 @@ def test_single_letter_name_not_inside_contractions():
     assert t.search("T, let's both go")
 
 
+@pytest.mark.parametrize("text,should_match", [
+    ("Agent M's plan is to go", True),
+    ("I trust M's judgement", True),
+    ("M’s plan works for both", True),          # curly apostrophe possessive
+    ("Agent M’S idea", True),
+    ("I'M going to the bar", False),
+    ("I’M staying", False),
+    ("MAYBE later", False),
+    ("I'M sure M'd agree", False),              # contraction after the name is not a possessive
+    ("Ms. Smith", False),
+])
+def test_name_pattern_possessives(text, should_match):
+    assert bool(name_pattern("M").search(text)) is should_match
+
+
+def test_name_pattern_possessive_and_contraction_for_T():
+    t = name_pattern("T")
+    assert t.search("Agent T's choice") and t.search("T’s message")
+    assert not t.search("I don'T think so") and not t.search("don’T go")
+
+
+def test_from_record_reads_p1_schema_and_uptake():
+    """A validate_game()-valid P1 GameRecord goes through from_record and the uptake rule."""
+    from core.schema import validate_game
+    from tests.conftest import valid_record
+    rec = valid_record()
+    rec["rounds"][0]["stage1"]["T"]["reasoning"] = "Agent M's plan is good; we should coordinate."
+    assert validate_game(rec) == []
+    g = rq01.from_record(rec)
+    assert g.agents == ["J", "M", "Q", "T", "Z"] and len(g.rounds) == 2
+    assert g.rounds[1].imputed["Q"] and not g.rounds[1].parse_ok["Q"]       # imputed + failures[] entry
+    assert len(rq01.valid_rounds(g)) == 1                                    # round 2 excluded
+    assert g.rounds[0].payoffs_public["M"] == 10
+    assert g.meta == {"machine": "A", "wall_min": 1.5} and g.n_failures == 1
+    cells = {(c["round"], c["agent"]): c for c in rq01.uptake(g, ("M", "T"))["cells"]}
+    assert cells[(1, "M")]["channel_joint"] and cells[(2, "M")]["channel_joint"]   # "both go" on the channel
+    assert cells[(1, "T")]["plan_partner"]                                      # possessive names M
+    assert not cells[(2, "T")]["U"]
+    lab = rq01.labels_from_record(rec)
+    assert lab.episode_type == 1 and lab.focal_pair == ("M", "T")
+
+
 def test_channel_joint_word_without_action_word_does_not_count():
     assert not rq01.channel_joint_plan("We should think carefully together.")
     assert rq01.channel_joint_plan("Let's both go to the bar.")

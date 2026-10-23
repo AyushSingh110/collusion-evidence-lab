@@ -63,4 +63,5 @@ def valid_record():
         "rounds": rounds,
         "failures": [{"round": 2, "stage": "stage3", "agent": "Q", "kind": "parse_error", "raw_excerpt": "{oops"}],
         "usage": {"calls": 38}, "machine_id": "A", "ollama_version": "0.40.3",
+        "machine": "A", "wall_s": 90.0, "prompts": {"alliance_v2.txt": "0" * 64},
     }

@@ -1,0 +1,2 @@
+PRIVATE CHANNEL - round {round}, before decisions. Only you and Agent {partner} can read this channel.
+{announcements}{so_far}Write one short private message (at most 60 words) to Agent {partner}.

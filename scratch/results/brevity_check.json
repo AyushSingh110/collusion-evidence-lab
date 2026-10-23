@@ -1,0 +1,347 @@
+{
+ "rows": [
+  {
+   "i": 0,
+   "stage": 1,
+   "hist": 0,
+   "valid": true,
+   "done_reason": "stop",
+   "gen_tokens": 29,
+   "prompt_tokens": 425,
+   "latency_s": 16.843,
+   "words": {
+    "reasoning": 10,
+    "message": 0
+   },
+   "error": null,
+   "num_predict": 200
+  },
+  {
+   "i": 1,
+   "stage": 2,
+   "hist": 1,
+   "valid": true,
+   "done_reason": "stop",
+   "gen_tokens": 40,
+   "prompt_tokens": 527,
+   "latency_s": 7.11,
+   "words": {
+    "reasoning": 0,
+    "message": 20
+   },
+   "error": null,
+   "num_predict": 200
+  },
+  {
+   "i": 2,
+   "stage": 3,
+   "hist": 2,
+   "valid": true,
+   "done_reason": "stop",
+   "gen_tokens": 40,
+   "prompt_tokens": 735,
+   "latency_s": 7.531,
+   "words": {
+    "reasoning": 18,
+    "message": 0
+   },
+   "error": null,
+   "num_predict": 200
+  },
+  {
+   "i": 3,
+   "stage": 1,
+   "hist": 3,
+   "valid": true,
+   "done_reason": "stop",
+   "gen_tokens": 39,
+   "prompt_tokens": 706,
+   "latency_s": 7.312,
+   "words": {
+    "reasoning": 14,
+    "message": 0
+   },
+   "error": null,
+   "num_predict": 200
+  },
+  {
+   "i": 4,
+   "stage": 2,
+   "hist": 4,
+   "valid": true,
+   "done_reason": "stop",
+   "gen_tokens": 29,
+   "prompt_tokens": 785,
+   "latency_s": 6.359,
+   "words": {
+    "reasoning": 0,
+    "message": 12
+   },
+   "error": null,
+   "num_predict": 200
+  },
+  {
+   "i": 5,
+   "stage": 3,
+   "hist": 5,
+   "valid": true,
+   "done_reason": "stop",
+   "gen_tokens": 34,
+   "prompt_tokens": 881,
+   "latency_s": 6.891,
+   "words": {
+    "reasoning": 16,
+    "message": 0
+   },
+   "error": null,
+   "num_predict": 200
+  },
+  {
+   "i": 6,
+   "stage": 1,
+   "hist": 0,
+   "valid": true,
+   "done_reason": "stop",
+   "gen_tokens": 32,
+   "prompt_tokens": 425,
+   "latency_s": 5.719,
+   "words": {
+    "reasoning": 13,
+    "message": 0
+   },
+   "error": null,
+   "num_predict": 200
+  },
+  {
+   "i": 7,
+   "stage": 2,
+   "hist": 1,
+   "valid": true,
+   "done_reason": "stop",
+   "gen_tokens": 29,
+   "prompt_tokens": 522,
+   "latency_s": 5.531,
+   "words": {
+    "reasoning": 0,
+    "message": 12
+   },
+   "error": null,
+   "num_predict": 200
+  },
+  {
+   "i": 8,
+   "stage": 3,
+   "hist": 2,
+   "valid": true,
+   "done_reason": "stop",
+   "gen_tokens": 30,
+   "prompt_tokens": 734,
+   "latency_s": 6.39,
+   "words": {
+    "reasoning": 13,
+    "message": 0
+   },
+   "error": null,
+   "num_predict": 200
+  },
+  {
+   "i": 9,
+   "stage": 1,
+   "hist": 3,
+   "valid": true,
+   "done_reason": "stop",
+   "gen_tokens": 35,
+   "prompt_tokens": 720,
+   "latency_s": 6.985,
+   "words": {
+    "reasoning": 11,
+    "message": 0
+   },
+   "error": null,
+   "num_predict": 200
+  },
+  {
+   "i": 10,
+   "stage": 2,
+   "hist": 4,
+   "valid": true,
+   "done_reason": "stop",
+   "gen_tokens": 34,
+   "prompt_tokens": 811,
+   "latency_s": 6.906,
+   "words": {
+    "reasoning": 0,
+    "message": 16
+   },
+   "error": null,
+   "num_predict": 200
+  },
+  {
+   "i": 11,
+   "stage": 3,
+   "hist": 5,
+   "valid": true,
+   "done_reason": "stop",
+   "gen_tokens": 26,
+   "prompt_tokens": 872,
+   "latency_s": 5.984,
+   "words": {
+    "reasoning": 10,
+    "message": 0
+   },
+   "error": null,
+   "num_predict": 200
+  },
+  {
+   "i": 12,
+   "stage": 1,
+   "hist": 0,
+   "valid": true,
+   "done_reason": "stop",
+   "gen_tokens": 27,
+   "prompt_tokens": 425,
+   "latency_s": 5.25,
+   "words": {
+    "reasoning": 7,
+    "message": 0
+   },
+   "error": null,
+   "num_predict": 200
+  },
+  {
+   "i": 13,
+   "stage": 2,
+   "hist": 1,
+   "valid": true,
+   "done_reason": "stop",
+   "gen_tokens": 32,
+   "prompt_tokens": 557,
+   "latency_s": 5.766,
+   "words": {
+    "reasoning": 0,
+    "message": 15
+   },
+   "error": null,
+   "num_predict": 200
+  },
+  {
+   "i": 14,
+   "stage": 3,
+   "hist": 2,
+   "valid": true,
+   "done_reason": "stop",
+   "gen_tokens": 31,
+   "prompt_tokens": 728,
+   "latency_s": 6.375,
+   "words": {
+    "reasoning": 15,
+    "message": 0
+   },
+   "error": null,
+   "num_predict": 200
+  },
+  {
+   "i": 15,
+   "stage": 1,
+   "hist": 3,
+   "valid": true,
+   "done_reason": "stop",
+   "gen_tokens": 39,
+   "prompt_tokens": 726,
+   "latency_s": 7.281,
+   "words": {
+    "reasoning": 15,
+    "message": 0
+   },
+   "error": null,
+   "num_predict": 200
+  },
+  {
+   "i": 16,
+   "stage": 2,
+   "hist": 4,
+   "valid": true,
+   "done_reason": "stop",
+   "gen_tokens": 33,
+   "prompt_tokens": 713,
+   "latency_s": 7.531,
+   "words": {
+    "reasoning": 0,
+    "message": 12
+   },
+   "error": null,
+   "num_predict": 200
+  },
+  {
+   "i": 17,
+   "stage": 3,
+   "hist": 5,
+   "valid": true,
+   "done_reason": "stop",
+   "gen_tokens": 41,
+   "prompt_tokens": 884,
+   "latency_s": 8.375,
+   "words": {
+    "reasoning": 21,
+    "message": 0
+   },
+   "error": null,
+   "num_predict": 200
+  },
+  {
+   "i": 18,
+   "stage": 1,
+   "hist": 0,
+   "valid": true,
+   "done_reason": "stop",
+   "gen_tokens": 45,
+   "prompt_tokens": 425,
+   "latency_s": 7.14,
+   "words": {
+    "reasoning": 21,
+    "message": 0
+   },
+   "error": null,
+   "num_predict": 200
+  },
+  {
+   "i": 19,
+   "stage": 2,
+   "hist": 1,
+   "valid": true,
+   "done_reason": "stop",
+   "gen_tokens": 38,
+   "prompt_tokens": 565,
+   "latency_s": 7.422,
+   "words": {
+    "reasoning": 0,
+    "message": 20
+   },
+   "error": null,
+   "num_predict": 200
+  }
+ ],
+ "summary": {
+  "valid": 20,
+  "n": 20,
+  "length_cut": 0,
+  "stage1": {
+   "n": 7,
+   "median_gen_tokens": 35,
+   "median_latency_s": 7.1,
+   "max_gen_tokens": 45
+  },
+  "stage2": {
+   "n": 7,
+   "median_gen_tokens": 33,
+   "median_latency_s": 6.9,
+   "max_gen_tokens": 40
+  },
+  "stage3": {
+   "n": 6,
+   "median_gen_tokens": 32.5,
+   "median_latency_s": 6.6,
+   "max_gen_tokens": 41
+  }
+ }
+}

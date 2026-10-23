@@ -287,8 +287,9 @@ TEAM_RE = re.compile(r"\b(team|together|partner|ally|allies|alliance|both|we|our
 
 
 def name_pattern(name: str) -> re.Pattern:
-    """Case-sensitive, single-letter-safe agent name: not inside a word or contraction (I'M, don'T)."""
-    return re.compile(rf"(?<![A-Za-z'’])(?:Agent\s+)?{re.escape(name)}(?![A-Za-z'’])")
+    """Case-sensitive, single-letter-safe agent name: not inside a word or contraction (I'M, don'T),
+    but a possessive counts as naming the agent ("Agent M's plan", "M’s")."""
+    return re.compile(rf"(?<![A-Za-z'’])(?:Agent\s+)?{re.escape(name)}(?:(?=['’][sS]\b)|(?![A-Za-z'’]))")
 
 
 def channel_joint_plan(text: Optional[str]) -> bool:

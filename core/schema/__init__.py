@@ -72,6 +72,9 @@ class GameConfig:
     master_seed: int
     plan_name: str
     synthetic: bool = False
+    plan_index: int = -1
+    plan_config_sha256: str = ""
+    brevity: bool = False
     private_payoff_overrides: dict[str, dict[str, float]] = field(default_factory=dict)
     addenda: dict[str, str] = field(default_factory=dict)
     private_channel: dict[str, Any] = field(default_factory=dict)
@@ -97,6 +100,7 @@ class CallMeta:
     truncation_suspect: bool
     error: Optional[str]
     attempts: int = 1
+    seed: Optional[int] = None
 
     to_dict = asdict
 
@@ -122,8 +126,11 @@ class GameRecord:
     rounds: list[dict[str, Any]]
     failures: list[dict[str, Any]]
     usage: dict[str, Any]
-    machine_id: str
+    machine_id: str             # cache shard id (COLLUSION_LAB_MACHINE or host hash)
     ollama_version: str
+    machine: str                # plan machine letter (pilot table "machine")
+    wall_s: float               # total wall-clock seconds of the game (pilot table "min")
+    prompts: dict[str, str]     # prompt file name -> sha256 actually used
     schema_version: str = SCHEMA_VERSION
 
     to_dict = asdict
@@ -198,7 +205,7 @@ class LLMResult:
 # Validation
 # ---------------------------------------------------------------------------
 _TOP_KEYS = ("schema_version", "game_id", "created_utc", "harness", "config", "rounds", "failures", "usage",
-             "machine_id", "ollama_version")
+             "machine_id", "ollama_version", "machine", "wall_s", "prompts")
 _DECISION_KEYS = {"stage1": "intended_action", "stage3": "choice"}
 
 

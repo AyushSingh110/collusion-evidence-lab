@@ -353,3 +353,62 @@ See report 01 §11 (10 questions). Most urgent:
   (Rule A).
 - `.gitignore` has an unstaged working-tree change that removes the `notes/` line the merge staged.
   Was that intentional? Rule E says `notes/` is ignored.
+
+---
+
+## 2026-10-24 — Task 04: Step 0 (P3a merge check) + P2 Generator
+
+### What was implemented or executed
+- **Step 0:**
+  - Read report 03.
+  - Full suite: 89 passed (P1 61 + P3a 28).
+  - `conftest.py` = P1's version; `pytest.ini` already has `testpaths=tests` and `pythonpath=.`.
+  - Adapter check: `from_record` matches the P1 layout except `machine` / `wall_s` → added to GameRecord.
+  - Possessive name-pattern fix + 11 tests + adapter test → 100 passed.
+- **P2 code:**
+  - `configs/prompts/` (9 files + `manifest.json`);
+  - `core/generate/{elfarol,history,prompts,runner}.py`, `core/clean/leaks.py`;
+  - `scripts/{make_plan,labels_split_from_plan,run_plan,merge_check}.py`;
+  - tests `genmock.py`, `test_generate.py`, `test_leaks.py`, `test_scripts_p2.py`;
+  - schema additions (GameRecord `machine`/`wall_s`/`prompts`; GameConfig `plan_index`/`plan_config_sha256`/`brevity`; CallMeta `seed`).
+- **Scratch helpers:** `dump_prompts.py` (verbatim addenda), `write_manifest.py`, `brevity_check.py` (L1), `smoke_report.py` (L2), `update_prereg.py`, `estimate_plans.py`.
+- **Live runs** (pre-approved):
+  - L1 brevity check: 20 calls; free RAM 6.0 GB; started 02:15.
+  - L2 smoke game: plan `smoke` seed 20261099 in `runs/smoke/`, 38 calls, 5.2 min; free RAM 2.1 GB.
+  - Total: 58 local calls, $0.
+- **Final configs:** `run_defaults.json` (brevity on, `num_predict` 200/200/200/150, 8 rounds, minutes per round 2.6/2.05, Type 1 factor 1.27); `prereg_rq01.md` still DRAFT, sha256 `22c8ff71…5d57`.
+- **Final test run:** `pytest -q` → **156 passed**. `find external -name __pycache__` → 0.
+
+### Errors and problems faced
+1. `test_prompts_module_does_not_import_harness_clients` FAILED: `external/llm-trust-breaking/src/games/__pycache__` existed. Root cause:
+   `prompt_builders._get_game_rules` imports `src.games` lazily, at call time, after our
+   `sys.dont_write_bytecode` guard had been restored. That violated Rule F.
+2. Leak pattern bug, found while writing it (before any test ran): `(?![\d.,]\d)` would still match the
+   "-8" inside "-80".
+3. P3a name pattern did not match possessives ("Agent M's plan"), as report 03 §7 flagged.
+4. The P1 schema had no `machine` / `wall_s`, so the pilot-table columns would have been empty.
+
+### How each problem was solved
+1. Import `src.games` eagerly inside the bytecode guard in `core/generate/prompts.py`. Deleted the
+   `__pycache__` folder our test run had created. Re-ran: 0 folders; the test now guards it permanently.
+2. Changed it to `(?!\d)(?![.,]\d)`. Tests cover -80, -8.5, 5-8 (no hit) and -8, $-8, − 8 (hit).
+3. **Pre-freeze rule change (approved):** the new pattern is
+   `(?<![A-Za-z'’])(?:Agent\s+)?<P>(?:(?=['’][sS]\b)|(?![A-Za-z'’]))`. 11 tests added; the recorded
+   mini-games still give uptake 1.00 (alliance) and 0.00 (placebo); the DRAFT prereg wording was updated.
+4. Added `machine`, `wall_s` and `prompts` as required GameRecord fields; `run_game` writes them.
+
+### Decisions taken
+- **Brevity KEEP** (pre-set rule: L1 20/20 valid, 0 length cuts, L2 0 parse failures, uptake 2/2 per focal
+  agent). Effect: Stage 3 132 → 32.5 median output tokens, 30.0 → 6.6 s.
+- **Rounds = 8** (pre-set rule: estimated 8-round Type 1 game ≈ 22.7 min ≤ 25 min).
+- Partial records go to `<id>.partial.json` and the final record to `<id>.json`. Alternative: one file with
+  a status flag — rejected, because a partial record would be confused with a finished one.
+- Brevity line placed at the end of every user prompt (identical for all agents), not in the addendum slot.
+  It is protocol-wide, not type-specific.
+- `run_plan` output goes to `data/raw/<plan name>/`.
+
+### Open questions for the team
+- B and C self-test lines are needed for the pilot plan speed factors.
+- The ML laptop must re-sync to pytest 8.4.2.
+- `notes/` is gitignored but still tracked from commit `ed3be3b`. Untrack or keep? (lead decision)
+- Lead: freeze `configs/prereg_rq01.md` (remove DRAFT, commit, record its sha256 in the DEVLOG) before P4.
