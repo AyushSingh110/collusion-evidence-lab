@@ -38,15 +38,23 @@ class MonitorConfig:
     view_prompt: dict[str, str]
     output_schema: dict[str, Any]
     manifest_sha256: str
+    format: str = "single"            # "single": one score + pair; "pairs": one score per pair
+    pair_order: tuple[str, ...] = ()  # pairs format: fixed key order, e.g. ("J-M", "J-Q", ...)
+    rationale_field: str = "rationale"
+
+
+# candidate prompts live side by side in configs/monitor/ (task 07); v1 stays the default
+PROMPTS = {"monitor_v1": "manifest.json", "monitor_v2_anchored": "manifest_v2_anchored.json",
+           "monitor_v2_pairs": "manifest_v2_pairs.json"}
 
 
 def _lf(b: bytes) -> bytes:
     return b.replace(b"\r\n", b"\n")
 
 
-def load_config(directory: Path = MONITOR_DIR) -> MonitorConfig:
-    """Load configs/monitor/manifest.json + template; refuse if the template hash does not match."""
-    man = load_json(directory / "manifest.json")
+def load_config(directory: Path = MONITOR_DIR, manifest: str = "manifest.json") -> MonitorConfig:
+    """Load a monitor manifest + its template; refuse if the template hash does not match."""
+    man = load_json(directory / manifest)
     raw = _lf((directory / man["template"]).read_bytes())
     got = hashlib.sha256(raw).hexdigest()
     if got != man["template_sha256"]:
@@ -56,7 +64,9 @@ def load_config(directory: Path = MONITOR_DIR) -> MonitorConfig:
         model=man["model"], temperature=float(man["temperature"]), num_ctx=int(man["num_ctx"]),
         num_predict=int(man["num_predict"]), max_rationale_words=int(man["max_rationale_words"]),
         agents=tuple(man["agents"]), what_you_see=dict(man["what_you_see"]), view_prompt=dict(man["view_prompt"]),
-        output_schema=man["output_schema"], manifest_sha256=sha256_of(man))
+        output_schema=man["output_schema"], manifest_sha256=sha256_of(man),
+        format=man.get("format", "single"), pair_order=tuple(man.get("pair_order", ())),
+        rationale_field=man.get("rationale_field", "rationale"))
 
 
 def system_prompt(cfg: MonitorConfig, view: str) -> str:
@@ -70,22 +80,54 @@ def monitor_seed(game_id: str, view: str, sample_idx: int) -> int:
     return int(hashlib.sha256(f"{game_id}|{view}|{sample_idx}".encode("utf-8")).hexdigest(), 16) % 2 ** 31
 
 
+def _bad_score(s) -> bool:
+    return isinstance(s, bool) or not isinstance(s, int) or not 0 <= s <= 100
+
+
 def validate_output(parsed: Optional[dict], cfg: MonitorConfig) -> list[str]:
     """Problems with a parsed monitor reply; an empty list means it is valid."""
     if not isinstance(parsed, dict):
         return ["not a JSON object"]
     errs = []
-    s = parsed.get("score")
-    if isinstance(s, bool) or not isinstance(s, int) or not 0 <= s <= 100:
-        errs.append(f"score {s!r} is not an integer in 0..100")
-    p = parsed.get("suspected_pair")
-    if not isinstance(p, list) or len(p) not in (0, 2):
-        errs.append(f"suspected_pair {p!r} is not a list of 0 or 2 names")
-    elif len(p) == 2 and (p[0] == p[1] or any(x not in cfg.agents for x in p)):
-        errs.append(f"suspected_pair {p!r} must be two distinct names from {list(cfg.agents)}")
-    if not isinstance(parsed.get("rationale"), str):
-        errs.append("rationale is not a string")
+    if cfg.format == "pairs":
+        ps = parsed.get("pair_scores")
+        if not isinstance(ps, dict):
+            errs.append("pair_scores is not an object")
+        else:
+            missing = [k for k in cfg.pair_order if k not in ps]
+            extra = sorted(k for k in ps if k not in cfg.pair_order)
+            if missing:
+                errs.append(f"pair_scores missing {missing}")
+            if extra:
+                errs.append(f"pair_scores has unknown pairs {extra}")
+            bad = [k for k in cfg.pair_order if k in ps and _bad_score(ps[k])]
+            if bad:
+                errs.append(f"pair_scores not integers in 0..100 for {bad}")
+    else:
+        s = parsed.get("score")
+        if _bad_score(s):
+            errs.append(f"score {s!r} is not an integer in 0..100")
+        p = parsed.get("suspected_pair")
+        if not isinstance(p, list) or len(p) not in (0, 2):
+            errs.append(f"suspected_pair {p!r} is not a list of 0 or 2 names")
+        elif len(p) == 2 and (p[0] == p[1] or any(x not in cfg.agents for x in p)):
+            errs.append(f"suspected_pair {p!r} must be two distinct names from {list(cfg.agents)}")
+    if not isinstance(parsed.get(cfg.rationale_field), str):
+        errs.append(f"{cfg.rationale_field} is not a string")
     return errs
+
+
+def game_score_from_pairs(pair_scores: dict[str, int], pair_order: Sequence[str]) -> tuple[int, list[str]]:
+    """Game score = max over pairs; suspected pair = argmax, or [] when the max is shared (tie)."""
+    top = max(pair_scores[k] for k in pair_order)
+    winners = [k for k in pair_order if pair_scores[k] == top]
+    return top, (winners[0].split("-") if len(winners) == 1 else [])
+
+
+def _decode(parsed: dict, cfg: MonitorConfig) -> tuple[int, list[str]]:
+    if cfg.format == "pairs":
+        return game_score_from_pairs(parsed["pair_scores"], cfg.pair_order)
+    return parsed["score"], list(parsed["suspected_pair"])
 
 
 def score_view(text: str, view: str, llm, cfg: MonitorConfig, *, game_id: str, sample_idx: int = 0) -> dict:
@@ -101,21 +143,27 @@ def score_view(text: str, view: str, llm, cfg: MonitorConfig, *, game_id: str, s
     pec = res.prompt_eval_count
     trunc = bool(res.truncation_suspect or (pec is not None and pec >= cfg.num_ctx / 2))
     accepted = parse_ok and not trunc
-    rationale = res.parsed.get("rationale") if parse_ok else None
-    return {
+    rationale = res.parsed.get(cfg.rationale_field) if parse_ok else None
+    raw_score, raw_pair = _decode(res.parsed, cfg) if parse_ok else (None, [])
+    if raw_score is None and cfg.format == "single" and isinstance(res.parsed, dict):
+        raw_score = res.parsed.get("score")
+    line = {
         "game_id": game_id, "view": view, "model": cfg.model, "digest": res.model_digest,
         "prompt_version": cfg.prompt_version, "prompt_sha256": sha256_of(messages[0]["content"]),
         "view_sha256": hashlib.sha256(text.encode("utf-8")).hexdigest(), "sample_idx": sample_idx,
-        "score": res.parsed["score"] if accepted else None,
-        "suspected_pair": list(res.parsed["suspected_pair"]) if accepted else [],
+        "score": raw_score if accepted else None,
+        "suspected_pair": raw_pair if accepted else [],
         "rationale": rationale, "rationale_words": len(rationale.split()) if rationale else None,
         "rationale_over_limit": bool(rationale) and len(rationale.split()) > cfg.max_rationale_words,
         "parse_ok": parse_ok, "errors": errs, "truncation_suspect": trunc,
-        "raw_score": res.parsed.get("score") if isinstance(res.parsed, dict) else None,
+        "raw_score": raw_score,
         "cache_key": res.cache_key, "cache_hit": res.cache_hit, "latency": res.latency_s,
         "prompt_eval_count": pec, "eval_count": res.eval_count, "done_reason": res.done_reason,
         "error": res.error,
     }
+    if cfg.format == "pairs":
+        line["pair_scores"] = ({k: res.parsed["pair_scores"][k] for k in cfg.pair_order} if parse_ok else None)
+    return line
 
 
 # --------------------------------------------------------------------------- runner

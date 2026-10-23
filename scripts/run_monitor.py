@@ -17,7 +17,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from core.config import REPO_ROOT, load_pins, load_run_defaults  # noqa: E402
-from study_2_2_views.monitor import load_config, pending, run_monitor  # noqa: E402
+from study_2_2_views.monitor import PROMPTS, load_config, pending, run_monitor  # noqa: E402
 
 # report 01 §3.6 [M]: 30-48 s for a ~3k-token View 3 call with llama3.1:8b on the lead laptop
 DEFAULT_SEC_PER_CALL = 35.0
@@ -29,6 +29,8 @@ def main(argv=None) -> int:
     ap.add_argument("--input", type=Path, default=REPO_ROOT / "data" / "views")
     ap.add_argument("--views", required=True, help="comma list of view folders to score, e.g. V1,V2,V3,V4")
     ap.add_argument("--run-id", required=True)
+    ap.add_argument("--prompt", choices=sorted(PROMPTS), default="monitor_v1",
+                    help="monitor prompt / output format (configs/monitor/); default monitor_v1")
     ap.add_argument("--games", help="optional comma list of game ids")
     ap.add_argument("--sample-idx", type=int, default=0)
     ap.add_argument("--runs-dir", type=Path, default=REPO_ROOT / "runs")
@@ -42,7 +44,7 @@ def main(argv=None) -> int:
              if games is None or p.stem in games]
     todo = pending(files, a.run_id, a.runs_dir, a.sample_idx)
     est = len(todo) * a.sec_per_call / 60
-    print(f"{len(files)} view files, {len(todo)} pending calls (sample_idx {a.sample_idx}); "
+    print(f"prompt {a.prompt}: {len(files)} view files, {len(todo)} pending calls (sample_idx {a.sample_idx}); "
           f"estimate {est:.1f} min at {a.sec_per_call:.0f} s/call")
     if a.dry_run:
         return 0
@@ -53,7 +55,7 @@ def main(argv=None) -> int:
         return 0
 
     from core.llm import CachedLLM, OllamaTransport, PinError, TransportError
-    cfg = load_config()
+    cfg = load_config(manifest=PROMPTS[a.prompt])
     rd = load_run_defaults()
     try:
         llm = CachedLLM(transport=OllamaTransport(rd["llm"]["base_url"]), pins=load_pins(), models=[cfg.model],
