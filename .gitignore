@@ -1,7 +1,7 @@
 # ---- Project rule E: reports/docs and generated data are never committed ----
 # (external/ starter code and scratch/ measurement scripts ARE committed since 2026-10-24,
 #  so teammates get a working codebase from one clone.)
-
+notes/
 data/
 runs/
 cache/
