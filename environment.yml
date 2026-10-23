@@ -1,0 +1,20 @@
+name: collusion-lab
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11.17
+  - pip=26.2.2
+  - pip:
+      # Starter-harness (external/llm-trust-breaking) runtime deps, pinned to the versions in
+      # its uv.lock for Python 3.11 (harness commit d585a7b of poseidon-research/collusion_hackathon).
+      - openai==3.37.0
+      - python-dotenv==1.2.4
+      - requests==2.34.2
+      - aiohttp==3.14.5
+      - tqdm==4.70.1
+      - numpy==2.4.6
+      - matplotlib==3.11.2
+# Optional, only needed to import the harness's own settings/clients (our code does not):
+#   poseidon-compute 0.1.0 from external/util. Install from a COPY of that folder so nothing
+#   is written into external/ (Rule F):
+#     cp -r external/util <tmp>/util_build && conda run -n collusion-lab python -m pip install <tmp>/util_build
