@@ -1,0 +1,22 @@
+[project]
+name = "llm-trust-breaking"
+version = "0.1.0"
+description = "Trust / deception-dynamics experiments: do LLM agents premeditate defection and does trust recover over memory-carrying rounds."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "poseidon-compute",
+    "python-dotenv>=1.0.0",
+    "requests>=2.31.0",
+    "aiohttp>=3.9.0",
+    "openai>=1.30",
+    "tqdm>=4.65.0",
+    "numpy>=1.24.0",
+    "matplotlib>=3.7.0",
+]
+
+[tool.uv]
+package = false
+
+[tool.uv.sources]
+poseidon-compute = { path = "../util", editable = true }

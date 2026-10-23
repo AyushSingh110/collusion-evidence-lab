@@ -1,0 +1,65 @@
+{
+ "qwen3:8b": {
+  "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+  "size_gb": 5.23,
+  "params": "8.2B",
+  "quant": "Q4_K_M",
+  "family": "qwen3",
+  "trained_ctx": 40960,
+  "default_params": "temperature                    0.6 | top_k                          20 | top_p                          0.95 | repeat_penalty                 1 | stop          "
+ },
+ "granite3.3:8b": {
+  "digest": "fd429f23b90980ed1bef53b990894e7b0199331f6ae90c5650240a7d5b70f1f7",
+  "size_gb": 4.94,
+  "params": "8.2B",
+  "quant": "Q4_K_M",
+  "family": "granite",
+  "trained_ctx": 131072,
+  "default_params": ""
+ },
+ "qwen2.5:7b": {
+  "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+  "size_gb": 4.68,
+  "params": "7.6B",
+  "quant": "Q4_K_M",
+  "family": "qwen2",
+  "trained_ctx": 32768,
+  "default_params": ""
+ },
+ "mistral:7b": {
+  "digest": "6577803aa9a036369e481d648a2baebb381ebc6e897f2bb9a766a2aa7bfbc1cf",
+  "size_gb": 4.37,
+  "params": "7.2B",
+  "quant": "Q4_K_M",
+  "family": "llama",
+  "trained_ctx": 32768,
+  "default_params": "stop                           \"[INST]\" | stop                           \"[/INST]\""
+ },
+ "llama3.1:8b": {
+  "digest": "46e0c10c039e019119339687c3c1757cc81b9da49709a3b3924863ba87ca666e",
+  "size_gb": 4.92,
+  "params": "8.0B",
+  "quant": "Q4_K_M",
+  "family": "llama",
+  "trained_ctx": 131072,
+  "default_params": "stop                           \"<|start_header_id|>\" | stop                           \"<|end_header_id|>\" | stop                           \"<|eot_id|>\""
+ },
+ "llama3.2:latest": {
+  "digest": "a80c4f17acd55265feec403c7aef86be0c25983ab279d83f3bcd3abbcb5b8b72",
+  "size_gb": 2.02,
+  "params": "3.2B",
+  "quant": "Q4_K_M",
+  "family": "llama",
+  "trained_ctx": 131072,
+  "default_params": "stop                           \"<|start_header_id|>\" | stop                           \"<|end_header_id|>\" | stop                           \"<|eot_id|>\""
+ },
+ "mistral:latest": {
+  "digest": "6577803aa9a036369e481d648a2baebb381ebc6e897f2bb9a766a2aa7bfbc1cf",
+  "size_gb": 4.37,
+  "params": "7.2B",
+  "quant": "Q4_K_M",
+  "family": "llama",
+  "trained_ctx": 32768,
+  "default_params": "stop                           \"[INST]\" | stop                           \"[/INST]\""
+ }
+}

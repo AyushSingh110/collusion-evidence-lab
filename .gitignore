@@ -1,12 +1,12 @@
-# ---- Project rule E: working docs, data and starter code are never committed ----
+# ---- Project rule E: reports/docs and generated data are never committed ----
+# (external/ starter code and scratch/ measurement scripts ARE committed since 2026-10-24,
+#  so teammates get a working codebase from one clone.)
 notes/
-CLAUDE.md
 data/
 runs/
 cache/
-external/
-scratch/
 study_*/results/
+outputs/
 
 # ---- Secrets ----
 .env

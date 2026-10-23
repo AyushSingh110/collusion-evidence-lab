@@ -1,0 +1,23 @@
+{
+ "label": "P1",
+ "model": "qwen2.5:7b",
+ "num_ctx": 4096,
+ "seq_wall_s": 147.6,
+ "par4_wall_s": 91.8,
+ "seq_gen_tokens": 558,
+ "par_gen_tokens": 509,
+ "same_output_seq_vs_par": [
+  true,
+  false,
+  false,
+  false
+ ],
+ "ps": [
+  {
+   "name": "qwen2.5:7b",
+   "size": 5123845650,
+   "size_vram": 2300040969,
+   "context_length": 4096
+  }
+ ]
+}

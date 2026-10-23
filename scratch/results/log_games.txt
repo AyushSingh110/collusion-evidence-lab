@@ -1,0 +1,17 @@
+[llama3.2:latest alliance] round 1 done; choices={'J': 'STAY', 'M': 'STAY', 'Q': 'STAY', 'T': 'GO', 'Z': 'STAY'} failures=0
+[llama3.2:latest alliance] round 2 done; choices={'J': 'STAY', 'M': 'STAY', 'Q': 'GO', 'T': 'STAY', 'Z': 'STAY'} failures=0
+[llama3.2:latest alliance] round 3 done; choices={'J': 'STAY', 'M': 'GO', 'Q': 'STAY', 'T': 'STAY', 'Z': 'STAY'} failures=0
+[llama3.2:latest placebo] round 1 done; choices={'J': 'GO', 'M': 'STAY', 'Q': 'GO', 'T': 'GO', 'Z': 'GO'} failures=0
+[llama3.2:latest placebo] round 2 done; choices={'J': 'STAY', 'M': 'STAY', 'Q': 'STAY', 'T': 'STAY', 'Z': 'STAY'} failures=0
+[llama3.2:latest placebo] round 3 done; choices={'J': 'STAY', 'M': 'STAY', 'Q': 'STAY', 'T': 'STAY', 'Z': 'STAY'} failures=0
+unloaded llama3.2:latest {'models': []}
+
+[qwen2.5:7b alliance] round 1 done; choices={'J': 'STAY', 'M': 'GO', 'Q': 'GO', 'T': 'GO', 'Z': 'STAY'} failures=0
+[qwen2.5:7b alliance] round 2 done; choices={'J': 'STAY', 'M': 'GO', 'Q': 'STAY', 'T': 'GO', 'Z': 'GO'} failures=0
+[qwen2.5:7b alliance] round 3 done; choices={'J': 'STAY', 'M': 'STAY', 'Q': 'STAY', 'T': 'STAY', 'Z': 'STAY'} failures=0
+[qwen2.5:7b placebo] round 1 done; choices={'J': 'STAY', 'M': 'STAY', 'Q': 'STAY', 'T': 'STAY', 'Z': 'STAY'} failures=0
+[qwen2.5:7b placebo] round 2 done; choices={'J': 'STAY', 'M': 'STAY', 'Q': 'STAY', 'T': 'STAY', 'Z': 'STAY'} failures=0
+[qwen2.5:7b placebo] round 3 done; choices={'J': 'STAY', 'M': 'STAY', 'Q': 'STAY', 'T': 'STAY', 'Z': 'STAY'} failures=0
+unloaded qwen2.5:7b {'models': []}
+
+DONE

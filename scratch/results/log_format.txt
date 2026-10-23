@@ -1,0 +1,154 @@
+[qwen2.5:7b] t=1.0 #0 stage1 hist=0 valid=True 7.8s p=379 g=53 stop
+[qwen2.5:7b] t=1.0 #1 stage2 hist=1 valid=True 10.1s p=645 g=63 stop
+[qwen2.5:7b] t=1.0 #2 stage3 hist=2 valid=True 16.58s p=687 g=122 stop
+[qwen2.5:7b] t=1.0 #3 stage1 hist=3 valid=True 12.49s p=683 g=79 stop
+[qwen2.5:7b] t=1.0 #4 stage2 hist=4 valid=True 9.53s p=659 g=52 stop
+[qwen2.5:7b] t=1.0 #5 stage3 hist=5 valid=True 20.68s p=864 g=136 stop
+[qwen2.5:7b] t=1.0 #6 stage1 hist=6 valid=True 14.26s p=835 g=72 stop
+[qwen2.5:7b] t=1.0 #7 stage2 hist=7 valid=True 14.45s p=942 g=70 stop
+[qwen2.5:7b] t=1.0 #8 stage3 hist=0 valid=True 29.24s p=456 g=131 stop
+[qwen2.5:7b] t=1.0 #9 stage1 hist=1 valid=True 19.68s p=573 g=88 stop
+[qwen2.5:7b] t=1.0 #10 stage2 hist=2 valid=True 8.43s p=656 g=47 stop
+[qwen2.5:7b] t=1.0 #11 stage3 hist=3 valid=True 32.33s p=738 g=133 stop
+[qwen2.5:7b] t=1.0 #12 stage1 hist=4 valid=True 14.65s p=725 g=56 stop
+[qwen2.5:7b] t=1.0 #13 stage2 hist=5 valid=True 15.25s p=730 g=60 stop
+[qwen2.5:7b] t=1.0 #14 stage3 hist=6 valid=True 33.66s p=907 g=140 stop
+[qwen2.5:7b] t=1.0 #15 stage1 hist=7 valid=True 18.08s p=905 g=68 stop
+[qwen2.5:7b] t=1.0 #16 stage2 hist=0 valid=True 13.65s p=393 g=58 stop
+[qwen2.5:7b] t=1.0 #17 stage3 hist=1 valid=True 34.21s p=622 g=151 stop
+[qwen2.5:7b] t=1.0 #18 stage1 hist=2 valid=True 10.52s p=625 g=68 stop
+[qwen2.5:7b] t=1.0 #19 stage2 hist=3 valid=True 7.52s p=593 g=45 stop
+[qwen2.5:7b] t=0.7 #0 stage1 hist=0 valid=True 9.84s p=379 g=69 stop
+[qwen2.5:7b] t=0.7 #1 stage2 hist=1 valid=True 7.28s p=491 g=44 stop
+[qwen2.5:7b] t=0.7 #2 stage3 hist=2 valid=True 18.16s p=675 g=116 stop
+[qwen2.5:7b] t=0.7 #3 stage1 hist=3 valid=True 18.32s p=672 g=69 stop
+[qwen2.5:7b] t=0.7 #4 stage2 hist=4 valid=True 15.54s p=759 g=65 stop
+[qwen2.5:7b] t=0.7 #5 stage3 hist=5 valid=True 24.29s p=851 g=103 stop
+[qwen2.5:7b] t=0.7 #6 stage1 hist=6 valid=True 15.52s p=868 g=63 stop
+[qwen2.5:7b] t=0.7 #7 stage2 hist=7 valid=True 11.57s p=957 g=41 stop
+[qwen2.5:7b] t=0.7 #8 stage3 hist=0 valid=True 34.65s p=429 g=147 stop
+[qwen2.5:7b] t=0.7 #9 stage1 hist=1 valid=True 17.04s p=581 g=68 stop
+[qwen2.5:7b] t=0.7 #10 stage2 hist=2 valid=True 19.48s p=642 g=89 stop
+[qwen2.5:7b] t=0.7 #11 stage3 hist=3 valid=True 30.67s p=758 g=126 stop
+[qwen2.5:7b] t=0.7 #12 stage1 hist=4 valid=True 15.27s p=738 g=66 stop
+[qwen2.5:7b] t=0.7 #13 stage2 hist=5 valid=True 14.23s p=711 g=54 stop
+[qwen2.5:7b] t=0.7 #14 stage3 hist=6 valid=True 25.53s p=911 g=113 stop
+[qwen2.5:7b] t=0.7 #15 stage1 hist=7 valid=True 19.63s p=928 g=82 stop
+[qwen2.5:7b] t=0.7 #16 stage2 hist=0 valid=True 11.05s p=427 g=47 stop
+[qwen2.5:7b] t=0.7 #17 stage3 hist=1 valid=True 39.61s p=637 g=180 stop
+[qwen2.5:7b] t=0.7 #18 stage1 hist=2 valid=True 17.06s p=642 g=80 stop
+[qwen2.5:7b] t=0.7 #19 stage2 hist=3 valid=True 19.45s p=639 g=81 stop
+[qwen2.5:7b] sweep round 1: 32.44s p=455 g=159
+[qwen2.5:7b] sweep round 2: 19.43s p=637 g=90
+[qwen2.5:7b] sweep round 3: 31.6s p=715 g=145
+[qwen2.5:7b] sweep round 4: 17.7s p=763 g=129
+[qwen2.5:7b] sweep round 5: 30.86s p=810 g=149
+[qwen2.5:7b] sweep round 6: 33.53s p=861 g=145
+[qwen2.5:7b] sweep round 7: 28.89s p=909 g=122
+[qwen2.5:7b] sweep round 8: 36.43s p=978 g=153
+
+unloaded qwen2.5:7b {'models': []}
+
+[llama3.1:8b] t=1.0 #0 stage1 hist=0 valid=True 29.44s p=378 g=110 stop
+[llama3.1:8b] t=1.0 #1 stage2 hist=1 valid=True 11.63s p=644 g=62 stop
+[llama3.1:8b] t=1.0 #2 stage3 hist=2 valid=True 46.78s p=685 g=150 stop
+[llama3.1:8b] t=1.0 #3 stage1 hist=3 valid=True 31.49s p=678 g=101 stop
+[llama3.1:8b] t=1.0 #4 stage2 hist=4 valid=True 14.1s p=652 g=41 stop
+[llama3.1:8b] t=1.0 #5 stage3 hist=5 valid=True 56.01s p=858 g=185 stop
+[llama3.1:8b] t=1.0 #6 stage1 hist=6 valid=True 16.48s p=831 g=94 stop
+[llama3.1:8b] t=1.0 #7 stage2 hist=7 valid=True 16.16s p=937 g=74 stop
+[llama3.1:8b] t=1.0 #8 stage3 hist=0 valid=True 44.33s p=455 g=152 stop
+[llama3.1:8b] t=1.0 #9 stage1 hist=1 valid=True 38.54s p=570 g=133 stop
+[llama3.1:8b] t=1.0 #10 stage2 hist=2 valid=True 19.8s p=651 g=78 stop
+[llama3.1:8b] t=1.0 #11 stage3 hist=3 valid=True 35.39s p=735 g=135 stop
+[llama3.1:8b] t=1.0 #12 stage1 hist=4 valid=True 27.51s p=723 g=113 stop
+[llama3.1:8b] t=1.0 #13 stage2 hist=5 valid=True 13.86s p=726 g=51 stop
+[llama3.1:8b] t=1.0 #14 stage3 hist=6 valid=True 39.75s p=901 g=164 stop
+[llama3.1:8b] t=1.0 #15 stage1 hist=7 valid=True 29.43s p=895 g=112 stop
+[llama3.1:8b] t=1.0 #16 stage2 hist=0 valid=True 12.23s p=392 g=48 stop
+[llama3.1:8b] t=1.0 #17 stage3 hist=1 valid=True 23.74s p=619 g=91 stop
+[llama3.1:8b] t=1.0 #18 stage1 hist=2 valid=True 21.37s p=622 g=88 stop
+[llama3.1:8b] t=1.0 #19 stage2 hist=3 valid=True 15.42s p=590 g=52 stop
+[llama3.1:8b] t=0.7 #0 stage1 hist=0 valid=True 23.38s p=378 g=79 stop
+[llama3.1:8b] t=0.7 #1 stage2 hist=1 valid=True 8.98s p=490 g=31 stop
+[llama3.1:8b] t=0.7 #2 stage3 hist=2 valid=True 28.91s p=674 g=106 stop
+[llama3.1:8b] t=0.7 #3 stage1 hist=3 valid=True 17.07s p=667 g=112 stop
+[llama3.1:8b] t=0.7 #4 stage2 hist=4 valid=True 15.05s p=757 g=70 stop
+[llama3.1:8b] t=0.7 #5 stage3 hist=5 valid=True 42.5s p=844 g=159 stop
+[llama3.1:8b] t=0.7 #6 stage1 hist=6 valid=True 26.97s p=858 g=101 stop
+[llama3.1:8b] t=0.7 #7 stage2 hist=7 valid=True 23.43s p=952 g=85 stop
+[llama3.1:8b] t=0.7 #8 stage3 hist=0 valid=True 16.53s p=428 g=68 stop
+[llama3.1:8b] t=0.7 #9 stage1 hist=1 valid=True 27.15s p=578 g=115 stop
+[llama3.1:8b] t=0.7 #10 stage2 hist=2 valid=True 16.13s p=638 g=60 stop
+[llama3.1:8b] t=0.7 #11 stage3 hist=3 valid=True 24.5s p=752 g=94 stop
+[llama3.1:8b] t=0.7 #12 stage1 hist=4 valid=True 26.58s p=734 g=93 stop
+[llama3.1:8b] t=0.7 #13 stage2 hist=5 valid=True 19.59s p=707 g=58 stop
+[llama3.1:8b] t=0.7 #14 stage3 hist=6 valid=True 18.06s p=904 g=107 stop
+[llama3.1:8b] t=0.7 #15 stage1 hist=7 valid=True 20.04s p=918 g=82 stop
+[llama3.1:8b] t=0.7 #16 stage2 hist=0 valid=True 12.78s p=426 g=49 stop
+[llama3.1:8b] t=0.7 #17 stage3 hist=1 valid=True 41.08s p=635 g=165 stop
+[llama3.1:8b] t=0.7 #18 stage1 hist=2 valid=True 23.79s p=639 g=90 stop
+[llama3.1:8b] t=0.7 #19 stage2 hist=3 valid=True 12.11s p=635 g=44 stop
+[llama3.1:8b] sweep round 1: 29.59s p=454 g=118
+[llama3.1:8b] sweep round 2: 34.39s p=635 g=142
+[llama3.1:8b] sweep round 3: 15.42s p=711 g=99
+[llama3.1:8b] sweep round 4: 14.71s p=758 g=89
+[llama3.1:8b] sweep round 5: 17.55s p=806 g=57
+[llama3.1:8b] sweep round 6: 36.28s p=855 g=151
+[llama3.1:8b] sweep round 7: 51.48s p=901 g=199
+[llama3.1:8b] sweep round 8: 25.13s p=972 g=160
+
+unloaded llama3.1:8b {'models': []}
+
+[llama3.2:latest] t=1.0 #0 stage1 hist=0 valid=True 11.43s p=388 g=94 stop
+[llama3.2:latest] t=1.0 #1 stage2 hist=1 valid=True 4.89s p=654 g=67 stop
+[llama3.2:latest] t=1.0 #2 stage3 hist=2 valid=True 8.82s p=695 g=118 stop
+[llama3.2:latest] t=1.0 #3 stage1 hist=3 valid=True 6.18s p=688 g=79 stop
+[llama3.2:latest] t=1.0 #4 stage2 hist=4 valid=True 4.96s p=662 g=60 stop
+[llama3.2:latest] t=1.0 #5 stage3 hist=5 valid=True 8.69s p=868 g=129 stop
+[llama3.2:latest] t=1.0 #6 stage1 hist=6 valid=True 7.31s p=841 g=104 stop
+[llama3.2:latest] t=1.0 #7 stage2 hist=7 valid=True 5.08s p=947 g=60 stop
+[llama3.2:latest] t=1.0 #8 stage3 hist=0 valid=True 7.19s p=465 g=112 stop
+[llama3.2:latest] t=1.0 #9 stage1 hist=1 valid=True 9.3s p=580 g=139 stop
+[llama3.2:latest] t=1.0 #10 stage2 hist=2 valid=True 7.88s p=661 g=105 stop
+[llama3.2:latest] t=1.0 #11 stage3 hist=3 valid=True 9.98s p=745 g=149 stop
+[llama3.2:latest] t=1.0 #12 stage1 hist=4 valid=True 7.15s p=733 g=97 stop
+[llama3.2:latest] t=1.0 #13 stage2 hist=5 valid=True 4.46s p=736 g=45 stop
+[llama3.2:latest] t=1.0 #14 stage3 hist=6 valid=True 7.11s p=911 g=101 stop
+[llama3.2:latest] t=1.0 #15 stage1 hist=7 valid=True 8.48s p=905 g=111 stop
+[llama3.2:latest] t=1.0 #16 stage2 hist=0 valid=True 5.79s p=402 g=82 stop
+[llama3.2:latest] t=1.0 #17 stage3 hist=1 valid=True 7.08s p=629 g=104 stop
+[llama3.2:latest] t=1.0 #18 stage1 hist=2 valid=True 5.95s p=632 g=82 stop
+[llama3.2:latest] t=1.0 #19 stage2 hist=3 valid=True 5.8s p=600 g=77 stop
+[llama3.2:latest] t=0.7 #0 stage1 hist=0 valid=True 6.26s p=388 g=96 stop
+[llama3.2:latest] t=0.7 #1 stage2 hist=1 valid=True 3.98s p=500 g=43 stop
+[llama3.2:latest] t=0.7 #2 stage3 hist=2 valid=True 5.94s p=684 g=82 stop
+[llama3.2:latest] t=0.7 #3 stage1 hist=3 valid=True 6.11s p=677 g=88 stop
+[llama3.2:latest] t=0.7 #4 stage2 hist=4 valid=True 4.69s p=767 g=53 stop
+[llama3.2:latest] t=0.7 #5 stage3 hist=5 valid=True 7.34s p=854 g=103 stop
+[llama3.2:latest] t=0.7 #6 stage1 hist=6 valid=True 7.67s p=868 g=106 stop
+[llama3.2:latest] t=0.7 #7 stage2 hist=7 valid=True 5.63s p=962 g=69 stop
+[llama3.2:latest] t=0.7 #8 stage3 hist=0 valid=True 8.19s p=438 g=132 stop
+[llama3.2:latest] t=0.7 #9 stage1 hist=1 valid=True 7.48s p=588 g=113 stop
+[llama3.2:latest] t=0.7 #10 stage2 hist=2 valid=True 4.86s p=648 g=61 stop
+[llama3.2:latest] t=0.7 #11 stage3 hist=3 valid=True 9.97s p=762 g=151 stop
+[llama3.2:latest] t=0.7 #12 stage1 hist=4 valid=True 4.94s p=744 g=57 stop
+[llama3.2:latest] t=0.7 #13 stage2 hist=5 valid=True 6.3s p=717 g=87 stop
+[llama3.2:latest] t=0.7 #14 stage3 hist=6 valid=True 5.49s p=914 g=68 stop
+[llama3.2:latest] t=0.7 #15 stage1 hist=7 valid=True 8.45s p=928 g=120 stop
+[llama3.2:latest] t=0.7 #16 stage2 hist=0 valid=True 5.14s p=436 g=69 stop
+[llama3.2:latest] t=0.7 #17 stage3 hist=1 valid=True 10.05s p=645 g=159 stop
+[llama3.2:latest] t=0.7 #18 stage1 hist=2 valid=True 6.63s p=649 g=97 stop
+[llama3.2:latest] t=0.7 #19 stage2 hist=3 valid=True 4.29s p=645 g=46 stop
+[llama3.2:latest] sweep round 1: 6.05s p=464 g=91
+[llama3.2:latest] sweep round 2: 9.5s p=645 g=143
+[llama3.2:latest] sweep round 3: 6.8s p=721 g=95
+[llama3.2:latest] sweep round 4: 10.52s p=768 g=119
+[llama3.2:latest] sweep round 5: 7.34s p=816 g=86
+[llama3.2:latest] sweep round 6: 6.17s p=865 g=83
+[llama3.2:latest] sweep round 7: 8.48s p=911 g=126
+[llama3.2:latest] sweep round 8: 8.82s p=982 g=128
+
+unloaded llama3.2:latest {'models': []}
+
+DONE

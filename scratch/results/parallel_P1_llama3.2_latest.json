@@ -1,0 +1,23 @@
+{
+ "label": "P1",
+ "model": "llama3.2:latest",
+ "num_ctx": 4096,
+ "seq_wall_s": 23.9,
+ "par4_wall_s": 25.7,
+ "seq_gen_tokens": 483,
+ "par_gen_tokens": 463,
+ "same_output_seq_vs_par": [
+  true,
+  false,
+  false,
+  false
+ ],
+ "ps": [
+  {
+   "name": "llama3.2:latest",
+   "size": 2910469486,
+   "size_vram": 2335094865,
+   "context_length": 4096
+  }
+ ]
+}

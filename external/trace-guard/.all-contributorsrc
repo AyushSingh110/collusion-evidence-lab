@@ -1,0 +1,40 @@
+{
+  "projectName": "TraceGuard",
+  "projectOwner": "linhkid",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": ["README.md"],
+  "imageSize": 50,
+  "commit": false,
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "linhkid",
+      "name": "Linh Nguyen",
+      "avatar_url": "https://github.com/linhkid.png",
+      "profile": "https://github.com/linhkid",
+      "contributions": ["code", "doc", "research", "ideas", "projectManagement"]
+    },
+    {
+      "login": "lehoangh",
+      "name": "Le Hoang",
+      "avatar_url": "https://github.com/lehoangh.png",
+      "profile": "https://github.com/lehoangh",
+      "contributions": ["code", "research"]
+    },
+    {
+      "login": "dark-kazansky",
+      "name": "Tu Tran",
+      "avatar_url": "https://github.com/dark-kazansky.png",
+      "profile": "https://github.com/dark-kazansky",
+      "contributions": ["code", "research"]
+    },
+    {
+      "login": "claude-anthropic",
+      "name": "Claude (Anthropic)",
+      "avatar_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Claude_AI_symbol.svg/1280px-Claude_AI_symbol.svg.png?_=20250427183551",
+      "profile": "https://claude.ai",
+      "contributions": ["code", "doc", "tool"]
+    }
+  ]
+}

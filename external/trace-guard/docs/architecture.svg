@@ -1,0 +1,217 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 820" font-family="'Segoe UI', Arial, sans-serif" font-size="13">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#6b7280"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#3b82f6"/>
+    </marker>
+    <filter id="shadow" x="-2%" y="-2%" width="104%" height="104%">
+      <feDropShadow dx="1" dy="1" stdDeviation="2" flood-opacity="0.1"/>
+    </filter>
+    <linearGradient id="trusted-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#dbeafe"/><stop offset="100%" stop-color="#bfdbfe"/>
+    </linearGradient>
+    <linearGradient id="untrusted-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fee2e2"/><stop offset="100%" stop-color="#fecaca"/>
+    </linearGradient>
+    <linearGradient id="mixed-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ede9fe"/><stop offset="100%" stop-color="#ddd6fe"/>
+    </linearGradient>
+    <linearGradient id="green-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#dcfce7"/><stop offset="100%" stop-color="#bbf7d0"/>
+    </linearGradient>
+    <linearGradient id="dim-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fef3c7"/><stop offset="100%" stop-color="#fde68a"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="820" rx="12" fill="#fafafa"/>
+
+  <!-- Title -->
+  <text x="450" y="32" text-anchor="middle" font-size="20" font-weight="bold" fill="#1e293b">TraceGuard Architecture</text>
+  <text x="450" y="50" text-anchor="middle" font-size="11" fill="#64748b">Structured Cognitive Trace Monitoring as a Control Protocol</text>
+
+  <!-- Legend (top-right, above protocol box) -->
+  <rect x="630" y="10" width="260" height="80" rx="8" fill="white" stroke="#e2e8f0" filter="url(#shadow)"/>
+  <text x="646" y="28" font-size="11" font-weight="bold" fill="#475569">Legend</text>
+  <rect x="646" y="36" width="14" height="10" rx="2" fill="url(#trusted-grad)" stroke="#3b82f6"/>
+  <text x="666" y="45" font-size="10" fill="#475569">Trusted (Gemini Flash)</text>
+  <rect x="780" y="36" width="14" height="10" rx="2" fill="url(#untrusted-grad)" stroke="#ef4444"/>
+  <text x="800" y="45" font-size="10" fill="#475569">Untrusted (Gemini-3-pro)</text>
+  <rect x="646" y="54" width="14" height="10" rx="2" fill="url(#mixed-grad)" stroke="#8b5cf6"/>
+  <text x="666" y="63" font-size="10" fill="#475569">Mixed Models</text>
+  <rect x="780" y="54" width="14" height="10" rx="2" fill="url(#dim-grad)" stroke="#f59e0b"/>
+  <text x="800" y="63" font-size="10" fill="#475569">Dimension Scoring</text>
+  <rect x="646" y="72" width="14" height="10" rx="2" fill="url(#green-grad)" stroke="#22c55e"/>
+  <text x="666" y="81" font-size="10" fill="#475569">Output / Analysis</text>
+
+  <!-- ═══════════ CLI ENTRY POINT ═══════════ -->
+  <rect x="300" y="68" width="220" height="40" rx="8" fill="white" stroke="#475569" stroke-width="2" filter="url(#shadow)"/>
+  <text x="410" y="84" text-anchor="middle" font-weight="bold" font-size="13" fill="#1e293b">run_eval.py</text>
+  <text x="410" y="99" text-anchor="middle" font-size="10" fill="#64748b">CLI Entry Point</text>
+
+  <!-- Arrow: CLI → Protocol -->
+  <line x1="410" y1="108" x2="410" y2="138" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- ═══════════ MONITOR REGISTRY (side panel) ═══════════ -->
+  <rect x="20" y="62" width="200" height="200" rx="8" fill="white" stroke="#94a3b8" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="120" y="82" text-anchor="middle" font-weight="bold" font-size="12" fill="#334155">Monitor Registry</text>
+  <line x1="30" y1="90" x2="210" y2="90" stroke="#e2e8f0"/>
+
+  <!-- Monitor entries -->
+  <rect x="32" y="98" width="176" height="22" rx="4" fill="url(#trusted-grad)" stroke="#3b82f6" stroke-width="0.8"/>
+  <text x="120" y="113" text-anchor="middle" font-size="10" fill="#1e40af">traceguard (5-dim, trusted)</text>
+
+  <rect x="32" y="126" width="176" height="22" rx="4" fill="url(#trusted-grad)" stroke="#3b82f6" stroke-width="0.8"/>
+  <text x="120" y="141" text-anchor="middle" font-size="10" fill="#1e40af">simple_trusted (1-score)</text>
+
+  <rect x="32" y="154" width="176" height="22" rx="4" fill="url(#untrusted-grad)" stroke="#ef4444" stroke-width="0.8"/>
+  <text x="120" y="169" text-anchor="middle" font-size="10" fill="#991b1b">simple_untrusted (1-score)</text>
+
+  <rect x="32" y="182" width="176" height="22" rx="4" fill="url(#untrusted-grad)" stroke="#ef4444" stroke-width="0.8"/>
+  <text x="120" y="197" text-anchor="middle" font-size="10" fill="#991b1b">collusion_resistant (5-dim)</text>
+
+  <rect x="32" y="210" width="176" height="22" rx="4" fill="url(#mixed-grad)" stroke="#8b5cf6" stroke-width="0.8"/>
+  <text x="120" y="225" text-anchor="middle" font-size="10" fill="#5b21b6">separation_of_duties (5-dim)</text>
+
+  <rect x="32" y="238" width="176" height="22" rx="4" fill="url(#trusted-grad)" stroke="#3b82f6" stroke-width="0.8"/>
+  <text x="120" y="253" text-anchor="middle" font-size="10" fill="#1e40af">bash_heuristic (regex + 5-dim)</text>
+
+  <!-- Arrow: Registry → Protocol -->
+  <line x1="220" y1="162" x2="300" y2="162" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)" stroke-dasharray="5,3"/>
+
+  <!-- ═══════════ DEFER-TO-TRUSTED PROTOCOL ═══════════ -->
+  <rect x="300" y="120" width="580" height="180" rx="10" fill="white" stroke="#475569" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="590" y="142" text-anchor="middle" font-weight="bold" font-size="13" fill="#334155">Defer-to-Trusted Protocol</text>
+
+  <!-- Agent proposes -->
+  <rect x="320" y="162" width="140" height="36" rx="6" fill="url(#untrusted-grad)" stroke="#ef4444"/>
+  <text x="390" y="176" text-anchor="middle" font-size="11" font-weight="600" fill="#991b1b">Untrusted Agent</text>
+  <text x="390" y="190" text-anchor="middle" font-size="9" fill="#b91c1c">proposes action</text>
+
+  <!-- Arrow: Agent → Monitor -->
+  <line x1="460" y1="180" x2="498" y2="180" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Monitor scores -->
+  <rect x="500" y="162" width="130" height="36" rx="6" fill="url(#trusted-grad)" stroke="#3b82f6"/>
+  <text x="565" y="176" text-anchor="middle" font-size="11" font-weight="600" fill="#1e40af">Monitor</text>
+  <text x="565" y="190" text-anchor="middle" font-size="9" fill="#2563eb">scores suspicion</text>
+
+  <!-- Arrow: Monitor → Decision -->
+  <line x1="630" y1="180" x2="665" y2="180" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Decision diamond -->
+  <polygon points="720,160 770,180 720,200 670,180" fill="#f8fafc" stroke="#475569" stroke-width="1.5"/>
+  <text x="720" y="177" text-anchor="middle" font-size="9" font-weight="bold" fill="#334155">score</text>
+  <text x="720" y="187" text-anchor="middle" font-size="8" fill="#334155">>= thr?</text>
+
+  <!-- DEFER path (up) -->
+  <line x1="720" y1="160" x2="720" y2="148" stroke="#3b82f6" stroke-width="1.5"/>
+  <line x1="720" y1="148" x2="810" y2="148" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
+  <rect x="812" y="137" width="56" height="22" rx="4" fill="url(#trusted-grad)" stroke="#3b82f6"/>
+  <text x="840" y="152" text-anchor="middle" font-size="9" font-weight="bold" fill="#1e40af">DEFER</text>
+  <text x="752" y="143" font-size="8" fill="#3b82f6">Yes</text>
+  <text x="840" y="132" text-anchor="middle" font-size="8" fill="#64748b">Trusted model</text>
+
+  <!-- ALLOW path (down) -->
+  <line x1="720" y1="200" x2="720" y2="220" stroke="#ef4444" stroke-width="1.5"/>
+  <line x1="720" y1="220" x2="810" y2="220" stroke="#ef4444" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <rect x="812" y="209" width="56" height="22" rx="4" fill="url(#untrusted-grad)" stroke="#ef4444"/>
+  <text x="840" y="224" text-anchor="middle" font-size="9" font-weight="bold" fill="#991b1b">ALLOW</text>
+  <text x="752" y="216" font-size="8" fill="#ef4444">No</text>
+  <text x="840" y="240" text-anchor="middle" font-size="8" fill="#64748b">Untrusted output</text>
+
+  <!-- ═══════════ TRACEGUARD MONITOR INTERNALS ═══════════ -->
+  <rect x="80" y="320" width="740" height="300" rx="10" fill="white" stroke="#f59e0b" stroke-width="2" filter="url(#shadow)"/>
+  <text x="450" y="342" text-anchor="middle" font-weight="bold" font-size="14" fill="#92400e">TraceGuard Monitor — Core Scoring Logic</text>
+
+  <!-- Extract reasoning -->
+  <rect x="110" y="358" width="160" height="44" rx="6" fill="#f1f5f9" stroke="#94a3b8"/>
+  <text x="190" y="377" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">Extract Reasoning</text>
+  <text x="190" y="393" text-anchor="middle" font-size="9" fill="#64748b">last 3 assistant msgs</text>
+
+  <!-- Extract action -->
+  <rect x="110" y="412" width="160" height="44" rx="6" fill="#f1f5f9" stroke="#94a3b8"/>
+  <text x="190" y="431" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">Extract Action</text>
+  <text x="190" y="447" text-anchor="middle" font-size="9" fill="#64748b">tool calls from last 4 msgs</text>
+
+  <!-- Arrow: extractions → parallel scoring -->
+  <line x1="270" y1="380" x2="310" y2="400" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="270" y1="434" x2="310" y2="414" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Parallel scoring block -->
+  <rect x="312" y="358" width="340" height="170" rx="8" fill="#fffbeb" stroke="#f59e0b" stroke-dasharray="4,2"/>
+  <text x="482" y="376" text-anchor="middle" font-size="10" font-weight="bold" fill="#92400e">asyncio.gather() — Parallel Scoring</text>
+
+  <!-- 5 dimension boxes -->
+  <rect x="326" y="386" width="140" height="26" rx="4" fill="url(#dim-grad)" stroke="#f59e0b" stroke-width="0.8"/>
+  <text x="396" y="403" text-anchor="middle" font-size="9" font-weight="600" fill="#92400e">Goal Alignment (0.20)</text>
+
+  <rect x="326" y="418" width="140" height="26" rx="4" fill="url(#dim-grad)" stroke="#f59e0b" stroke-width="0.8"/>
+  <text x="396" y="435" text-anchor="middle" font-size="9" font-weight="600" fill="#92400e">Constraint Adher. (0.20)</text>
+
+  <rect x="326" y="450" width="140" height="26" rx="4" fill="url(#dim-grad)" stroke="#f59e0b" stroke-width="0.8"/>
+  <text x="396" y="467" text-anchor="middle" font-size="9" font-weight="600" fill="#92400e">Reasoning Coher. (0.25)</text>
+
+  <rect x="326" y="482" width="140" height="26" rx="4" fill="url(#dim-grad)" stroke="#f59e0b" stroke-width="0.8"/>
+  <text x="396" y="499" text-anchor="middle" font-size="9" font-weight="600" fill="#92400e">Safety Awareness (0.15)</text>
+
+  <rect x="500" y="386" width="140" height="26" rx="4" fill="url(#dim-grad)" stroke="#f59e0b" stroke-width="0.8"/>
+  <text x="570" y="403" text-anchor="middle" font-size="9" font-weight="600" fill="#92400e">Action-Trace Cons. (0.20)</text>
+
+  <!-- Each dimension has its own LLM call indicator -->
+  <text x="500" y="420" font-size="8" fill="#64748b">Each dimension → independent LLM call</text>
+  <text x="500" y="432" font-size="8" fill="#64748b">Format prompt → generate → parse score</text>
+  <text x="500" y="444" font-size="8" fill="#64748b">Raw 0-10 → normalize to 0.0-1.0</text>
+
+  <!-- Arrow: parallel → composite -->
+  <line x1="482" y1="528" x2="482" y2="548" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Composite score -->
+  <rect x="370" y="550" width="224" height="50" rx="8" fill="url(#green-grad)" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="482" y="570" text-anchor="middle" font-size="11" font-weight="bold" fill="#166534">Weighted Composite Score</text>
+  <text x="482" y="588" text-anchor="middle" font-size="9" fill="#15803d">sum(score * weight) / sum(weights) → 0.0 - 1.0</text>
+
+  <!-- Flag check -->
+  <text x="610" y="572" font-size="9" fill="#dc2626" font-weight="600">Flag if any dim >= 0.6</text>
+
+  <!-- ═══════════ OUTPUT FLOW ═══════════ -->
+  <!-- Arrow: Composite → logs -->
+  <line x1="450" y1="620" x2="450" y2="660" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- .eval logs -->
+  <rect x="340" y="662" width="120" height="38" rx="6" fill="#f1f5f9" stroke="#94a3b8" filter="url(#shadow)"/>
+  <text x="400" y="678" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">.eval logs</text>
+  <text x="400" y="693" text-anchor="middle" font-size="9" fill="#64748b">logs/ directory</text>
+
+  <!-- Arrow: logs → posthoc -->
+  <line x1="400" y1="700" x2="300" y2="730" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)" stroke-dasharray="5,3"/>
+  <!-- Arrow: logs → analyze -->
+  <line x1="400" y1="700" x2="500" y2="730" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Post-hoc -->
+  <rect x="200" y="732" width="160" height="38" rx="6" fill="white" stroke="#94a3b8" filter="url(#shadow)"/>
+  <text x="280" y="748" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">run_posthoc.py</text>
+  <text x="280" y="763" text-anchor="middle" font-size="9" fill="#64748b">re-score with new monitors</text>
+
+  <!-- Arrow: posthoc → analyze -->
+  <line x1="360" y1="751" x2="430" y2="751" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)" stroke-dasharray="5,3"/>
+
+  <!-- Analyze -->
+  <rect x="432" y="732" width="160" height="38" rx="6" fill="url(#green-grad)" stroke="#22c55e" filter="url(#shadow)"/>
+  <text x="512" y="748" text-anchor="middle" font-size="11" font-weight="600" fill="#166534">analyze_results.py</text>
+  <text x="512" y="763" text-anchor="middle" font-size="9" fill="#15803d">Pareto frontier + breakdown</text>
+
+  <!-- Output plots -->
+  <rect x="650" y="732" width="140" height="38" rx="6" fill="url(#green-grad)" stroke="#22c55e" filter="url(#shadow)"/>
+  <text x="720" y="748" text-anchor="middle" font-size="11" font-weight="600" fill="#166534">Pareto Plot</text>
+  <text x="720" y="763" text-anchor="middle" font-size="9" fill="#15803d">Safety vs. Usefulness</text>
+
+  <!-- Arrow: analyze → plots -->
+  <line x1="592" y1="751" x2="648" y2="751" stroke="#22c55e" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Footer -->
+  <text x="450" y="800" text-anchor="middle" font-size="10" fill="#94a3b8">TraceGuard — Apart Research x Redwood Research AI Control Hackathon 2026</text>
+</svg>

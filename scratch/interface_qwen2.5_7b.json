@@ -1,0 +1,71 @@
+{
+ "native_cold": {
+  "latency_s": 56.53,
+  "load_s": 44.22,
+  "prompt_tokens": 379,
+  "gen_tokens": 74,
+  "prompt_tok_s": 169.7,
+  "gen_tok_s": 9.9,
+  "content": "{\n  \"intended_action\": \"STAY\",\n  \"reasoning\": \"Given that this is the first round and there is no history, I'll base my decision on the expected distribution of actions. If all agents assume a 50/50 split, the bar might be crowded, so I'll stay home to ensure a better outcome.\"\n}",
+  "ps": [
+   {
+    "name": "qwen2.5:7b",
+    "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+    "size": 5378513303,
+    "size_vram": 2242012773,
+    "context_length": 8192
+   }
+  ],
+  "parsed": {
+   "intended_action": "STAY",
+   "reasoning": "Given that this is the first round and there is no history, I'll base my decision on the expected distribution of actions. If all agents assume a 50/50 split, the bar might be crowded, so I'll stay home to ensure a better outcome."
+  }
+ },
+ "seed_same_x3_identical": true,
+ "seed_same_contents": [
+  "{\n  \"intended_action\": \"STAY\",\n  \"reasoning\": \"Given that this is the first round with no history, I will choose to stay",
+  "{\n  \"intended_action\": \"STAY\",\n  \"reasoning\": \"Given that this is the first round with no history, I will choose to stay",
+  "{\n  \"intended_action\": \"STAY\",\n  \"reasoning\": \"Given that this is the first round with no history, I will choose to stay"
+ ],
+ "seed_other_differs": true,
+ "seed_temp0_x2_identical": true,
+ "openai_compat": {
+  "latency_s": 34.96,
+  "usage": {
+   "prompt_tokens": 379,
+   "prompt_tokens_details": {
+    "cached_tokens": 0
+   },
+   "completion_tokens": 69,
+   "total_tokens": 448
+  },
+  "content": "{\n  \"intended_action\": \"STAY\",\n  \"reasoning\": \"Given that this is the first round, I'll choose to STAY HOME to gather more information from others' announcements in the public discussion. This strategy allows me to observe potential patterns or biases in their decision-making, which might influence ",
+  "ps_after": [
+   {
+    "name": "qwen2.5:7b",
+    "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+    "size": 5813231941,
+    "size_vram": 2366352915,
+    "context_length": 16384
+   }
+  ],
+  "parsed": {
+   "intended_action": "STAY",
+   "reasoning": "Given that this is the first round, I'll choose to STAY HOME to gather more information from others' announcements in the public discussion. This strategy allows me to observe potential patterns or biases in their decision-making, which might influence my final decision."
+  }
+ },
+ "openai_compat_options_numctx_ps": [
+  {
+   "name": "qwen2.5:7b",
+   "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+   "size": 5813231941,
+   "size_vram": 2366352915,
+   "context_length": 16384
+  }
+ ],
+ "truncation": {
+  "prompt_tokens_numctx2048": 1026,
+  "prompt_tokens_numctx8192": 3383
+ },
+ "ollama_version": "0.40.3"
+}

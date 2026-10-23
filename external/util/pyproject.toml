@@ -1,0 +1,25 @@
+[project]
+name = "poseidon-compute"
+version = "0.1.0"
+description = "Shared inference routing (Nebius -> OpenRouter -> Modal, never silently substituted) for the hackathon experiments."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "openai>=1.40",
+    "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+# Only needed for the Modal escape hatch (hosting an off-catalog / custom model for a run).
+modal = ["modal>=0.64"]
+
+[project.scripts]
+poseidon-run = "poseidon_compute.run:main"
+poseidon-host = "poseidon_compute.hosted_model:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["poseidon_compute"]
