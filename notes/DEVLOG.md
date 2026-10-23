@@ -224,3 +224,52 @@ See report 01 §11 (10 questions). Most urgent:
 - (5) pin Ollama 0.40.3 and turn off auto-update — do not restart the Ollama app on the lead laptop
   before that;
 - (6) teammates' hardware.
+
+---
+
+## 2026-10-24 — [machine: ML] Task 03: P3a RQ0.1 metrics
+
+### What was implemented or executed
+- Created `core/__init__.py` (empty; missing on this machine), `core/evidence/__init__.py`,
+  `core/evidence/rq01.py`, `core/stats/__init__.py`, `core/stats/basic.py`, `tests/conftest.py`
+  (2-line sys.path shim; missing), `tests/test_rq01.py`, `tests/fixtures/rq01/example_{A..E}.json`
+  (GameRecord layout) and copies of the 4 mini-games from `scratch/results/` as
+  `tests/fixtures/rq01/mini_game_*.json`. No P1 files touched.
+- `conda env create -f environment.yml` (env `collusion-lab` did not exist here; Python 3.11.17).
+- `conda run -n collusion-lab python -m pip install pytest` → pytest 9.1.1 (+ iniconfig 2.3.1,
+  pluggy 1.7.0, pygments 2.21.0). Reason: test runner for this task.
+- `conda run -n collusion-lab pytest -q tests` → **28 passed**.
+- No LLM calls, no GPU use (RTX 3060 present but not needed), $0.
+
+### Errors and problems faced
+- `EnvironmentLocationNotFound: Not a conda environment: E:\hell\hell\envs\collusion-lab` — env never
+  created on this laptop.
+- `No module named pytest` in the fresh env — pytest is not yet in `environment.yml` (P1 item).
+- `pytest -q` from the repo root: 3 collection errors (`scratch/interface_test.py` URLError — needs
+  Ollama; `scratch/parallel_test.py` IndexError; `external/trace-guard/scripts/test_model_access.py`).
+  Root cause: no `testpaths` config, so pytest collects scratch scripts.
+- Found `CLAUDE.md` and `notes/` tracked in git, and absent from `.gitignore` (conflicts with Rule E).
+
+### How each problem was solved
+- Env created from the committed `environment.yml`; pytest installed into it only.
+- Collection errors: unsolved here (config file is P1's); workaround `pytest -q tests`.
+- Rule E tracking issue: unsolved (Rule A forbids git writes); reported to the lead.
+
+### Decisions taken
+- NA = Python `None` everywhere, with a reason flag (`few_valid_rounds`, `constant`). Alternative NaN
+  rejected: NaN compares False silently and is easy to average in by mistake.
+- Constant-series → NA applies to co-variation signals only (D_sync, D_private, W_joint), not to the level
+  measures coGO/capture/G_others, because the report 01 §5.4 table gives values (1.0, 0.0) for constant
+  level series.
+- Labels kept out of `GameData`; passed to gate/pilot table as a separate dict (Rule G). Deviates from the
+  prompt's `pilot_table(games)` signature.
+- Uptake computed over all rounds (text check, §7 "2 agents × rounds"), not only valid rounds.
+- Included D_sync, D_private, W_joint to check the full A–E table; D_react deferred as the prompt says.
+- `environment.yml` not edited to avoid a merge conflict with P1, which pins pytest.
+
+### Open questions for the team
+- Lead: un-track `CLAUDE.md` and `notes/` and add them to `.gitignore` (Rule E)?
+- P1: add `testpaths = tests` (and `pythonpath = .`, after which `tests/conftest.py` can go); pin pytest.
+- Where do `machine` and per-game wall time live in GameRecord? `pilot_table` reads `machine` /
+  `config.machine` and `wall_s`.
+- Name pattern does not match possessives ("Agent M's"); keep as pre-registered, or reword before freezing?

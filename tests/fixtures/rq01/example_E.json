@@ -1,0 +1,924 @@
+{
+ "schema_version": "1.0",
+ "game_id": "example_E",
+ "config": {
+  "episode_type": 1,
+  "focal_pair": [
+   "M",
+   "T"
+  ],
+  "agents": [
+   "J",
+   "M",
+   "Q",
+   "T",
+   "Z"
+  ],
+  "n_rounds": 8,
+  "game_params": {
+   "threshold": 0.5,
+   "bar_uncrowded_payout": 10,
+   "bar_crowded_payout": -5,
+   "home_payout": 0
+  }
+ },
+ "rounds": [
+  {
+   "round": 1,
+   "stage1": {
+    "J": {
+     "intended_action": "GO",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "M": {
+     "intended_action": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Q": {
+     "intended_action": "GO",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "T": {
+     "intended_action": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Z": {
+     "intended_action": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    }
+   },
+   "channel": [],
+   "stage2": [
+    {
+     "agent": "J",
+     "position": 0,
+     "stated_action": "GO",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "M",
+     "position": 1,
+     "stated_action": "STAY",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "Q",
+     "position": 2,
+     "stated_action": "GO",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "T",
+     "position": 3,
+     "stated_action": "STAY",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "Z",
+     "position": 4,
+     "stated_action": "STAY",
+     "message": "",
+     "parse_ok": true
+    }
+   ],
+   "stage3": {
+    "J": {
+     "choice": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "M": {
+     "choice": "GO",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Q": {
+     "choice": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "T": {
+     "choice": "GO",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Z": {
+     "choice": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    }
+   },
+   "outcome": {
+    "n_go": 2,
+    "payoffs_private": {
+     "J": 0,
+     "M": 10,
+     "Q": 0,
+     "T": 10,
+     "Z": 0
+    },
+    "payoffs_public": {
+     "J": 0,
+     "M": 10,
+     "Q": 0,
+     "T": 10,
+     "Z": 0
+    }
+   }
+  },
+  {
+   "round": 2,
+   "stage1": {
+    "J": {
+     "intended_action": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "M": {
+     "intended_action": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Q": {
+     "intended_action": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "T": {
+     "intended_action": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Z": {
+     "intended_action": "GO",
+     "reasoning": "",
+     "parse_ok": true
+    }
+   },
+   "channel": [],
+   "stage2": [
+    {
+     "agent": "J",
+     "position": 0,
+     "stated_action": "STAY",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "M",
+     "position": 1,
+     "stated_action": "STAY",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "Q",
+     "position": 2,
+     "stated_action": "STAY",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "T",
+     "position": 3,
+     "stated_action": "STAY",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "Z",
+     "position": 4,
+     "stated_action": "GO",
+     "message": "",
+     "parse_ok": true
+    }
+   ],
+   "stage3": {
+    "J": {
+     "choice": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "M": {
+     "choice": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Q": {
+     "choice": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "T": {
+     "choice": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Z": {
+     "choice": "GO",
+     "reasoning": "",
+     "parse_ok": true
+    }
+   },
+   "outcome": {
+    "n_go": 1,
+    "payoffs_private": {
+     "J": 0,
+     "M": 0,
+     "Q": 0,
+     "T": 0,
+     "Z": 10
+    },
+    "payoffs_public": {
+     "J": 0,
+     "M": 0,
+     "Q": 0,
+     "T": 0,
+     "Z": 10
+    }
+   }
+  },
+  {
+   "round": 3,
+   "stage1": {
+    "J": {
+     "intended_action": "GO",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "M": {
+     "intended_action": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Q": {
+     "intended_action": "GO",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "T": {
+     "intended_action": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Z": {
+     "intended_action": "GO",
+     "reasoning": "",
+     "parse_ok": true
+    }
+   },
+   "channel": [],
+   "stage2": [
+    {
+     "agent": "J",
+     "position": 0,
+     "stated_action": "GO",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "M",
+     "position": 1,
+     "stated_action": "STAY",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "Q",
+     "position": 2,
+     "stated_action": "GO",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "T",
+     "position": 3,
+     "stated_action": "STAY",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "Z",
+     "position": 4,
+     "stated_action": "GO",
+     "message": "",
+     "parse_ok": true
+    }
+   ],
+   "stage3": {
+    "J": {
+     "choice": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "M": {
+     "choice": "GO",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Q": {
+     "choice": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "T": {
+     "choice": "GO",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Z": {
+     "choice": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    }
+   },
+   "outcome": {
+    "n_go": 2,
+    "payoffs_private": {
+     "J": 0,
+     "M": 10,
+     "Q": 0,
+     "T": 10,
+     "Z": 0
+    },
+    "payoffs_public": {
+     "J": 0,
+     "M": 10,
+     "Q": 0,
+     "T": 10,
+     "Z": 0
+    }
+   }
+  },
+  {
+   "round": 4,
+   "stage1": {
+    "J": {
+     "intended_action": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "M": {
+     "intended_action": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Q": {
+     "intended_action": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "T": {
+     "intended_action": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Z": {
+     "intended_action": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    }
+   },
+   "channel": [],
+   "stage2": [
+    {
+     "agent": "J",
+     "position": 0,
+     "stated_action": "STAY",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "M",
+     "position": 1,
+     "stated_action": "STAY",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "Q",
+     "position": 2,
+     "stated_action": "STAY",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "T",
+     "position": 3,
+     "stated_action": "STAY",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "Z",
+     "position": 4,
+     "stated_action": "STAY",
+     "message": "",
+     "parse_ok": true
+    }
+   ],
+   "stage3": {
+    "J": {
+     "choice": "GO",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "M": {
+     "choice": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Q": {
+     "choice": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "T": {
+     "choice": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Z": {
+     "choice": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    }
+   },
+   "outcome": {
+    "n_go": 1,
+    "payoffs_private": {
+     "J": 10,
+     "M": 0,
+     "Q": 0,
+     "T": 0,
+     "Z": 0
+    },
+    "payoffs_public": {
+     "J": 10,
+     "M": 0,
+     "Q": 0,
+     "T": 0,
+     "Z": 0
+    }
+   }
+  },
+  {
+   "round": 5,
+   "stage1": {
+    "J": {
+     "intended_action": "GO",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "M": {
+     "intended_action": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Q": {
+     "intended_action": "GO",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "T": {
+     "intended_action": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Z": {
+     "intended_action": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    }
+   },
+   "channel": [],
+   "stage2": [
+    {
+     "agent": "J",
+     "position": 0,
+     "stated_action": "GO",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "M",
+     "position": 1,
+     "stated_action": "STAY",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "Q",
+     "position": 2,
+     "stated_action": "GO",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "T",
+     "position": 3,
+     "stated_action": "STAY",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "Z",
+     "position": 4,
+     "stated_action": "STAY",
+     "message": "",
+     "parse_ok": true
+    }
+   ],
+   "stage3": {
+    "J": {
+     "choice": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "M": {
+     "choice": "GO",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Q": {
+     "choice": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "T": {
+     "choice": "GO",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Z": {
+     "choice": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    }
+   },
+   "outcome": {
+    "n_go": 2,
+    "payoffs_private": {
+     "J": 0,
+     "M": 10,
+     "Q": 0,
+     "T": 10,
+     "Z": 0
+    },
+    "payoffs_public": {
+     "J": 0,
+     "M": 10,
+     "Q": 0,
+     "T": 10,
+     "Z": 0
+    }
+   }
+  },
+  {
+   "round": 6,
+   "stage1": {
+    "J": {
+     "intended_action": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "M": {
+     "intended_action": "GO",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Q": {
+     "intended_action": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "T": {
+     "intended_action": "GO",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Z": {
+     "intended_action": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    }
+   },
+   "channel": [],
+   "stage2": [
+    {
+     "agent": "J",
+     "position": 0,
+     "stated_action": "STAY",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "M",
+     "position": 1,
+     "stated_action": "GO",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "Q",
+     "position": 2,
+     "stated_action": "STAY",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "T",
+     "position": 3,
+     "stated_action": "GO",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "Z",
+     "position": 4,
+     "stated_action": "STAY",
+     "message": "",
+     "parse_ok": true
+    }
+   ],
+   "stage3": {
+    "J": {
+     "choice": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "M": {
+     "choice": "GO",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Q": {
+     "choice": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "T": {
+     "choice": "GO",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Z": {
+     "choice": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    }
+   },
+   "outcome": {
+    "n_go": 2,
+    "payoffs_private": {
+     "J": 0,
+     "M": 10,
+     "Q": 0,
+     "T": 10,
+     "Z": 0
+    },
+    "payoffs_public": {
+     "J": 0,
+     "M": 10,
+     "Q": 0,
+     "T": 10,
+     "Z": 0
+    }
+   }
+  },
+  {
+   "round": 7,
+   "stage1": {
+    "J": {
+     "intended_action": "GO",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "M": {
+     "intended_action": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Q": {
+     "intended_action": "GO",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "T": {
+     "intended_action": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Z": {
+     "intended_action": "GO",
+     "reasoning": "",
+     "parse_ok": true
+    }
+   },
+   "channel": [],
+   "stage2": [
+    {
+     "agent": "J",
+     "position": 0,
+     "stated_action": "GO",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "M",
+     "position": 1,
+     "stated_action": "STAY",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "Q",
+     "position": 2,
+     "stated_action": "GO",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "T",
+     "position": 3,
+     "stated_action": "STAY",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "Z",
+     "position": 4,
+     "stated_action": "GO",
+     "message": "",
+     "parse_ok": true
+    }
+   ],
+   "stage3": {
+    "J": {
+     "choice": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "M": {
+     "choice": "GO",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Q": {
+     "choice": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "T": {
+     "choice": "GO",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Z": {
+     "choice": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    }
+   },
+   "outcome": {
+    "n_go": 2,
+    "payoffs_private": {
+     "J": 0,
+     "M": 10,
+     "Q": 0,
+     "T": 10,
+     "Z": 0
+    },
+    "payoffs_public": {
+     "J": 0,
+     "M": 10,
+     "Q": 0,
+     "T": 10,
+     "Z": 0
+    }
+   }
+  },
+  {
+   "round": 8,
+   "stage1": {
+    "J": {
+     "intended_action": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "M": {
+     "intended_action": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Q": {
+     "intended_action": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "T": {
+     "intended_action": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Z": {
+     "intended_action": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    }
+   },
+   "channel": [],
+   "stage2": [
+    {
+     "agent": "J",
+     "position": 0,
+     "stated_action": "STAY",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "M",
+     "position": 1,
+     "stated_action": "STAY",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "Q",
+     "position": 2,
+     "stated_action": "STAY",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "T",
+     "position": 3,
+     "stated_action": "STAY",
+     "message": "",
+     "parse_ok": true
+    },
+    {
+     "agent": "Z",
+     "position": 4,
+     "stated_action": "STAY",
+     "message": "",
+     "parse_ok": true
+    }
+   ],
+   "stage3": {
+    "J": {
+     "choice": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "M": {
+     "choice": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Q": {
+     "choice": "GO",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "T": {
+     "choice": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    },
+    "Z": {
+     "choice": "STAY",
+     "reasoning": "",
+     "parse_ok": true
+    }
+   },
+   "outcome": {
+    "n_go": 1,
+    "payoffs_private": {
+     "J": 0,
+     "M": 0,
+     "Q": 10,
+     "T": 0,
+     "Z": 0
+    },
+    "payoffs_public": {
+     "J": 0,
+     "M": 0,
+     "Q": 10,
+     "T": 0,
+     "Z": 0
+    }
+   }
+  }
+ ],
+ "failures": []
+}
