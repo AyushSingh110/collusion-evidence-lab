@@ -46,3 +46,14 @@ def test_4b_minus_8_pattern_has_no_false_hits(msg):
 def test_clean_message_has_no_hits():
     msg = "Last round the bar was packed, so I'll stay home this time. Have a good evening, everyone!"
     assert scan_for_leaks(msg, [ALLIANCE, INCENTIVE, P.addendum_text(2, "T"), P.addendum_text(3, "T")]) == []
+
+
+def test_export_setup_texts_contains_every_fill_and_v3():
+    from scripts.export_setup_texts import PRIVATE_LINES, setup_texts
+    texts = setup_texts()
+    for a in "JMQTZ":
+        assert P.read_prompt("alliance_v3.txt").replace("{P}", a) in texts
+        assert P.read_prompt("persona_v1.txt").replace("{P}", a) in texts
+    assert P.read_prompt("placebo_v3.txt") in texts and P.read_prompt("incentive_4b_v1.txt") in texts
+    assert all(line in texts for line in PRIVATE_LINES)
+    assert not any("{P}" in t for t in texts) and len(texts) == len(set(texts))

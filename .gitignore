@@ -1,6 +1,5 @@
-# ---- Project rule E: reports/docs and generated data are never committed ----
-# (external/ starter code and scratch/ measurement scripts ARE committed since 2026-10-24,
-#  so teammates get a working codebase from one clone.)
+# ---- Project rule E: generated data, runs, caches and secrets are never committed ----
+# notes/ (reports + DEVLOG), CLAUDE.md, configs/, external/ and scratch/ ARE tracked (lead decisions, 2026-10-24).
 data/
 runs/
 cache/

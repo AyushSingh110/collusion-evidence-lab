@@ -9,7 +9,7 @@ from core.clean.leaks import scan_record  # noqa: E402
 from core.evidence import rq01  # noqa: E402
 from core.schema import validate_game  # noqa: E402
 
-for f in sorted((ROOT / "runs" / "smoke" / "raw").glob("*.json")):
+for f in sorted((ROOT / "runs" / (sys.argv[1] if len(sys.argv) > 1 else "smoke") / "raw").glob("*.json")):
     if f.name.endswith(".partial.json"):
         print("UNFINISHED", f)
         continue

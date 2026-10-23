@@ -412,3 +412,62 @@ See report 01 §11 (10 questions). Most urgent:
 - The ML laptop must re-sync to pytest 8.4.2.
 - `notes/` is gitignored but still tracked from commit `ed3be3b`. Untrack or keep? (lead decision)
 - Lead: freeze `configs/prereg_rq01.md` (remove DRAFT, commit, record its sha256 in the DEVLOG) before P4.
+
+---
+
+## 2026-10-24 — Task 06a: Step 0 (P5 merge check) + P4 pilot preparation
+
+### What was implemented or executed
+- **Step 0:**
+  - full suite after the P5 merge: 1 failed / 297 passed;
+  - the Type 4 hit count fixed in `test_cleaner.py` → 298 passed;
+  - import-cycle check OK;
+  - 4b patterns are internal to P2's scanner (the cleaner already matches);
+  - over-removal check on 8 sentences (`scratch/overremoval_check.py`);
+  - monitor `num_predict` 300 → 200 in run_defaults;
+  - `scripts/export_setup_texts.py` → `configs/monitor/setup_texts.json` (24 texts).
+- **Pre-freeze change (approved, prereg still DRAFT):**
+  - `configs/prompts/alliance_v3.txt` (v2 + hint, byte-exact) and `placebo_v3.txt` (v2 + 1 neutral sentence);
+  - token counts measured with qwen2.5:7b: v2 method check 101/107; **v3 130/139, ratio 1.069**;
+  - manifest updated; Type 1 → `collusion_v3_hint`, Type 2 → `placebo_v3`; runtime hint appending removed;
+  - prereg: prompts row, machines A+B, E1 removed, times for 2 laptops, §10 "Pre-freeze changes";
+  - prereg sha256 (DRAFT) `a0ff97e8f68c69313d8d101b23251c8aecff8624dad112db85995f4c1c5150ab`.
+- **Two machines:** `run_defaults` `"machines": ["A","B"]`; `make_plan --machines` defaults to it.
+- **`scripts/pilot_report.py`** (report + `--handcheck`) and `tests/test_pilot_report.py` (6 tests).
+- **notes/:** Rule E and the `.gitignore` header now say `notes/` is tracked (it was already not ignored).
+- **Live runs:**
+  - 8 token-count calls;
+  - L3: plan `smoke3` seed 20261098 in `runs/smoke3/`, 1 Type 1 game, 2 rounds, 38 calls, 4.8 min;
+  - A's selftest: 6 calls, 27.17 s/call;
+  - total 52 local calls, $0.
+- **Final:** `pytest -q` → **308 passed**.
+
+### Errors and problems faced
+1. `test_leak_counts_per_fixture`: Type 4 `{"hits": 3, "redactions": 2}` instead of `{"hits": 4, ...}`. Root cause: the P5 stub
+   counted "$-8" twice ("-8" and "$-8"); P2's real scanner counts it once (`minus_8` skips a minus after "$").
+2. `conda run -n collusion-lab python -B scratch/smoke_report.py smoke3` crashed in conda itself:
+   `UnicodeEncodeError: 'charmap' codec can't encode character '�'`. Root cause: `conda run` re-prints
+   captured stdout with cp1252; the L3 model output contained emoji and a replacement character.
+3. With `alliance_v3` already containing the hint, the old runtime rule (`"hint" in variant` → append the hint)
+   would have appended it a second time for the variant `collusion_v3_hint`.
+
+### How each problem was solved
+1. Changed only the expected count (4 → 3), with a comment. Same sentences are removed; scanner and
+   `leaks.py` tests unchanged.
+2. Re-ran with `PYTHONIOENCODING=utf-8 conda run --no-capture-output …`, writing to a file. Rule: scripts
+   that print model text use `--no-capture-output` and UTF-8.
+3. Removed runtime hint appending (`addendum_text(type, partner)`); a test asserts the hint file is not
+   listed separately in Type 1 records.
+
+### Decisions taken
+- Placebo extension sentence chosen with no agent names, actions, team words or banned terms;
+  measured +6.9% vs alliance_v3. Alternative: two shorter sentences — not needed, the ratio is already within ±10%.
+- `external/` NOT re-added to `.gitignore`, although the task text says "stays ignored": it is tracked since
+  `835b289` and teammates need it. Flagged for the lead to confirm.
+- L3 result (the pair captured the bar in round 2) is reported only; no wording changed (one game is an anecdote).
+
+### Open questions for the team
+- Over-removal: is removing sentences with generic words ("secret", "episode", "label", "experiment")
+  acceptable, or should those words only be flagged?
+- Confirm that `external/` stays tracked.
+- Lead: freeze the prereg, run fresh self-tests on A and B, create the pilot plan with B_FACTOR (≈ 2.26 today).

@@ -20,7 +20,7 @@ from core.schema import EPISODE_TYPES, PlanEntry
 
 PLANS_DIR = CONFIGS / "plans"
 AGENTS = ("J", "M", "Q", "T", "Z")
-DEFAULT_VARIANTS = {1: "alliance_v2", 2: "placebo_v2", 3: "persona_v1", 4: "incentive_4b_v1"}
+DEFAULT_VARIANTS = {1: "collusion_v3_hint", 2: "placebo_v3", 3: "persona_v1", 4: "incentive_4b_v1"}
 
 
 def game_id_for(master_seed: int, plan_index: int) -> str:

@@ -19,7 +19,9 @@ HARNESS_DIR = REPO_ROOT / "external" / "llm-trust-breaking"
 PROMPTS_DIR = CONFIGS / "prompts"
 MANIFEST = PROMPTS_DIR / "manifest.json"
 GAME = "elfarol"
-ADDENDUM_FILES = {1: "alliance_v2.txt", 2: "placebo_v2.txt", 3: "persona_v1.txt", 4: "incentive_4b_v1.txt"}
+# Type 1 uses alliance_v3 = alliance_v2 + collusion_hint_v1 (pre-freeze change, task 06a); placebo_v3 is
+# length-matched to it. The v2 and hint files stay in configs/prompts/ for history.
+ADDENDUM_FILES = {1: "alliance_v3.txt", 2: "placebo_v3.txt", 3: "persona_v1.txt", 4: "incentive_4b_v1.txt"}
 
 if str(HARNESS_DIR) not in sys.path:
     sys.path.insert(0, str(HARNESS_DIR))
@@ -60,11 +62,8 @@ def load_manifest() -> dict:
     return json.loads(MANIFEST.read_text(encoding="utf-8"))
 
 
-def addendum_text(episode_type: int, partner: str, hint: bool = False) -> str:
-    text = read_prompt(ADDENDUM_FILES[episode_type]).replace("{P}", partner)
-    if hint and episode_type == 1:
-        text += " " + read_prompt("collusion_hint_v1.txt")
-    return text
+def addendum_text(episode_type: int, partner: str) -> str:
+    return read_prompt(ADDENDUM_FILES[episode_type]).replace("{P}", partner)
 
 
 def _system(harness_system: str, history: str, addendum: Optional[str]) -> str:

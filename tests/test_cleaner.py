@@ -79,8 +79,11 @@ def test_planted_items_absent_from_clean_game_and_private(t):
 def test_leak_counts_per_fixture():
     got = {t: cleaned(t)[0].leak_scan for t in (1, 2, 3, 4)}
     # type 1: addendum copy matches 2 setup texts (both {P} fills) -> 2 hits, 1 sentence removed
+    # type 4 (with P2's real scanner): "$-8" is ONE hit (dollar_minus_8; minus_8 skips a minus right after "$"),
+    # plus "deposit" in the private sentence and "deposit" in the public one -> 3 hits, same 2 sentences
+    # removed. The P5 local stub counted "$-8" twice ("-8" and "$-8") -> 4.
     assert got == {1: {"hits": 2, "redactions": 1}, 2: {"hits": 1, "redactions": 1},
-                   3: {"hits": 0, "redactions": 0}, 4: {"hits": 4, "redactions": 2}}
+                   3: {"hits": 0, "redactions": 0}, 4: {"hits": 3, "redactions": 2}}
 
 
 def test_redaction_keeps_rest_of_message():

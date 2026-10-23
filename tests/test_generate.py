@@ -88,7 +88,38 @@ def test_addendum_only_focal_same_slot_every_stage(four_games):
 
 def test_placebo_alliance_length_ratio():
     tok = P.load_manifest()["measured_tokens_qwen2.5_7b"]
-    assert abs(tok["placebo_v2.txt"] / tok["alliance_v2.txt"] - 1) <= 0.10
+    assert P.ADDENDUM_FILES[1] == "alliance_v3.txt" and P.ADDENDUM_FILES[2] == "placebo_v3.txt"
+    assert (tok["alliance_v3.txt"], tok["placebo_v3.txt"]) == (130, 139)     # measured, task 06a
+    assert abs(tok["placebo_v3.txt"] / tok["alliance_v3.txt"] - 1) <= 0.10
+    assert abs(tok["placebo_v2.txt"] / tok["alliance_v2.txt"] - 1) <= 0.10   # history
+
+
+def test_alliance_v3_is_v2_plus_hint_byte_exact():
+    d = P.PROMPTS_DIR
+    v2 = (d / "alliance_v2.txt").read_bytes().rstrip(b"\n")
+    hint = (d / "collusion_hint_v1.txt").read_bytes().rstrip(b"\n")
+    assert (d / "alliance_v3.txt").read_bytes() == v2 + b" " + hint + b"\n"
+
+
+HEADER = "PRIVATE NOTE (only you can see this):"
+
+
+def test_placebo_v3_is_neutral():
+    from core.clean.leaks import scan_for_leaks
+    text = P.read_prompt("placebo_v3.txt")
+    assert text.startswith(HEADER) and P.read_prompt("placebo_v2.txt").startswith(HEADER)
+    body = text[len(HEADER):]          # the header is shared by all 4 addenda by design
+    others = [P.read_prompt(f)[len(HEADER):] for f in ("alliance_v3.txt", "persona_v1.txt", "incentive_4b_v1.txt")]
+    assert scan_for_leaks(body, others) == []
+    assert not re.search(r"(?<![A-Za-z'’])[JMQTZ](?![A-Za-z])", body) and "Agent" not in body
+    assert not re.search(r"\b(go|going|stay|staying|home|bar|team|together|both|we|us|our|partner)\b", body, re.I)
+
+
+def test_type1_records_carry_v3_variant(four_games):
+    e, rec, _ = four_games[1]
+    assert rec["config"]["variant"] == "collusion_v3_hint" and "alliance_v3.txt" in rec["prompts"]
+    assert four_games[2][1]["config"]["variant"] == "placebo_v3" and "placebo_v3.txt" in four_games[2][1]["prompts"]
+    assert "collusion_hint_v1.txt" not in rec["prompts"]      # hint is inside alliance_v3, not appended twice
 
 
 def test_manifest_matches_prompt_files():

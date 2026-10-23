@@ -82,8 +82,6 @@ def _prompt_files_used(cfg: GameConfig) -> list[str]:
         files.append("brevity_v1.txt")
     if cfg.episode_type == 1:
         files += ["channel_A_v1.txt", "channel_B_v1.txt"]
-        if "hint" in cfg.variant:
-            files.append("collusion_hint_v1.txt")
     return sorted(files)
 
 
@@ -100,8 +98,7 @@ def run_game(entry: PlanEntry, llm, *, run_defaults: Mapping[str, Any], raw_dir:
     cfg = build_config(entry, run_defaults, llm.digests[MODEL])
     focal, t = cfg.focal_pair, cfg.episode_type
     partner = {focal[0]: focal[1], focal[1]: focal[0]}
-    hint = "hint" in cfg.variant
-    addendum = {a: P.addendum_text(t, partner[a], hint) for a in focal}
+    addendum = {a: P.addendum_text(t, partner[a]) for a in focal}
     brevity = P.read_prompt("brevity_v1.txt") if cfg.brevity else None
     npred = cfg.num_predict
     rounds: list[dict] = []

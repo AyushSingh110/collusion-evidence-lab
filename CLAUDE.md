@@ -61,10 +61,12 @@ is built on the same dataset.
   9. Suggested commit line
 - Never claim something works unless it was actually run and checked. Never invent numbers.
 
-## RULE E — Reports, docs and data are never committed
+## RULE E — Data, runs, caches and secrets are never committed
 
-- `.gitignore` excludes: `notes/`, `data/`, `runs/`, `cache/`, `study_*/results/`,
-  `outputs/`, `.env` and any secrets, plus standard Python / Jupyter / OS / editor junk.
+- `.gitignore` excludes: `data/`, `runs/`, `cache/`, `study_*/results/`, `outputs/`, `.env` and any
+  secrets, plus standard Python / Jupyter / OS / editor junk.
+- `notes/` (DEVLOG and reports) stays TRACKED and shared (lead decision, 2026-10-24); the lead
+  commits it. Claude still never runs git write commands (Rule A).
 - `CLAUDE.md` itself IS committed (the user removed it from `.gitignore` on 2026-10-24), so
   teammates share these rules.
 - Changed 2026-10-24 on the user's request: `external/` (starter code, still read-only per Rule F)

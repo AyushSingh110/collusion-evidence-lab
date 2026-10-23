@@ -2,7 +2,8 @@
 
 Example:
   conda run -n collusion-lab python scripts/make_plan.py --name pilot --seed 20261024 \
-      --counts 1=4 2=2 3=1 4=1 --machines A B C --rounds 6 --speed A=1.0 B=0.9 C=1.1
+      --counts 1=4 2=2 3=1 4=1 --machines A B --rounds 8 --speed A=1.0 B=2.4
+(--machines defaults to run_defaults.json "machines" = A B; any machine list works.)
 """
 from __future__ import annotations
 
@@ -31,7 +32,7 @@ def main(argv=None) -> int:
     ap.add_argument("--name", required=True)
     ap.add_argument("--seed", type=int, required=True, help="master seed (pilot 20261024, dataset 20261023)")
     ap.add_argument("--counts", nargs="+", required=True, help="type=count, e.g. 1=24 2=8 3=8 4=8")
-    ap.add_argument("--machines", nargs="+", required=True)
+    ap.add_argument("--machines", nargs="+", default=rd.get("machines", ["A", "B"]))
     ap.add_argument("--rounds", type=int, default=rd["n_rounds"])
     ap.add_argument("--speed", nargs="*", default=[], help="machine=factor (>1 = faster), default 1.0")
     ap.add_argument("--out-dir", default=str(PLANS_DIR))
