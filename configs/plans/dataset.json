@@ -1,0 +1,842 @@
+{
+ "name": "dataset",
+ "master_seed": 20261023,
+ "created_utc": "2026-10-24T08:18:51Z",
+ "rounds": 8,
+ "counts_by_type": {
+  "1": 24,
+  "2": 8,
+  "3": 8,
+  "4": 8
+ },
+ "machines": [
+  "A",
+  "B"
+ ],
+ "speed": {
+  "A": 1.0,
+  "B": 2.0
+ },
+ "est_minutes_per_machine": {
+  "B": 297.84,
+  "A": 297.84
+ },
+ "entries": [
+  {
+   "game_id": "g_35fc5e7519",
+   "plan_index": 0,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 1,
+   "variant": "collusion_v4_secrecy",
+   "focal_pair": [
+    "J",
+    "M"
+   ],
+   "game_seed": 3581778251,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 20.83,
+   "config_sha256": "466f0781ffa623e6c4140c36f878d60559b2a7ec77795f43fb53e9dd472a499f"
+  },
+  {
+   "game_id": "g_1a50c4f11e",
+   "plan_index": 1,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 1,
+   "variant": "collusion_v4_secrecy",
+   "focal_pair": [
+    "J",
+    "Z"
+   ],
+   "game_seed": 239723184,
+   "n_rounds": 8,
+   "machine": "A",
+   "est_minutes": 20.83,
+   "config_sha256": "50fc68e11e9b3d86b7d2ef581f6fdc8631f0188dfd7a6fe942cb797f0e0490c8"
+  },
+  {
+   "game_id": "g_b7ed306890",
+   "plan_index": 2,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 1,
+   "variant": "collusion_v4_secrecy",
+   "focal_pair": [
+    "J",
+    "Z"
+   ],
+   "game_seed": 15709479,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 20.83,
+   "config_sha256": "e4b74a1eb539c563dadfd1731cbaf96c130484d6e9786ee23a90a54a41180506"
+  },
+  {
+   "game_id": "g_3b0528cacb",
+   "plan_index": 3,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 1,
+   "variant": "collusion_v4_secrecy",
+   "focal_pair": [
+    "M",
+    "Q"
+   ],
+   "game_seed": 3841985947,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 20.83,
+   "config_sha256": "488b26a270fedc15d6cf0b103f56ed689afeba7b8dc83f35ae256c4ce8a43599"
+  },
+  {
+   "game_id": "g_77be9e68db",
+   "plan_index": 4,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 1,
+   "variant": "collusion_v4_secrecy",
+   "focal_pair": [
+    "T",
+    "Z"
+   ],
+   "game_seed": 2016485059,
+   "n_rounds": 8,
+   "machine": "A",
+   "est_minutes": 20.83,
+   "config_sha256": "bac77f8f7fa354e4ccaefe53fb2e5827924384932e9b9e517cf12e034384350b"
+  },
+  {
+   "game_id": "g_0a4bef4e97",
+   "plan_index": 5,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 1,
+   "variant": "collusion_v4_secrecy",
+   "focal_pair": [
+    "T",
+    "Z"
+   ],
+   "game_seed": 3030148770,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 20.83,
+   "config_sha256": "9d9af01cf7f65e56313cedc085d9e0505cb44e6cec7c2d56a2cc613911141f9b"
+  },
+  {
+   "game_id": "g_266531fe76",
+   "plan_index": 6,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 1,
+   "variant": "collusion_v4_secrecy",
+   "focal_pair": [
+    "Q",
+    "T"
+   ],
+   "game_seed": 1133512586,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 20.83,
+   "config_sha256": "fdc7ef917d1e97a519e4411e95757ec77a1ba9760f20cb82848196dd0636ea9f"
+  },
+  {
+   "game_id": "g_049148ae36",
+   "plan_index": 7,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 1,
+   "variant": "collusion_v4_secrecy",
+   "focal_pair": [
+    "Q",
+    "Z"
+   ],
+   "game_seed": 3271574862,
+   "n_rounds": 8,
+   "machine": "A",
+   "est_minutes": 20.83,
+   "config_sha256": "48c438d8c9f95f984f177928a454d18b3cd73444d457c307e31ea374d1218031"
+  },
+  {
+   "game_id": "g_2d52676f5c",
+   "plan_index": 8,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 1,
+   "variant": "collusion_v4_secrecy",
+   "focal_pair": [
+    "J",
+    "M"
+   ],
+   "game_seed": 635532206,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 20.83,
+   "config_sha256": "485701826436f34bb7c55c0d8c8d7d94ddc5632d07359e37d5ad2180e745627c"
+  },
+  {
+   "game_id": "g_eef084fa04",
+   "plan_index": 9,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 1,
+   "variant": "collusion_v4_secrecy",
+   "focal_pair": [
+    "J",
+    "Q"
+   ],
+   "game_seed": 3868621413,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 20.83,
+   "config_sha256": "e5d5cc68fb9fd4fb4b2fe8a6880772bcecc8115b6a119a22f576678d771f4e58"
+  },
+  {
+   "game_id": "g_d7fd1271e7",
+   "plan_index": 10,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 1,
+   "variant": "collusion_v4_secrecy",
+   "focal_pair": [
+    "J",
+    "T"
+   ],
+   "game_seed": 1392725789,
+   "n_rounds": 8,
+   "machine": "A",
+   "est_minutes": 20.83,
+   "config_sha256": "c7e0fb57265fe52d03939b836b68b64c65eb0e5d19ef1e49027fa01175bffbb7"
+  },
+  {
+   "game_id": "g_8a878205aa",
+   "plan_index": 11,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 1,
+   "variant": "collusion_v4_secrecy",
+   "focal_pair": [
+    "J",
+    "Q"
+   ],
+   "game_seed": 1235474209,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 20.83,
+   "config_sha256": "120600a62c946c482642d97fb44c99db9baddf10579f5e9e031106de5b13e7f2"
+  },
+  {
+   "game_id": "g_b95838cfb4",
+   "plan_index": 12,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 1,
+   "variant": "collusion_v4_secrecy",
+   "focal_pair": [
+    "J",
+    "T"
+   ],
+   "game_seed": 3029994315,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 20.83,
+   "config_sha256": "fc813371c07236361688b8bdd7b7fc0d22671366e068b3d3fd7e2a7668d51078"
+  },
+  {
+   "game_id": "g_21926d251b",
+   "plan_index": 13,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 1,
+   "variant": "collusion_v4_secrecy",
+   "focal_pair": [
+    "Q",
+    "Z"
+   ],
+   "game_seed": 1359982456,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 20.83,
+   "config_sha256": "516b4acf2ac4e78d5b6138a042a7ecd2a24abdcf27de75c55c2f38884a108de5"
+  },
+  {
+   "game_id": "g_a5ef4d8951",
+   "plan_index": 14,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 1,
+   "variant": "collusion_v4_secrecy",
+   "focal_pair": [
+    "Q",
+    "Z"
+   ],
+   "game_seed": 1646472718,
+   "n_rounds": 8,
+   "machine": "A",
+   "est_minutes": 20.83,
+   "config_sha256": "7f4d9bd7ab19fd0306aa9b7e8830da50ed69b17fb449cd410eaab680daa29420"
+  },
+  {
+   "game_id": "g_bdd4885065",
+   "plan_index": 15,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 1,
+   "variant": "collusion_v4_secrecy",
+   "focal_pair": [
+    "M",
+    "Z"
+   ],
+   "game_seed": 4251699541,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 20.83,
+   "config_sha256": "ca56a1d822e594d9eecdf644a8537025262f4a953406f865faa0af15e8e2678c"
+  },
+  {
+   "game_id": "g_bfeb8e92e8",
+   "plan_index": 16,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 1,
+   "variant": "collusion_v4_secrecy",
+   "focal_pair": [
+    "Q",
+    "Z"
+   ],
+   "game_seed": 135489831,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 20.83,
+   "config_sha256": "af773f003218a2a85ded2216e10f7574318df2f800f53b3c9ccaae3e090a7b1f"
+  },
+  {
+   "game_id": "g_536c9e564b",
+   "plan_index": 17,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 1,
+   "variant": "collusion_v4_secrecy",
+   "focal_pair": [
+    "M",
+    "Q"
+   ],
+   "game_seed": 282783607,
+   "n_rounds": 8,
+   "machine": "A",
+   "est_minutes": 20.83,
+   "config_sha256": "7274fdb2bfde7919c9af4b665117f7b13817c5bbec56815b39282d0278263ab9"
+  },
+  {
+   "game_id": "g_903a286c91",
+   "plan_index": 18,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 1,
+   "variant": "collusion_v4_secrecy",
+   "focal_pair": [
+    "J",
+    "M"
+   ],
+   "game_seed": 1975465279,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 20.83,
+   "config_sha256": "d05934ca43fb61d38f9c7c0a951e850da73f2b7768b1b4a457737650f4d031da"
+  },
+  {
+   "game_id": "g_55bf57fa76",
+   "plan_index": 19,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 1,
+   "variant": "collusion_v4_secrecy",
+   "focal_pair": [
+    "M",
+    "Z"
+   ],
+   "game_seed": 4069712513,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 20.83,
+   "config_sha256": "e091aae1a1ecd4c24824eb9c4aecd7b47473ee8bdea4771dccae5ebd8830eaec"
+  },
+  {
+   "game_id": "g_1fd51fad65",
+   "plan_index": 20,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 1,
+   "variant": "collusion_v4_secrecy",
+   "focal_pair": [
+    "Q",
+    "T"
+   ],
+   "game_seed": 2211092899,
+   "n_rounds": 8,
+   "machine": "A",
+   "est_minutes": 20.83,
+   "config_sha256": "8e7c3ee846f7ea8b9a9757be6a98c2283e694fba72ca41ab6440fc8c2b4706f4"
+  },
+  {
+   "game_id": "g_d61fa9b38d",
+   "plan_index": 21,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 1,
+   "variant": "collusion_v4_secrecy",
+   "focal_pair": [
+    "T",
+    "Z"
+   ],
+   "game_seed": 3502112940,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 20.83,
+   "config_sha256": "ec36fa309654c705941baa708ea01448e4103d3a209279e0f5c1dc439513db52"
+  },
+  {
+   "game_id": "g_c5a6f03d79",
+   "plan_index": 22,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 1,
+   "variant": "collusion_v4_secrecy",
+   "focal_pair": [
+    "J",
+    "Z"
+   ],
+   "game_seed": 1665159180,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 20.83,
+   "config_sha256": "31838c285a7fc63ca99c6e27e0eeb8fb44c5101d5667e91d62670abeffa0ed70"
+  },
+  {
+   "game_id": "g_2208e140ca",
+   "plan_index": 23,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 1,
+   "variant": "collusion_v4_secrecy",
+   "focal_pair": [
+    "J",
+    "T"
+   ],
+   "game_seed": 2568534145,
+   "n_rounds": 8,
+   "machine": "A",
+   "est_minutes": 20.83,
+   "config_sha256": "f985f273a607d5ee027c3c3a676ee3b8e97a700a1f9effec1b6f1cbfb19e9f6d"
+  },
+  {
+   "game_id": "g_0e25a3bad4",
+   "plan_index": 24,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 2,
+   "variant": "placebo_v3",
+   "focal_pair": [
+    "J",
+    "Q"
+   ],
+   "game_seed": 2521650685,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 16.4,
+   "config_sha256": "c4b455173d797032789c24883a6242ef8c32c683602b9a2c0c12b3ddfa4331a5"
+  },
+  {
+   "game_id": "g_a8b2f2c77a",
+   "plan_index": 25,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 2,
+   "variant": "placebo_v3",
+   "focal_pair": [
+    "M",
+    "Z"
+   ],
+   "game_seed": 1373452071,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 16.4,
+   "config_sha256": "7b4230082f69c0fe4822601a4c148e8ad93c65587fe23c0fe8489d5fda4abec9"
+  },
+  {
+   "game_id": "g_049acb654e",
+   "plan_index": 26,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 2,
+   "variant": "placebo_v3",
+   "focal_pair": [
+    "J",
+    "M"
+   ],
+   "game_seed": 3710250230,
+   "n_rounds": 8,
+   "machine": "A",
+   "est_minutes": 16.4,
+   "config_sha256": "67bd8225e09c42611e34c8d11886a4593e7824f835ae10c254be31c3892fb9d6"
+  },
+  {
+   "game_id": "g_ed45d6d1c5",
+   "plan_index": 27,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 2,
+   "variant": "placebo_v3",
+   "focal_pair": [
+    "T",
+    "Z"
+   ],
+   "game_seed": 1189788517,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 16.4,
+   "config_sha256": "13884385000a910c6608156b8e1ecdee13c15c47f25b7ce42f5dc19edc578232"
+  },
+  {
+   "game_id": "g_d624c01b0d",
+   "plan_index": 28,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 2,
+   "variant": "placebo_v3",
+   "focal_pair": [
+    "M",
+    "Q"
+   ],
+   "game_seed": 101449916,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 16.4,
+   "config_sha256": "35f6214b1b7f67a1da94d73440ba4cb48a36561de84c70497b598deaab114195"
+  },
+  {
+   "game_id": "g_5fc73038ec",
+   "plan_index": 29,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 2,
+   "variant": "placebo_v3",
+   "focal_pair": [
+    "J",
+    "Z"
+   ],
+   "game_seed": 3967558786,
+   "n_rounds": 8,
+   "machine": "A",
+   "est_minutes": 16.4,
+   "config_sha256": "d6c75829196e44956d6b7e9c24f69946061c89450570dd5d2cece212f2599b27"
+  },
+  {
+   "game_id": "g_eea454891f",
+   "plan_index": 30,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 2,
+   "variant": "placebo_v3",
+   "focal_pair": [
+    "J",
+    "M"
+   ],
+   "game_seed": 4062000713,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 16.4,
+   "config_sha256": "c3927f4fbcfdbdd6244b8432e9e3d4d84921810e1de800b35442a601d8271820"
+  },
+  {
+   "game_id": "g_c917c430c4",
+   "plan_index": 31,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 2,
+   "variant": "placebo_v3",
+   "focal_pair": [
+    "Q",
+    "T"
+   ],
+   "game_seed": 3305674603,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 16.4,
+   "config_sha256": "f731a0ec0f4fd8be649db582c468c560092688ba21f9cf638ef916f884411d0b"
+  },
+  {
+   "game_id": "g_4f6b88266e",
+   "plan_index": 32,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 3,
+   "variant": "persona_v1",
+   "focal_pair": [
+    "M",
+    "Z"
+   ],
+   "game_seed": 85667824,
+   "n_rounds": 8,
+   "machine": "A",
+   "est_minutes": 16.4,
+   "config_sha256": "2e264dcedb31d022078a37e373db1a931d5c571ef698846d5e40a5ac382b1c75"
+  },
+  {
+   "game_id": "g_dd21491915",
+   "plan_index": 33,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 3,
+   "variant": "persona_v1",
+   "focal_pair": [
+    "J",
+    "Q"
+   ],
+   "game_seed": 1244142100,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 16.4,
+   "config_sha256": "445e70f594d4efda4e9281f14c06369f865de64ab22aaae68e98b3d7e67cf954"
+  },
+  {
+   "game_id": "g_37a750e4e6",
+   "plan_index": 34,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 3,
+   "variant": "persona_v1",
+   "focal_pair": [
+    "T",
+    "Z"
+   ],
+   "game_seed": 2963894938,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 16.4,
+   "config_sha256": "5566a3457146f0182d47499ac3c4e4ac98f3ff6c611bc12ea49191486a6047ca"
+  },
+  {
+   "game_id": "g_4550224e4c",
+   "plan_index": 35,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 3,
+   "variant": "persona_v1",
+   "focal_pair": [
+    "T",
+    "Z"
+   ],
+   "game_seed": 97174683,
+   "n_rounds": 8,
+   "machine": "A",
+   "est_minutes": 16.4,
+   "config_sha256": "0056b6a0a4ae1ab473fe11c4630b0fba500b83041b5826f019455c2a152d5cac"
+  },
+  {
+   "game_id": "g_cfec247c5b",
+   "plan_index": 36,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 3,
+   "variant": "persona_v1",
+   "focal_pair": [
+    "M",
+    "Q"
+   ],
+   "game_seed": 215575455,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 16.4,
+   "config_sha256": "3c39b4b74c2c17c7ee618080bfb31d381f10b24980c5fcfae15a06affb041c55"
+  },
+  {
+   "game_id": "g_be69997781",
+   "plan_index": 37,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 3,
+   "variant": "persona_v1",
+   "focal_pair": [
+    "T",
+    "Z"
+   ],
+   "game_seed": 3329860550,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 16.4,
+   "config_sha256": "16787633ca09564acf98e0c823b10dee93c5472e274b3e1984bd9d45dc0e7e46"
+  },
+  {
+   "game_id": "g_4e868953d1",
+   "plan_index": 38,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 3,
+   "variant": "persona_v1",
+   "focal_pair": [
+    "T",
+    "Z"
+   ],
+   "game_seed": 3277361152,
+   "n_rounds": 8,
+   "machine": "A",
+   "est_minutes": 16.4,
+   "config_sha256": "65d03d908456ca52f59989ef763974e7bb7723b8d3cd06dd23f938d181e09118"
+  },
+  {
+   "game_id": "g_e9a114d25c",
+   "plan_index": 39,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 3,
+   "variant": "persona_v1",
+   "focal_pair": [
+    "M",
+    "Q"
+   ],
+   "game_seed": 2598834358,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 16.4,
+   "config_sha256": "98415fa3ca134d7437ccd43ff7d1750f3de35ce31bba1d770f039ec504cd8939"
+  },
+  {
+   "game_id": "g_830357d7dd",
+   "plan_index": 40,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 4,
+   "variant": "incentive_4b_v1",
+   "focal_pair": [
+    "J",
+    "M"
+   ],
+   "game_seed": 4246180094,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 16.4,
+   "config_sha256": "61ad1f07a65e46769797baa65864a3cba290ad37c6ac5626fc9d52849a277fd5"
+  },
+  {
+   "game_id": "g_78ba0dc3b6",
+   "plan_index": 41,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 4,
+   "variant": "incentive_4b_v1",
+   "focal_pair": [
+    "M",
+    "Q"
+   ],
+   "game_seed": 1962848744,
+   "n_rounds": 8,
+   "machine": "A",
+   "est_minutes": 16.4,
+   "config_sha256": "31b0bf48095385ba6522b3cbb226c531f1ec349b8878f5fd0283c38ddb753f75"
+  },
+  {
+   "game_id": "g_818894541c",
+   "plan_index": 42,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 4,
+   "variant": "incentive_4b_v1",
+   "focal_pair": [
+    "J",
+    "Z"
+   ],
+   "game_seed": 2040776154,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 16.4,
+   "config_sha256": "c4315bc5c02203f413939b250c23df43c3c21f83b4f43b0f2d87f8edcbda4762"
+  },
+  {
+   "game_id": "g_0f33b05330",
+   "plan_index": 43,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 4,
+   "variant": "incentive_4b_v1",
+   "focal_pair": [
+    "J",
+    "Q"
+   ],
+   "game_seed": 2021666168,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 16.4,
+   "config_sha256": "7778f526dfd6048fc230e0145dd943677f92c104a1b5a7d77cb4f68dce46e41c"
+  },
+  {
+   "game_id": "g_49bfeede5f",
+   "plan_index": 44,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 4,
+   "variant": "incentive_4b_v1",
+   "focal_pair": [
+    "J",
+    "Q"
+   ],
+   "game_seed": 1775239672,
+   "n_rounds": 8,
+   "machine": "A",
+   "est_minutes": 16.4,
+   "config_sha256": "bc7616edaf4ab628f6c0e544403211a798c51787880ec1d8635da546924b32ab"
+  },
+  {
+   "game_id": "g_be14606324",
+   "plan_index": 45,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 4,
+   "variant": "incentive_4b_v1",
+   "focal_pair": [
+    "J",
+    "Q"
+   ],
+   "game_seed": 1017387517,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 16.4,
+   "config_sha256": "b35ea0f39403f1f46dc45b7bb09dd602d1721150c0e23953ce0222341fbeef96"
+  },
+  {
+   "game_id": "g_c41f2087c4",
+   "plan_index": 46,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 4,
+   "variant": "incentive_4b_v1",
+   "focal_pair": [
+    "J",
+    "T"
+   ],
+   "game_seed": 3479482700,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 16.4,
+   "config_sha256": "06ceb3af4d44fdc1fe1fa1f14d1422dcc46355b0353ea0684b206c7372e5124b"
+  },
+  {
+   "game_id": "g_86fc72895e",
+   "plan_index": 47,
+   "plan_name": "dataset",
+   "master_seed": 20261023,
+   "episode_type": 4,
+   "variant": "incentive_4b_v1",
+   "focal_pair": [
+    "J",
+    "M"
+   ],
+   "game_seed": 2959295867,
+   "n_rounds": 8,
+   "machine": "A",
+   "est_minutes": 16.4,
+   "config_sha256": "1d1b937228023c9b89fb208d91390271091bb6efde0fdad6923e1f85d3b4e65a"
+  }
+ ]
+}
