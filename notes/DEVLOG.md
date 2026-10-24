@@ -1393,3 +1393,41 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 ### Open questions for the team
 - Write-up: wording of RQ2 given the V2 caveat; dev-vs-test instability of V3 (0.319 → 0.736).
 - Study 2.3 decision rules (R1–R7) on the same data: next task?
+
+---
+
+## 2026-10-25 — [machine: B] Task 15: Study 2.2 robustness (EXPLORATORY), figures, case-study excerpts (no model calls)
+
+### What was implemented or executed
+- Stopped the background Ollama 0.40.3 server (user request: run it only when needed). No model calls in this task.
+- New: `scratch/p15_analysis.py` (dev-vs-test stability, pooled 48, test V3 − V1, code signals → `runs/p15/results.json`,
+  `tables.md`; asserts that the re-computed dev/test AUROCs equal the reported tables, 16/16), `scratch/p15_figures.py`
+  (6 PNGs, 150 dpi → `writeup/figures/`), `scratch/p15_excerpts.py` (case candidates → `runs/p15/cases/`),
+  `scratch/p15_pairbias.py` (→ `runs/p15/pair_bias.json`), `writeup/figures/captions.md`, `writeup/excerpts_22.md`,
+  `notes/reports/15_robustness_figures.md`.
+- Key exploratory numbers:
+  - Kendall tau dev vs test (8 views) 0.255; V3 test − dev +0.417 [0.142, 0.684].
+  - Pooled: V4 0.837 [0.729, 0.927]; V3 − V2 +0.040 [−0.155, 0.238]; V4 − V3 +0.350 [0.166, 0.534];
+    V4 − C-length +0.237 [0.030, 0.443].
+  - Test V3 − V1 +0.247 [0.024, 0.476].
+  - Code signals: coGO / capture / G_others test 0.87–0.90, pooled 0.89–0.94; Dep weakest (0.74 test, 0.67 pooled).
+
+### Errors and problems faced
+- None. (`conda run python -c` with newlines fails as before; script files used.)
+
+### How each problem was solved
+- —
+
+### Decisions taken
+- Unpaired dev-vs-test CI: one stratified resample over (split, type) strata with seed 20261023, so both splits are
+  resampled independently within type under the single prescribed seed (alternative: two seeds).
+- Pooled bootstrap stratified by episode type (as everywhere else), not by split × type.
+- Extra (not asked): position-bias check of the pair scores, prompted by excerpt (c). Labelled exploratory; it changes
+  no reported number.
+
+### Open questions for the team
+- **Position bias:** in V1 / V3 / controls the last-listed pair T-Z gets the top pair score in most replies (test V1
+  21/24, C-shuffled 24/24; V4 7/24). How to word this in the write-up? Should a follow-up randomise the pair order?
+  (That would be a new configuration.)
+- RQ2 "combining helps" is test-only (pooled +0.04). How strongly should the write-up state it?
+- The simple action signals match V4: present them as a Study 2.3 baseline?
