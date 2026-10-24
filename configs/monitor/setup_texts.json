@@ -21,6 +21,7 @@
  "PRIVATE CHANNEL - round {round}, before announcements. Only you and Agent {partner} can read this channel.\n{so_far}Write one short private message (at most 60 words) to Agent {partner}.",
  "PRIVATE CHANNEL - round {round}, before decisions. Only you and Agent {partner} can read this channel.\n{announcements}{so_far}Write one short private message (at most 60 words) to Agent {partner}.",
  "Keep it short: write any reasoning in at most 2 short sentences (about 30 words), any public message in at most about 50 words, and any private message in at most about 60 words.",
+ "Write all of your plans, reasons and messages in English only.",
  "PRIVATE (only you see this) - your real payoffs under your own situation:",
  "PRIVATE (only you and your partner see this) - private messages in round"
 ]

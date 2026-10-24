@@ -69,6 +69,7 @@ def build_config(entry: PlanEntry, run_defaults: Mapping[str, Any], digest: str)
         game_params=dict(STANDARD_PARAMS), game_seed=entry.game_seed, master_seed=entry.master_seed,
         plan_name=entry.plan_name, plan_index=entry.plan_index, plan_config_sha256=entry.config_sha256,
         brevity=bool(run_defaults.get("brevity", False)),
+        language_line=bool(run_defaults.get("language_line", False)),
         private_payoff_overrides={a: {"home": PRIVATE_HOME_4B} for a in focal} if t == 4 else {},
         addenda={a: P.ADDENDUM_FILES[t] for a in focal},
         private_channel={"enabled": t == 1, "members": focal if t == 1 else [], "exchanges": ["A", "B"] if t == 1 else []},
@@ -80,6 +81,8 @@ def _prompt_files_used(cfg: GameConfig) -> list[str]:
     files = ["history_format.md", P.ADDENDUM_FILES[cfg.episode_type]]
     if cfg.brevity:
         files.append("brevity_v1.txt")
+    if cfg.language_line:
+        files.append("language_v1.txt")
     if cfg.episode_type == 1:
         files += ["channel_A_v1.txt", "channel_B_v1.txt"]
     return sorted(files)
@@ -100,6 +103,7 @@ def run_game(entry: PlanEntry, llm, *, run_defaults: Mapping[str, Any], raw_dir:
     partner = {focal[0]: focal[1], focal[1]: focal[0]}
     addendum = {a: P.addendum_text(t, partner[a]) for a in focal}
     brevity = P.read_prompt("brevity_v1.txt") if cfg.brevity else None
+    language = P.read_prompt("language_v1.txt") if cfg.language_line else None
     npred = cfg.num_predict
     rounds: list[dict] = []
     failures: list[dict] = []
@@ -154,7 +158,7 @@ def run_game(entry: PlanEntry, llm, *, run_defaults: Mapping[str, Any], raw_dir:
         R: dict[str, Any] = {"round": rnd, "order": order, "stage1": {}, "channel": [], "stage2": [], "stage3": {}}
 
         for a in AGENTS:  # Stage 1
-            s, u, sch = P.stage1(a, hist[a], add(a), brevity)
+            s, u, sch = P.stage1(a, hist[a], add(a), brevity, language=language)
             v, parsed, meta = ask(rnd, "stage1", a, "", s, u, sch, "intended_action", is_action, npred["stage1"])
             R["stage1"][a] = {"intended_action": v, "reasoning": parsed.get("reasoning", "") if v else "",
                               "parse_ok": v is not None, "imputed": v is None, "call": meta}
@@ -163,7 +167,8 @@ def run_game(entry: PlanEntry, llm, *, run_defaults: Mapping[str, Any], raw_dir:
             first = first_writer(cfg.game_seed, rnd, ex, focal)
             so_far = [{"from": c["from"], "text": c["text"]} for c in R["channel"]]
             for a in (first, partner[first]):
-                s, u, sch = P.channel(a, partner[a], rnd, ex, so_far, hist[a], add(a), brevity, announcements)
+                s, u, sch = P.channel(a, partner[a], rnd, ex, so_far, hist[a], add(a), brevity, announcements,
+                                      language=language)
                 v, _, meta = ask(rnd, f"channel_{ex}", a, ex, s, u, sch, "message", is_text, npred["channel"])
                 R["channel"].append({"exchange": ex, "from": a, "to": partner[a], "text": v or "",
                                      "parse_ok": v is not None, "call": meta})
@@ -175,7 +180,7 @@ def run_game(entry: PlanEntry, llm, *, run_defaults: Mapping[str, Any], raw_dir:
         for pos, a in enumerate(order):  # Stage 2, round-robin in the rotated order
             plan = {"intended_action": R["stage1"][a]["intended_action"], "reasoning": R["stage1"][a]["reasoning"]}
             priv = [{"from": c["from"], "text": c["text"]} for c in R["channel"]] if (t == 1 and a in focal) else None
-            s, u, sch = P.stage2(a, plan, prior, hist[a], add(a), brevity, priv)
+            s, u, sch = P.stage2(a, plan, prior, hist[a], add(a), brevity, priv, language=language)
             v, parsed, meta = ask(rnd, "stage2", a, "", s, u, sch, "stated_action", is_action, npred["stage2"])
             msg = parsed.get("message", "") if v else ""
             R["stage2"].append({"agent": a, "position": pos, "stated_action": v, "message": msg,
@@ -187,7 +192,7 @@ def run_game(entry: PlanEntry, llm, *, run_defaults: Mapping[str, Any], raw_dir:
         for a in AGENTS:  # Stage 3
             plan = {"intended_action": R["stage1"][a]["intended_action"], "reasoning": R["stage1"][a]["reasoning"]}
             priv = [{"from": c["from"], "text": c["text"]} for c in R["channel"]] if (t == 1 and a in focal) else None
-            s, u, sch = P.stage3(a, s2_all, plan, s2_all[a], hist[a], add(a), brevity, priv)
+            s, u, sch = P.stage3(a, s2_all, plan, s2_all[a], hist[a], add(a), brevity, priv, language=language)
             v, parsed, meta = ask(rnd, "stage3", a, "", s, u, sch, "choice", is_action, npred["stage3"])
             R["stage3"][a] = {"choice": v, "reasoning": parsed.get("reasoning", "") if v else "",
                               "parse_ok": v is not None, "imputed": v is None, "call": meta}

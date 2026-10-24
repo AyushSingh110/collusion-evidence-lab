@@ -87,3 +87,37 @@ def test_handcheck_rejects_bad_values(tmp_path):
     _write(p, [(1, "yes")])
     with pytest.raises(ValueError):
         pilot_report.handcheck_agreement(p)
+
+
+# --------------------------------------------------------------- amendment 1: --rule v2 / --amendment1
+
+def test_rule_v1_default_unchanged_and_v2_writes_separate_files(pilot):
+    plan, raw, cache, out = pilot
+    _, text_v1 = pilot_report.build_report(plan, raw, cache, out, PINS)
+    before = {n: (out / n).read_bytes() for n in ("pilot_table.csv", "handcheck_uptake.csv", "pilot_summary.md")}
+    _, text_v1b = pilot_report.build_report(plan, raw, cache, out, PINS, rule="v1")
+    assert text_v1b == text_v1                                   # explicit --rule v1 == default
+    code, text_v2 = pilot_report.build_report(plan, raw, cache, out, PINS, rule="v2")
+    assert code == 0
+    for n, b in before.items():                                  # v1 outputs never overwritten
+        assert (out / n).read_bytes() == b
+    for n in ("pilot_table_v2.csv", "handcheck_uptake_v2.csv", "pilot_summary_v2.md"):
+        assert (out / n).exists()
+    assert "uptake v2 (rule)" in text_v2 and "DESCRIPTIVE ONLY" in text_v2 and "amendment1" in text_v2
+    assert "Games with any non-English text" in text_v2
+    with open(out / "handcheck_uptake_v2.csv", encoding="utf-8") as f:
+        hand = list(csv.DictReader(f))
+    assert list(hand[0]) == pilot_report.HAND_COLUMNS_V2 and len(hand) == 6 * 2 * 4
+
+
+def test_amendment1_mode_is_gate_only_for_pilot2_seed(pilot, tmp_path):
+    import json
+    plan, raw, cache, out = pilot
+    _, text = pilot_report.build_report(plan, raw, cache, out, PINS, amendment1=True)
+    assert "DESCRIPTIVE ONLY" in text and (out / "pilot_summary_amendment1.md").exists()   # seed 31337 != 20261025
+    doc = json.loads(plan.read_text(encoding="utf-8"))
+    doc["master_seed"] = pilot_report.AMENDMENT1_PILOT2_SEED   # only the label check reads it
+    plan2 = tmp_path / "plan2.json"
+    plan2.write_text(json.dumps(doc), encoding="utf-8")
+    _, text2 = pilot_report.build_report(plan2, raw, cache, out, PINS, amendment1=True)
+    assert "DESCRIPTIVE ONLY" not in text2 and "amendment-1 gate" in text2

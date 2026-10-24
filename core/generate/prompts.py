@@ -1,7 +1,8 @@
-"""Per-stage prompts: harness builders (read-only import) + history block + addendum + brevity line.
+"""Per-stage prompts: harness builders (read-only import) + history block + addendum + brevity + language line.
 
 Slot (report 01 §6): system = harness system prompt + "\n\n" + history + ["\n\n" + addendum, focal only].
-The brevity line (if on) is appended to EVERY user prompt of EVERY agent, identically.
+The brevity line (if on) is appended to EVERY user prompt of EVERY agent, identically. The language line
+(amendment 1, if on) follows directly after it, also identical for every agent, type and stage.
 Imports only the harness prompt builders and games - never its settings.py, LLM clients or poseidon_compute.
 """
 from __future__ import annotations
@@ -71,8 +72,10 @@ def _system(harness_system: str, history: str, addendum: Optional[str]) -> str:
     return out + ("\n\n" + addendum if addendum else "")
 
 
-def _user(text: str, brevity: Optional[str]) -> str:
-    return text + ("\n\n" + brevity if brevity else "")
+def _user(text: str, brevity: Optional[str], language: Optional[str] = None) -> str:
+    """Brevity line, then (amendment 1) the language line directly after it. Both off -> text unchanged."""
+    tail = [x for x in (brevity, language) if x]
+    return text + ("\n\n" + "\n".join(tail) if tail else "")
 
 
 def _private_block(private_now: Optional[Sequence[Mapping[str, str]]]) -> str:
@@ -80,32 +83,34 @@ def _private_block(private_now: Optional[Sequence[Mapping[str, str]]]) -> str:
             + "\n".join(f'  {m["from"]}: "{m.get("text") or ""}"' for m in private_now))
 
 
-def stage1(agent: str, history: str, addendum: Optional[str], brevity: Optional[str]):
+def stage1(agent: str, history: str, addendum: Optional[str], brevity: Optional[str],
+           language: Optional[str] = None):
     s, u, schema = _pb.build_stage1_prompt(GAME, agent, list(AGENTS), dict(STANDARD_PARAMS), True, takeaways=None)
-    return _system(s, history, addendum), _user(u, brevity), schema["schema"]
+    return _system(s, history, addendum), _user(u, brevity, language), schema["schema"]
 
 
 def stage2(agent: str, plan: Mapping[str, Any], prior: Sequence[Mapping[str, Any]], history: str,
-           addendum: Optional[str], brevity: Optional[str], private_now=None):
+           addendum: Optional[str], brevity: Optional[str], private_now=None, language: Optional[str] = None):
     s, u, schema = _pb.build_stage2_prompt(GAME, agent, list(AGENTS), dict(plan), dict(STANDARD_PARAMS), True,
                                            prior_announcements=list(prior))
     if private_now:
         u += "\n\n" + _private_block(private_now)
-    return _system(s, history, addendum), _user(u, brevity), schema["schema"]
+    return _system(s, history, addendum), _user(u, brevity, language), schema["schema"]
 
 
 def stage3(agent: str, stage2_all: Mapping[str, Mapping[str, Any]], plan: Mapping[str, Any],
-           own_s2: Mapping[str, Any], history: str, addendum: Optional[str], brevity: Optional[str], private_now=None):
+           own_s2: Mapping[str, Any], history: str, addendum: Optional[str], brevity: Optional[str], private_now=None,
+           language: Optional[str] = None):
     s, u, schema = _pb.build_stage3_prompt(GAME, agent, list(AGENTS), {k: dict(v) for k, v in stage2_all.items()},
                                            dict(STANDARD_PARAMS), dict(plan), dict(own_s2), True, True)
     if private_now:
         marker = "\nNow choose your ACTUAL action"
         u = u.replace(marker, "\n" + _private_block(private_now) + "\n" + marker, 1)
-    return _system(s, history, addendum), _user(u, brevity), schema["schema"]
+    return _system(s, history, addendum), _user(u, brevity, language), schema["schema"]
 
 
 def channel(agent: str, partner: str, rnd: int, exchange: str, so_far: Sequence[Mapping[str, str]], history: str,
-            addendum: Optional[str], brevity: Optional[str], announcements=None):
+            addendum: Optional[str], brevity: Optional[str], announcements=None, language: Optional[str] = None):
     """System prompt = the agent's own Stage-1 system prompt (rules + history + addendum)."""
     s, _, _ = _pb.build_stage1_prompt(GAME, agent, list(AGENTS), dict(STANDARD_PARAMS), True, takeaways=None)
     so = ("Private messages so far this round:\n" + "\n".join(f'  {m["from"]}: "{m.get("text") or ""}"' for m in so_far)
@@ -117,4 +122,4 @@ def channel(agent: str, partner: str, rnd: int, exchange: str, so_far: Sequence[
                + "\n".join(f'  Agent {p["name"]} (stated action: {p["stated_action"]}): "{p["message"]}"'
                            for p in announcements or []) + "\n")
         u = read_prompt("channel_B_v1.txt").format(round=rnd, partner=partner, so_far=so, announcements=ann)
-    return _system(s, history, addendum), _user(u, brevity), CHANNEL_SCHEMA
+    return _system(s, history, addendum), _user(u, brevity, language), CHANNEL_SCHEMA

@@ -75,6 +75,7 @@ class GameConfig:
     plan_index: int = -1
     plan_config_sha256: str = ""
     brevity: bool = False
+    language_line: bool = False   # amendment 1: "English only" line after the brevity line (pilot-1 records: absent)
     private_payoff_overrides: dict[str, dict[str, float]] = field(default_factory=dict)
     addenda: dict[str, str] = field(default_factory=dict)
     private_channel: dict[str, Any] = field(default_factory=dict)

@@ -64,6 +64,8 @@ def setup_texts_for(record: dict) -> list[str]:
         texts += [P.read_prompt("channel_A_v1.txt"), P.read_prompt("channel_B_v1.txt")]
     if cfg.get("brevity"):
         texts.append(P.read_prompt("brevity_v1.txt"))
+    if cfg.get("language_line"):
+        texts.append(P.read_prompt("language_v1.txt"))
     return texts
 
 

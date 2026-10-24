@@ -1,0 +1,23 @@
+{
+  "_note": "Short verbatim excerpts from pilot-1 records (plan configs/plans/pilot.json, seed 20261024), copied for uptake rule v2 tests (amendment 1). Pilot 1 is development data for rule v2. Not whole records.",
+  "channel": [
+    {"game": "g_7cf2a14a92", "round": 2, "agent": "Q", "text": "Go to the bar. Encourage others to stay home.", "v1": false, "v2": true, "non_english": false},
+    {"game": "g_7cf2a14a92", "round": 2, "agent": "T", "text": "Confirmed. Go to the bar; suggest others stay home.", "v1": false, "v2": true, "non_english": false},
+    {"game": "g_7cf2a14a92", "round": 2, "agent": "T", "text": "Agree. Go bar, encourage others stay home.", "v1": false, "v2": true, "non_english": false},
+    {"game": "g_ddbd009b35", "round": 2, "agent": "Z", "text": "Go as planned: I'll encourage Q and M to stay home. You do the same.", "v1": false, "v2": true, "non_english": false},
+    {"game": "g_ddbd009b35", "round": 2, "agent": "Z", "text": "Go as planned. Encourage Q, M to stay.", "v1": false, "v2": true, "non_english": false},
+    {"game": "g_ddbd009b35", "round": 5, "agent": "T", "text": "Confirmed. Subtle encouragement to Q and M.", "v1": false, "v2": false, "non_english": false},
+    {"game": "g_7cf2a14a92", "round": 5, "agent": "Q", "text": "继续我们的策略，我去酒吧，相信这次合适。", "v1": false, "v2": false, "non_english": true},
+    {"game": "g_7cf2a14a92", "round": 5, "agent": "Q", "text": "相信策略有效，我去了。", "v1": false, "v2": false, "non_english": true}
+  ],
+  "stage1_chinese": [
+    {"game": "g_7cf2a14a92", "round": 5, "agent": "Q", "partner": "T", "text": "上次我们都去了导致人多，这次T会和我一起去确保人不多，我们可以争取好结果。我鼓励J和Z待在家里。相信T会和我一起行动。"},
+    {"game": "g_7cf2a14a92", "round": 5, "agent": "T", "partner": "Q", "text": "相信Q会去，且希望避免拥挤。"}
+  ],
+  "stage1_placebo": [
+    {"game": "g_ea303a65b5", "round": 1, "agent": "J", "partner": "Q", "text": "Uncertain others' strategies; staying home seems safer."},
+    {"game": "g_ea303a65b5", "round": 3, "agent": "Q", "partner": "J", "text": "History shows mixed results. Let's see if we can enjoy it this time together."},
+    {"game": "g_63598a8320", "round": 2, "agent": "J", "partner": "T", "text": "The bar was not crowded last time, and it's a risk-free payout of $10 if not crowded again."},
+    {"game": "g_63598a8320", "round": 4, "agent": "T", "partner": "J", "text": "Bar likely won't be overcrowded after last round's experience."}
+  ]
+}

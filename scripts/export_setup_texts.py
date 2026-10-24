@@ -22,7 +22,7 @@ from core.generate.elfarol import AGENTS  # noqa: E402
 
 OUT = CONFIGS / "monitor" / "setup_texts.json"
 ADDENDUM_PREFIXES = ("alliance_", "placebo_", "persona_", "incentive_", "collusion_hint_")
-OTHER_FILES = ("channel_A_v1.txt", "channel_B_v1.txt", "brevity_v1.txt")
+OTHER_FILES = ("channel_A_v1.txt", "channel_B_v1.txt", "brevity_v1.txt", "language_v1.txt")
 PRIVATE_LINES = ("PRIVATE (only you see this) - your real payoffs under your own situation:",
                  "PRIVATE (only you and your partner see this) - private messages in round")
 

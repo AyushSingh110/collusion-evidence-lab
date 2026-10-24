@@ -742,3 +742,54 @@ See report 01 §11 (10 questions). Most urgent:
 - Language drift (Chinese): add an "answer in English" line for all agents as a new pre-registered variant?
 - New cleaner rule vs the Type 4b "deposit" leak: keep removing the 4b patterns, or flag only?
 - V5: measure real prompt_eval_count, or move all views to num_ctx 16384?
+
+---
+
+## 2026-10-24 — [machine: B] Task 09a: pre-registration Amendment 1 + code for the confirmation pilot (no model calls)
+
+### What was implemented or executed
+- Lead's decision, dated 2026-10-24, made before any pilot-2 data and before the pilot-1 hand-check: depart
+  from frozen step U1 with Amendment 1. Written to `configs/prereg_rq01_amendment1.md` (new; LF sha256
+  `c214284753ff2cf167012e585774f4f59a4f1c5f9d1bae50c53e82ee6eff06a0`). The frozen pre-registration is untouched
+  (`c5976220…`, commit 4909c7e).
+- Language line: `configs/prompts/language_v1.txt`; manifest regenerated (12 files); `prompts._user` puts it right
+  after the brevity line; all builders take `language=`; `GameConfig.language_line` (default False); runner;
+  `run_defaults.json` `"language_line": true`; leak-scan setup texts (25).
+- `core/evidence/rq01.py`: uptake rule v2 as new functions (v1 unchanged); `evaluate_gate(rule_version=)`,
+  `pilot_table(rule_versions=)`. `core/stats/basic.py`: `percent_agreement`, `cohen_kappa`.
+- `scripts/pilot_report.py --rule v1|v2 --amendment1` (separate output files for v2/amendment).
+  New `scripts/handcheck_sheets.py` and `scripts/handcheck_agreement.py`.
+- Ran (no model calls): `pilot_report.py --rule v1` (byte-identical to task 08's outputs), `--rule v2`
+  (descriptive), `handcheck_sheets.py` → `runs/pilot/{uptake_v2_retro.csv, handcheck_blind_R1.csv,
+  handcheck_blind_R2.csv, handcheck_key.csv}`. Wrote assistant translations of 33 Chinese texts to
+  `runs/pilot/translations_en.json`.
+- `pytest -q` → **409 passed, 0 failed** (+51 tests).
+- Retro rule v2 on pilot 1 (development data; DESCRIPTIVE ONLY, NOT THE GATE): Type 1 3/4 (1.000, 0.938, 1.000,
+  0.250 with 12 non-English cells), Type 2 0/2. Rule v1 result (2/4 FAIL) stands.
+
+### Errors and problems faced
+- `bash: unexpected EOF while looking for matching '` when appending tests through a shell heredoc. Nothing was
+  written; redone with the file tools.
+- A string substitution in `core/generate/prompts.py` was run with the system Python (Rule B slip). Two of its
+  multi-line replacements did not match (CRLF), which left `_user(u, brevity, language)` calls without the new
+  parameter for a moment.
+- `test_brevity_line_identical_for_all_agents` failed after switching the language line on (prompts now end with
+  brevity + language).
+
+### How each problem was solved
+- Used the Edit/Write tools for the remaining edits. Fixed `_user` and the docstring with the editor; tests cover
+  the result (3 new language tests).
+- Updated the brevity test to expect the language line after the brevity line. Pilot-1 behaviour (flag off) is
+  covered by `test_language_line_off_reproduces_pilot1_prompts`.
+
+### Decisions taken
+- Rule-v2 and amendment modes of `pilot_report.py` write separate files, so the v1 hand-check sheet the lead may
+  be filling is never overwritten. `--amendment1` is labelled descriptive unless the master seed is 20261025.
+- A cell is non-English if any of its texts is (conservative reading). Agreement words match whole words only.
+- Rule v2 was not tuned after seeing its pilot-1 retro numbers; the amendment states openly that they were known.
+- E2 written as 10 rounds per the lead's instruction (the frozen tree says 12); flagged for confirmation.
+
+### Open questions for the team
+- Confirm E2 = 10 rounds (vs the frozen 12) before committing the amendment.
+- Commit the amendment alone first; then pilot 2 (task 09b) can start.
+- Who is R2 for the pilot-1 blinded hand-check?

@@ -5,6 +5,8 @@
   "n_rounds": 8,
   "temperature": {"agent": 1.0, "monitor": 0.0, "judge": 0.0},
   "brevity": true,
+  "language_line": true,
+  "_language_note": "Amendment 1 (configs/prereg_rq01_amendment1.md, 2026-10-24): 'English only' line after the brevity line, all agents/types/stages incl. channel. ON for pilot 2 and the dataset; pilot-1 records were generated without it.",
   "num_predict": {"stage1": 200, "channel": 150, "stage2": 200, "stage3": 200, "monitor": 200, "judge": 400},
   "num_predict_uncapped": {"stage1": 350, "channel": 200, "stage2": 350, "stage3": 350, "monitor": 300, "judge": 400},
   "master_seeds": {"dataset": 20261023, "pilot": 20261024},

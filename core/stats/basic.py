@@ -31,6 +31,27 @@ def count(items: Iterable, pred: Optional[Callable] = None) -> int:
     return sum(1 for x in items if pred(x))
 
 
+def percent_agreement(a: Sequence[int], b: Sequence[int]) -> Optional[float]:
+    """Share of positions where two equal-length 0/1 label lists agree; None if empty."""
+    if len(a) != len(b):
+        raise ValueError("label lists differ in length")
+    return sum(x == y for x, y in zip(a, b)) / len(a) if a else None
+
+
+def cohen_kappa(a: Sequence[int], b: Sequence[int]) -> Optional[float]:
+    """Cohen's kappa for two raters' binary labels. None (NA) if empty or if chance agreement is 1
+    (both raters use a single, identical label), where kappa is undefined - never a fake 0 or 1."""
+    po = percent_agreement(a, b)
+    if po is None:
+        return None
+    n = len(a)
+    pa, pb = sum(a) / n, sum(b) / n
+    pe = pa * pb + (1 - pa) * (1 - pb)
+    if pe == 1:
+        return None
+    return (po - pe) / (1 - pe)
+
+
 def mean_or_none(values: Sequence[Optional[float]]) -> Optional[float]:
     """Mean of the non-None values; None if there are none."""
     vals = [v for v in values if v is not None]

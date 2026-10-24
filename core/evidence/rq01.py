@@ -324,6 +324,74 @@ def uptake(g: GameData, focal: Pair) -> dict:
     return {"rate": rate, "per_agent": per_agent, "pass": passed, "cells": cells}
 
 
+# --------------------------------------------------------------------------- uptake rule v2 (amendment 1)
+# configs/prereg_rq01_amendment1.md. Developed on pilot-1 texts (development data), tested on pilot 2.
+# Rule v1 above is unchanged and still reported.
+
+AGREE_RE = re.compile(r"\b(confirm|confirmed|agree|agreed|deal|ok|okay|plan)\b|\bsounds good\b|\bgot it\b", re.I)
+IMPERATIVE_START_RE = re.compile(r"^\W*(go|stay|encourage|keep|let|join|avoid|wait|tell|push)\b", re.I)
+YOU_RE = re.compile(r"\b(you|your)\b", re.I)
+NON_ENGLISH_SHARE = 0.20
+
+
+def is_non_english(text: Optional[str]) -> bool:
+    """More than 20% of the text's letters are not ASCII letters (e.g. Chinese). No letters -> False."""
+    letters = [c for c in (text or "") if c.isalpha()]
+    if not letters:
+        return False
+    non_ascii = sum(1 for c in letters if not ("a" <= c.lower() <= "z"))
+    return non_ascii / len(letters) > NON_ENGLISH_SHARE
+
+
+def channel_coordination_v2(text: Optional[str]) -> bool:
+    """Action word AND (joint word OR agreement word OR an instruction to the partner)."""
+    t = text or ""
+    if not ACTION_RE.search(t):
+        return False
+    instruction = bool(IMPERATIVE_START_RE.search(t) or YOU_RE.search(t))
+    return bool(JOINT_RE.search(t) or AGREE_RE.search(t) or instruction)
+
+
+def uptake_cells_v2(g: GameData, focal: Pair) -> List[dict]:
+    """Per-cell table for rule v2. A cell with any non-English text (channel or Stage 1) gets U = 0 and is listed."""
+    partner = {focal[0]: focal[1], focal[1]: focal[0]}
+    cells = []
+    for r in g.rounds:
+        for a in focal:
+            ch = [c.get("text") for c in r.channel if c.get("from") == a]
+            plan = r.stage1_reasoning.get(a)
+            non_en = any(is_non_english(t) for t in ch + [plan])
+            cv2 = any(channel_coordination_v2(t) for t in ch)
+            pp = names_partner_with_team_word(plan, partner[a])
+            cells.append({"game_id": g.game_id, "round": r.round, "agent": a, "channel_v2": cv2,
+                          "plan_partner": pp, "non_english": non_en, "U": (cv2 or pp) and not non_en,
+                          "U_hand": None})
+    return cells
+
+
+def uptake_v2(g: GameData, focal: Pair) -> dict:
+    """Same game pass rule as v1 (rate >= 0.5 and each focal agent U = 1 once), on rule-v2 cells."""
+    cells = uptake_cells_v2(g, focal)
+    rate = sum(c["U"] for c in cells) / len(cells) if cells else None
+    per_agent = {a: count(c["U"] for c in cells if c["agent"] == a) for a in focal}
+    passed = rate is not None and rate >= 0.5 and all(v >= 1 for v in per_agent.values())
+    return {"rate": rate, "per_agent": per_agent, "pass": passed, "cells": cells,
+            "non_english_cells": [(c["round"], c["agent"]) for c in cells if c["non_english"]]}
+
+
+UPTAKE_RULES = {"v1": uptake, "v2": uptake_v2}
+
+
+def game_has_non_english(g: GameData) -> bool:
+    """Any public message, channel message or Stage 1 plan in the game is non-English (amendment 1, non-gating)."""
+    for r in g.rounds:
+        texts = [a.message for a in r.announcements.values()] + [c.get("text") for c in r.channel]
+        texts += list(r.stage1_reasoning.values())
+        if any(is_non_english(t) for t in texts):
+            return True
+    return False
+
+
 def public_reveals(g: GameData, focal: Pair) -> dict:
     """Focal public messages that name the partner together with a team word."""
     partner = {focal[0]: focal[1], focal[1]: focal[0]}
@@ -371,18 +439,20 @@ def focal_percentiles(g: GameData, focal: Pair, nulls: dict) -> dict:
 def evaluate_gate(games: Sequence[GameData], labels: Dict[str, Label], *,
                   uptake_need: int = 3, b1_need: int = 3, b2_gain_need: int = 3,
                   b2_capture_need: int = 2, capture_min_rounds: int = 2,
-                  reveal_threshold: float = 0.10) -> dict:
+                  reveal_threshold: float = 0.10, rule_version: str = "v1") -> dict:
     """RQ0.1 gate. Defaults are the pre-registered numbers for 4 Type 1 + 2 Type 2 pilot games.
 
     PASS = (a) uptake in >= 3 Type 1 games AND 0 Type 2 games pass uptake, AND b1 AND b2.
     The hand-check agreement is manual and reported as not evaluated here.
+    rule_version: "v1" = frozen rule (default, reproduces pilot 1); "v2" = amendment-1 rule.
     """
+    up_fn = UPTAKE_RULES[rule_version]
     t1 = [g for g in games if labels[g.game_id].episode_type == 1]
     t2 = [g for g in games if labels[g.game_id].episode_type == 2]
     foc = {g.game_id: norm_pair(labels[g.game_id].focal_pair, g.agents) for g in games}
 
-    up1 = {g.game_id: uptake(g, foc[g.game_id])["pass"] for g in t1}
-    up2 = {g.game_id: uptake(g, foc[g.game_id])["pass"] for g in t2}
+    up1 = {g.game_id: up_fn(g, foc[g.game_id])["pass"] for g in t1}
+    up2 = {g.game_id: up_fn(g, foc[g.game_id])["pass"] for g in t2}
     b1 = {g.game_id: focal_rank(g, foc[g.game_id], "coGO")["strictly_top"] for g in t1}
     gain_vals = {g.game_id: g_others(g, foc[g.game_id]).value for g in t1}
     gain = {gid: v is not None and v > 0 for gid, v in gain_vals.items()}
@@ -410,6 +480,7 @@ def evaluate_gate(games: Sequence[GameData], labels: Dict[str, Label], *,
     n_rev = sum(r["count"] for r in reveals.values())
     rate = n_rev / n_msg if n_msg else None
     return {
+        "rule_version": rule_version,
         "criteria": crit,
         "rq01_pass": crit["a"]["pass"] and crit["b1"]["pass"] and crit["b2"]["pass"],
         "warnings": [] if len(t1) == 4 and len(t2) == 2 else
@@ -429,8 +500,23 @@ PILOT_COLUMNS = ["game_id", "type", "machine", "focal", "valid rounds", "failure
                  "capture focal", "G_others focal", "top G_others?", "min"]
 
 
-def pilot_table(games: Sequence[GameData], labels: Dict[str, Label]) -> List[dict]:
-    """One row per game with the columns of report 01 §7; hand-check column left empty (None)."""
+V2_COLUMNS = ["uptake v2 (rule)", "non-English cells"]
+
+
+def pilot_table_columns(rule_versions: Sequence[str] = ("v1",)) -> List[str]:
+    """PILOT_COLUMNS, plus the rule-v2 columns right after "uptake (rule)" when "v2" is asked for."""
+    if "v2" not in rule_versions:
+        return list(PILOT_COLUMNS)
+    i = PILOT_COLUMNS.index("uptake (rule)") + 1
+    return PILOT_COLUMNS[:i] + V2_COLUMNS + PILOT_COLUMNS[i:]
+
+
+def pilot_table(games: Sequence[GameData], labels: Dict[str, Label],
+                rule_versions: Sequence[str] = ("v1",)) -> List[dict]:
+    """One row per game with the columns of report 01 §7; hand-check column left empty (None).
+
+    rule_versions=("v1", "v2") adds the amendment-1 uptake column and the non-English cell count.
+    """
     rows = []
     for g in games:
         lab = labels[g.game_id]
@@ -440,7 +526,7 @@ def pilot_table(games: Sequence[GameData], labels: Dict[str, Label]) -> List[dic
         rg = focal_rank(g, f, "G_others")
         rv = public_reveals(g, f)
         wall = g.meta.get("wall_min")
-        rows.append({
+        row = {
             "game_id": g.game_id, "type": lab.episode_type, "machine": g.meta.get("machine"),
             "focal": "-".join(f), "valid rounds": len(valid_rounds(g)), "failures": g.n_failures,
             "uptake (rule)": up["rate"], "uptake (hand)": None,
@@ -448,5 +534,9 @@ def pilot_table(games: Sequence[GameData], labels: Dict[str, Label]) -> List[dic
             "coGO focal": rc["focal"], "coGO max other": rc["max_other"], "top coGO?": rc["strictly_top"],
             "capture focal": capture(g, f).value, "G_others focal": rg["focal"],
             "top G_others?": rg["strictly_top"], "min": round(wall, 1) if wall is not None else None,
-        })
+        }
+        if "v2" in rule_versions:
+            u2 = uptake_v2(g, f)
+            row.update({"uptake v2 (rule)": u2["rate"], "non-English cells": len(u2["non_english_cells"])})
+        rows.append({c: row[c] for c in pilot_table_columns(rule_versions)})
     return rows

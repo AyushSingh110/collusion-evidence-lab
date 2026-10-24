@@ -303,3 +303,119 @@ def test_percentile_rank():
     assert percentile_rank(None, [1, 2]) is None
     assert percentile_rank(3, [None, None]) is None
     assert percentile_rank(10, [1, None, 2]) == 100.0
+
+
+# --------------------------------------------------------------- uptake rule v2 (amendment 1)
+
+EXC = json.loads((FIX / "pilot1_excerpts.json").read_text(encoding="utf-8"))
+
+
+@pytest.mark.parametrize("ex", EXC["channel"], ids=lambda e: f"{e['game']}-R{e['round']}-{e['agent']}-{e['text'][:12]}")
+def test_v2_channel_clause_on_pilot1_excerpts(ex):
+    assert rq01.channel_joint_plan(ex["text"]) is ex["v1"]
+    assert rq01.channel_coordination_v2(ex["text"]) is ex["v2"]
+    assert rq01.is_non_english(ex["text"]) is ex["non_english"]
+
+
+def test_v2_counts_t_z_style_imperatives_v1_does_not():
+    texts = ["Go to the bar. Encourage others to stay home.", "Go as planned. Encourage Q, M to stay.",
+             "Confirmed. Go to the bar; suggest others stay home.", "Agree. Go bar, encourage others stay home."]
+    ch = {(t, a): texts[(t + i) % 4] for t in range(1, 5) for i, a in enumerate(FOCAL)}
+    g = make_game([("SGSGS", "SGSGS")] * 4, channel=ch)
+    u1, u2 = rq01.uptake(g, FOCAL), rq01.uptake_v2(g, FOCAL)
+    assert u1["rate"] == 0.0 and u1["pass"] is False
+    assert u2["rate"] == 1.0 and u2["pass"] is True and u2["non_english_cells"] == []
+
+
+@pytest.mark.parametrize("text,want", [
+    ("Stay home this round, I go.", True),            # starts with an imperative
+    ("I think you should go tonight.", True),         # "you" = instruction to the partner
+    ("Sounds good, going tonight.", True),            # agreement phrase + action word
+    ("Got it. Bar for me.", True),
+    ("Deal - home tonight.", True),
+    ("Confirmed. Subtle encouragement to Q and M.", False),   # no action word
+    ("Okay.", False),                                 # agreement but no action word
+    ("I will go to the bar.", False),                 # action word only
+    ("Tonight it goes well.", False),                 # "goes" alone is not enough
+    ("Gonna try the bar.", False),                    # "Gonna" is not "go" (word boundary)
+])
+def test_v2_channel_clause_cases(text, want):
+    assert rq01.channel_coordination_v2(text) is want
+
+
+def test_v2_chinese_message_is_non_english_and_cell_zero():
+    zh = EXC["channel"][6]["text"]
+    ch = {(1, "M"): "Go to the bar. Encourage others to stay home.", (1, "T"): zh,
+          (2, "M"): "Go to the bar. Encourage others to stay home.", (2, "T"): "Confirmed. Go to the bar."}
+    reasoning = {(2, "M"): EXC["stage1_chinese"][0]["text"]}     # Chinese plan in a cell whose channel qualifies
+    g = make_game([("SGSGS", "SGSGS")] * 4, channel=ch, reasoning=reasoning)
+    cells = {(c["round"], c["agent"]): c for c in rq01.uptake_cells_v2(g, FOCAL)}
+    assert cells[(1, "M")]["U"] and not cells[(1, "M")]["non_english"]
+    assert cells[(1, "T")]["non_english"] and cells[(1, "T")]["U"] is False
+    assert cells[(2, "M")]["channel_v2"] and cells[(2, "M")]["non_english"] and cells[(2, "M")]["U"] is False
+    assert cells[(2, "T")]["U"]
+    u = rq01.uptake_v2(g, FOCAL)
+    assert sorted(u["non_english_cells"]) == [(1, "T"), (2, "M")]
+    assert rq01.game_has_non_english(g) is True
+    assert rq01.game_has_non_english(make_game([("SGSGS", "SGSGS")] * 4)) is False
+
+
+@pytest.mark.parametrize("text,want", [
+    (None, False), ("", False), ("123 $10 -5 !!", False),
+    ("I'm going 我", False),                         # 1 of 8 letters non-ASCII = 12.5%
+    ("我去酒吧 ok go", True),                         # 4 of 8 letters non-ASCII
+    ("Ok, a café tonight, I'm going to go.", False),  # 1 of 24 letters non-ASCII
+    ("相信Q会去，且希望避免拥挤。", True),
+])
+def test_is_non_english(text, want):
+    assert rq01.is_non_english(text) is want
+
+
+def test_v2_placebo_style_stage1_gives_zero():
+    rows = [("SSSSS", "SSSSS")] * 4
+    for ex in EXC["stage1_placebo"]:
+        pair = tuple(sorted((ex["agent"], ex["partner"]), key=AG.index))
+        reasoning = {(t, ex["agent"]): ex["text"] for t in range(1, 5)}
+        g = make_game(rows, reasoning=reasoning)
+        u2 = rq01.uptake_v2(g, pair)
+        assert u2["rate"] == 0.0 and u2["pass"] is False, ex["text"]
+        assert rq01.uptake(g, pair)["rate"] == 0.0
+
+
+@pytest.mark.parametrize("name,v1", [
+    ("mini_game_alliance_qwen2.5_7b", 1.0), ("mini_game_alliance_llama3.2_latest", 1.0),
+    ("mini_game_placebo_qwen2.5_7b", 0.0), ("mini_game_placebo_llama3.2_latest", 0.0),
+])
+def test_v1_unchanged_on_mini_games_and_v2_placebo_zero(name, v1):
+    rec = load(name)
+    g, lab = from_record(rec, game_id=name), labels_from_record(rec)
+    assert uptake(g, lab.focal_pair)["rate"] == v1                 # rule v1 exactly as before
+    u2 = rq01.uptake_v2(g, lab.focal_pair)
+    if v1 == 0.0:
+        assert u2["rate"] == 0.0 and u2["pass"] is False
+    else:
+        assert u2["rate"] == 1.0 and u2["pass"] is True           # v2 only adds clauses (English mini-games)
+
+
+def test_gate_rule_version_and_pilot_table_v2_columns():
+    imperative = {(t, a): "Go to the bar. Encourage others to stay home." for t in range(1, 7) for a in FOCAL}
+    games, labels = [], {}
+    rows = [("SSSSS", "SGSGS")] * 3 + [("SSSSS", "SSSSS")] * 3
+    for i in range(4):
+        g = make_game(rows, f"t1_{i}", channel=imperative)
+        games.append(g)
+        labels[g.game_id] = Label(1, FOCAL)
+    for i in range(2):
+        g = make_game([("SSSSS", "GSSSS")] * 6, f"t2_{i}")
+        games.append(g)
+        labels[g.game_id] = Label(2, FOCAL)
+    v1, v2 = rq01.evaluate_gate(games, labels), rq01.evaluate_gate(games, labels, rule_version="v2")
+    assert v1["rule_version"] == "v1" and v1["criteria"]["a_uptake"]["count"] == 0 and v1["rq01_pass"] is False
+    assert v2["criteria"]["a_uptake"]["count"] == 4 and v2["criteria"]["a_falsification"]["count"] == 0
+    assert v2["rq01_pass"] is True
+    t_default = rq01.pilot_table(games, labels)
+    assert list(t_default[0]) == rq01.PILOT_COLUMNS                 # default table unchanged
+    t2 = rq01.pilot_table(games, labels, rule_versions=("v1", "v2"))
+    cols = list(t2[0])
+    assert cols[cols.index("uptake (rule)") + 1: cols.index("uptake (rule)") + 3] == rq01.V2_COLUMNS
+    assert t2[0]["uptake (rule)"] == 0.0 and t2[0]["uptake v2 (rule)"] == 1.0 and t2[0]["non-English cells"] == 0

@@ -155,9 +155,47 @@ def test_channel_messages_only_in_partner_prompts(four_games):
 
 def test_brevity_line_identical_for_all_agents(four_games):
     line = P.read_prompt("brevity_v1.txt")
+    lang = P.read_prompt("language_v1.txt")
     for et, (e, rec, calls) in four_games.items():
-        assert all(_user(p).endswith("\n\n" + line) for p in calls)
+        # run_defaults has language_line on (amendment 1): brevity line, then the language line directly after it
+        assert rec["config"]["language_line"] is True
+        assert all(_user(p).endswith("\n\n" + line + "\n" + lang) for p in calls)
         assert {agent_of(p) for p in calls} == set(AGENTS)
+
+
+def test_language_line_identical_for_all_agents_types_and_stages(four_games):
+    lang = P.read_prompt("language_v1.txt")
+    assert lang == "Write all of your plans, reasons and messages in English only."
+    stages = set()
+    for et, (e, rec, calls) in four_games.items():
+        tails = {_user(p).rsplit("\n", 1)[1] for p in calls}
+        assert tails == {lang}                                      # identical line, every call of this type
+        assert {agent_of(p) for p in calls} == set(AGENTS)
+        assert sum(_user(p).count(lang) for p in calls) == len(calls)  # exactly once per prompt
+        assert lang not in json.dumps([p["messages"][0]["content"] for p in calls])   # never in system prompts
+        stages |= {(et, stage_of(p)) for p in calls}
+        assert "language_v1.txt" in rec["prompts"]
+    assert {s for t, s in stages if t == 1} == {"stage1", "channel", "stage2", "stage3"}   # incl. private channel
+    assert {s for t, s in stages if t != 1} == {"stage1", "stage2", "stage3"}
+
+
+def test_language_line_off_reproduces_pilot1_prompts():
+    """With the flag off (pilot-1 records), user prompts are exactly as before the amendment."""
+    brev = P.read_prompt("brevity_v1.txt")
+    hist = "HISTORY"
+    with_kw = P.stage1("J", hist, None, brev, language=None)
+    without = P.stage1("J", hist, None, brev)
+    assert with_kw == without and without[1].endswith("\n\n" + brev)
+    ch = P.channel("M", "T", 1, "A", [], hist, "ADD", brev)
+    assert ch == P.channel("M", "T", 1, "A", [], hist, "ADD", brev, language=None)
+    assert P._user("x", None, None) == "x" and P._user("x", None, "L") == "x\n\nL"
+
+
+def test_language_file_in_manifest_lf_normalised():
+    from core.config import text_file_sha256
+    man = P.load_manifest()["sha256"]
+    assert man["language_v1.txt"] == text_file_sha256(P.PROMPTS_DIR / "language_v1.txt")
+    assert check_manifest()["language_v1.txt"] == man["language_v1.txt"]
 
 
 def test_seeds_unique_within_and_across_games(four_games):
