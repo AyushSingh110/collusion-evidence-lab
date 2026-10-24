@@ -793,3 +793,102 @@ See report 01 §11 (10 questions). Most urgent:
 - Confirm E2 = 10 rounds (vs the frozen 12) before committing the amendment.
 - Commit the amendment alone first; then pilot 2 (task 09b) can start.
 - Who is R2 for the pilot-1 blinded hand-check?
+
+---
+
+## 2026-10-24 — [machine: B] Task 09b (part 1): AMENDMENT 1 FREEZE RECORD (before any pilot-2 call)
+
+### What was implemented or executed
+- Read-only: `git log -1 -- configs/prereg_rq01_amendment1.md` → commit
+  `2d475809fc73fd3c056e666a3b3feba188bb3f62` (2026-10-24 10:42:25 +0530, Param Bapu, "add language line, uptake rule
+  v2, rule-versioned pilot report and blinded hand-check tooling"). `git diff --quiet` → the working copy equals the
+  committed blob.
+- **Amendment 1, LF-normalised sha256 = `c214284753ff2cf167012e585774f4f59a4f1c5f9d1bae50c53e82ee6eff06a0`**
+  (identical to the value in report 09a). Frozen pre-registration unchanged: `c5976220…` (commit 4909c7e).
+- **No pilot-2 model call has been made before this entry.** `configs/plans/` holds only `pilot.json`.
+
+### Errors and problems faced
+- None.
+
+### How each problem was solved
+- —
+
+### Decisions taken
+- The amendment was committed together with the code (not as a separate first commit, as report 09a suggested).
+  It is committed and unchanged before any pilot-2 call, so the freeze holds; logged as a minor deviation.
+- E2 = 10 rounds was committed as written, so it is taken as confirmed by the lead.
+
+### Open questions for the team
+- None.
+
+---
+
+## 2026-10-24 — [machine: B] Task 09b (part 2): pilot-1 two-rater hand-check agreement (DESCRIPTIVE ONLY)
+
+### What was implemented or executed
+- The lead reported both pilot-1 blinded sheets filled: `runs/pilot/handcheck_blind_R1_filled.csv` (R1, lead) and
+  `runs/pilot/handcheck_blind_R2_Filled.csv` (R2). Validated read-only: 96/96 rows each, U_hand only 0/1, row ids =
+  key (no duplicates, none missing), sheet texts unchanged vs the original sheet; R2 file has CRLF line endings.
+- `scripts/handcheck_agreement.py --key runs/pilot/handcheck_key.csv --r1 …R1_filled.csv --r2 …R2_Filled.csv`
+  → `runs/pilot/handcheck_agreement.json`. CPU only; ran while pilot 2 was generating (no extra model calls).
+- Results (n = 96 cells; amendment 1 §6: descriptive only, does not decide any gate):
+  R1 vs rule v1 59.4% (κ 0.30); R2 vs rule v1 65.6% (κ 0.39); R1 vs rule v2 79.2% (κ 0.57);
+  R2 vs rule v2 85.4% (κ 0.70); R1 vs R2 91.7% (κ 0.80). Cells marked 1: v1 32, v2 51, R1 71, R2 65.
+- Breakdown: every rule–human disagreement is a rule miss (rule 0, human 1; never the reverse). Type 1 English cells:
+  v2 agrees with both raters on 51/52. The 12 non-English cells: v2 = 0 by design; R1 12/12 = 1, R2 10/12 = 1.
+  Type 2 (placebo): raters marked 1 in 8 cells of g_ea303a65b5 (R1 7, R2 3, both 2), all generic "let's … together"
+  Stage-1 talk without the partner's name; the rule (partner name required) gave 0.
+
+### Errors and problems faced
+- None (file names differ from the generated ones: "_filled" / "_Filled"; used as given).
+
+### How each problem was solved
+- —
+
+### Decisions taken
+- Reported as descriptive only, per amendment 1 §6. Under the frozen §4 wording, R1 (lead) vs rule v1 = 59.4% would
+  be below 80%; that is exactly the rule-wording problem amendment 1 already addresses (rule v2), and the pilot-1 gate
+  result stays as reported (FAIL on (a)).
+
+### Open questions for the team
+- Should the pilot-2 hand-check instructions say explicitly that generic group talk ("let's … together") without the
+  partner counts as 0? (Pilot-2 hand-check is gating, ≥ 80% vs rule v2.)
+
+---
+
+## 2026-10-24 — [machine: B] Task 09b (part 3): pilot 2 run + amendment-1 gate
+
+### What was implemented or executed
+- check_env READY; `pytest -q` 409 passed. `make_plan --name pilot2 --seed 20261025 --counts 1=4 2=2 --machines B
+  --rounds 8` → `configs/plans/pilot2.json` (new). Dry run: 6 games, 848 calls, ≈ 116 min at speed 1.0.
+- `run_plan` in the background 10:45:52 → 12:02:01: **76.0 min, 6/6 games, 848 calls, 0 crashes, 0 restarts**.
+  6 records in `data/raw/pilot2/`, 0 partials. Minutes: Type 1 13.4/13.3/13.6/12.8, Type 2 10.6/12.3.
+  Verified in the cache that pilot-2 prompts end with the language line.
+- `pilot_report.py --rule v2 --amendment1 --out runs/pilot2` (merge_check OK; "amendment-1 gate" mode, seed
+  20261025). `scratch/pilot2_extras_t09b.py` (new). Non-blinded sheet `runs/pilot2/handcheck_uptake.csv` (96 cells).
+- **Amendment-1 gate:** (a) uptake v2 4/4 PASS; falsification 0/2 PASS; b1 4/4 PASS; b2 4/4 + 4/4 PASS; hand
+  agreement pending (lead). Rule v1 on the same data also 4/4.
+- Non-gating: non-English games 1/6 (one mixed channel message); **reveal rate 8/64 = 12.5% (> 10% flag)**; leak flags
+  0/0; **failures 20/848 = 2.36%**, all `truncated` at num_predict 200 (15 Stage 1, 5 Stage 3).
+- Dataset estimates computed in memory (same code as `make_plan`; no plan file written): A+B with B = 1.87 → A ≈ 314 min
+  (17 games), B ≈ 310 min (31 games); at pilot-2 real B minutes, B ≈ 384 min.
+
+### Errors and problems faced
+- New: 20 truncation failures (pilot 1: 0). Raw outputs are long reasonings that hit num_predict 200 and ignore the
+  ~30-word brevity cap. Cause unconfirmed (hypothesis: brevity is no longer the last instruction after the language line).
+
+### How each problem was solved
+- Not solved (failures are data; no mid-run change). Kept, imputed and excluded as pre-registered.
+  Frozen §8: > 1% allows one logged repair re-ask from then on (not implemented); < 5%, so the model is not unsuitable.
+
+### Decisions taken
+- **Decision by Amendment 1: GO pending the lead's pilot-2 hand agreement (≥ 80%).**
+- **Stopped before the dataset:** the frozen §5 reveal rule (> 10% → revise the secrecy wording before the full run and
+  re-pilot 2 Type 1 games) is not changed by the amendment and applies (12.5%).
+- Dataset commands printed in report 09b, not run.
+
+### Open questions for the team
+- Secrecy rewording (new dated variant) and the 2-game Type 1 re-pilot (≈ 27 min on B): wording?
+- Implement the frozen §8 repair re-ask for the dataset, and/or put the brevity line back in last position? (Each is a
+  dated variant.)
+- Pilot-2 hand-check: give raters explicit guidance that generic group talk without the partner = 0?
