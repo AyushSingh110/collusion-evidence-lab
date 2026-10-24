@@ -1,4 +1,4 @@
-# DRAFT — RQ0.1 pre-registration (Gate 1: does real collusion happen in Type 1 games?)
+# RQ0.1 pre-registration (frozen 2026-10-24) (Gate 1: does real collusion happen in Type 1 games?)
 
 
 Source: report 01 §7, with the decisions approved in task 02 applied (pilot 4/2/1/1, models, seeds) and the
