@@ -1431,3 +1431,68 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
   (That would be a new configuration.)
 - RQ2 "combining helps" is test-only (pooled +0.04). How strongly should the write-up state it?
 - The simple action signals match V4: present them as a Study 2.3 baseline?
+
+---
+
+## 2026-10-25 — [machine: B] Task 16 (part 1): Follow-up 1 pre-registration (pair-order position bias), written BEFORE any follow-up call
+
+### What was implemented or executed
+- Wrote `configs/prereg_followup1_pair_order.md` (LF sha256 `7766c939b3a376c469ec30c69ad4aad76526d405f745045bedbf6f12ceb5aea2`
+  at time of writing).
+  - Motivation: report 15 §4.6.
+  - Design: frozen configuration except a per-call pair permutation in the prompt example line and the schema order,
+    seeded by sha256(game_id|view|"followup1") via Python `random.Random(...).shuffle`.
+  - Data: 24 test games × V1–V4 = 96 calls, one run.
+  - H1 (last-position-max share drops in V1/V3), H2 (AUROC V1/V3 increases), H3 (V4 unchanged), each with explicit
+    supported / not supported / unclear rules.
+  - Threshold-free analysis only.
+- No model call, no code change. Ollama server NOT started yet (user asked it to run only when needed; Part 1 needs no
+  calls).
+
+### Errors and problems faced
+- None.
+
+### How each problem was solved
+- —
+
+### Decisions taken
+- The Ollama seed stays the frozen rule (sha256(game_id|view|0) mod 2^31), so the only intended difference from the
+  frozen run is the pair order.
+- The LPM no-bias expectation counts ties: mean of (pairs tied at max)/10. Reason: replies often tie at the top, so 1/10
+  would understate chance.
+- The template, manifest and code option are described exactly in the prereg but are created in Part 2, after the
+  commit (the task lists only the prereg for Part 1). Their hashes will be recorded in the DEVLOG before any call.
+
+### Open questions for the team
+- Whether to add a same-order re-run as a session-noise control. Not in this prereg (scope); the limitation is stated
+  in §6.
+- STOP: waiting for the lead's "committed".
+
+---
+
+## 2026-10-25 — [machine: B] Task 16 (part 1b): prereg revised before commit — same-session control arm (lead request)
+
+### What was implemented or executed
+- Edited the uncommitted `configs/prereg_followup1_pair_order.md` (a pre-registration edit, not a deviation; no call
+  made yet). New LF sha256 `0d6aaa412b3944196ba344afa24a66092222a38a6c99af766c298777e24da46e` (replaces the part-1 value 7766c939…).
+- Added a fixed-order control arm (frozen config, frozen order, new calls, sample_idx 1), interleaved call by call in
+  the same session; the cell order is fixed by random.Random(20261023) before running.
+- H1–H3 are now primary against the same-session control and secondary against test_p8.
+- New descriptive session effect: AUROC(control) − AUROC(frozen), MAD, Spearman.
+- 192 calls, est. ~67 min, pre-approved if ≤ 90 min. §6 updated.
+
+### Errors and problems faced
+- None.
+
+### How each problem was solved
+- —
+
+### Decisions taken
+- The random arm ALSO uses sample_idx 1 (my choice, flagged to the lead), so both primary arms share the Ollama seed
+  and differ only in the pair order. The alternative (random arm at sample_idx 0) would add a seed difference.
+  Report 13 §4 (samples 1 vs 2 identical, MAD 0) suggests the seed does not matter in-session.
+- A paired comparison uses the cells where both of its arms have a score; dropped cells are reported.
+- If primary and secondary verdicts disagree, both are reported and the primary verdict stands.
+
+### Open questions for the team
+- STOP: waiting for the lead's "committed".
