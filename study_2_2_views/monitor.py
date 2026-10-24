@@ -42,11 +42,13 @@ class MonitorConfig:
     format: str = "single"            # "single": one score + pair; "pairs": one score per pair
     pair_order: tuple[str, ...] = ()  # pairs format: fixed key order, e.g. ("J-M", "J-Q", ...)
     rationale_field: str = "rationale"
+    pairs_extras: bool = False        # v3_pairs: also validate the model's suspected_pair, store it and the margin
+    evidence_max_chars: Optional[int] = None
 
 
-# candidate prompts live side by side in configs/monitor/ (task 07); v1 stays the default
+# candidate prompts live side by side in configs/monitor/ (task 07, task 11); v1 stays the default
 PROMPTS = {"monitor_v1": "manifest.json", "monitor_v2_anchored": "manifest_v2_anchored.json",
-           "monitor_v2_pairs": "manifest_v2_pairs.json"}
+           "monitor_v2_pairs": "manifest_v2_pairs.json", "monitor_v3_pairs": "manifest_v3_pairs.json"}
 
 
 def load_config(directory: Path = MONITOR_DIR, manifest: str = "manifest.json") -> MonitorConfig:
@@ -63,7 +65,9 @@ def load_config(directory: Path = MONITOR_DIR, manifest: str = "manifest.json") 
         agents=tuple(man["agents"]), what_you_see=dict(man["what_you_see"]), view_prompt=dict(man["view_prompt"]),
         output_schema=man["output_schema"], manifest_sha256=sha256_of(man),
         format=man.get("format", "single"), pair_order=tuple(man.get("pair_order", ())),
-        rationale_field=man.get("rationale_field", "rationale"))
+        rationale_field=man.get("rationale_field", "rationale"), pairs_extras=bool(man.get("pairs_extras", False)),
+        evidence_max_chars=man["output_schema"]["properties"].get(man.get("rationale_field", "rationale"), {})
+        .get("maxLength"))
 
 
 def system_prompt(cfg: MonitorConfig, view: str) -> str:
@@ -100,6 +104,12 @@ def validate_output(parsed: Optional[dict], cfg: MonitorConfig) -> list[str]:
             bad = [k for k in cfg.pair_order if k in ps and _bad_score(ps[k])]
             if bad:
                 errs.append(f"pair_scores not integers in 0..100 for {bad}")
+        if cfg.pairs_extras:
+            p = parsed.get("suspected_pair")
+            if not isinstance(p, list) or len(p) not in (0, 2):
+                errs.append(f"suspected_pair {p!r} is not a list of 0 or 2 names")
+            elif len(p) == 2 and (p[0] == p[1] or any(x not in cfg.agents for x in p)):
+                errs.append(f"suspected_pair {p!r} must be two distinct names from {list(cfg.agents)}")
     else:
         s = parsed.get("score")
         if _bad_score(s):
@@ -109,8 +119,11 @@ def validate_output(parsed: Optional[dict], cfg: MonitorConfig) -> list[str]:
             errs.append(f"suspected_pair {p!r} is not a list of 0 or 2 names")
         elif len(p) == 2 and (p[0] == p[1] or any(x not in cfg.agents for x in p)):
             errs.append(f"suspected_pair {p!r} must be two distinct names from {list(cfg.agents)}")
-    if not isinstance(parsed.get(cfg.rationale_field), str):
+    ev = parsed.get(cfg.rationale_field)
+    if not isinstance(ev, str):
         errs.append(f"{cfg.rationale_field} is not a string")
+    elif cfg.evidence_max_chars is not None and len(ev) > cfg.evidence_max_chars:
+        errs.append(f"{cfg.rationale_field} longer than {cfg.evidence_max_chars} characters ({len(ev)})")
     return errs
 
 
@@ -119,6 +132,12 @@ def game_score_from_pairs(pair_scores: dict[str, int], pair_order: Sequence[str]
     top = max(pair_scores[k] for k in pair_order)
     winners = [k for k in pair_order if pair_scores[k] == top]
     return top, (winners[0].split("-") if len(winners) == 1 else [])
+
+
+def pair_margin(pair_scores: dict[str, int], pair_order: Sequence[str]) -> int:
+    """Max minus second-highest pair score (0 when the max is tied), for later tie analysis."""
+    vals = sorted((pair_scores[k] for k in pair_order), reverse=True)
+    return vals[0] - vals[1] if len(vals) > 1 else 0
 
 
 def _decode(parsed: dict, cfg: MonitorConfig) -> tuple[int, list[str]]:
@@ -160,6 +179,9 @@ def score_view(text: str, view: str, llm, cfg: MonitorConfig, *, game_id: str, s
     }
     if cfg.format == "pairs":
         line["pair_scores"] = ({k: res.parsed["pair_scores"][k] for k in cfg.pair_order} if parse_ok else None)
+        if cfg.pairs_extras:
+            line["margin"] = pair_margin(res.parsed["pair_scores"], cfg.pair_order) if parse_ok else None
+            line["model_suspected_pair"] = list(res.parsed.get("suspected_pair") or []) if parse_ok else None
     return line
 
 

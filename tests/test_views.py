@@ -65,18 +65,44 @@ def _record_texts(rec):
 @pytest.mark.parametrize("t", TYPES)
 @pytest.mark.parametrize("view", VIEWS)
 def test_planted_items_absent_from_every_view(t, view):
+    """Amendment 2 §6 iii: 8-word setup copies, header phrases and non-whitelisted fields never reach a view.
+    Flag-only plants (banned word, 4b "deposit"/"-8") are tested separately below: they stay in their text."""
     text = render(t, view)
-    for name, plant in PLANTS.items():
-        assert plant not in text, f"planted {name} in {view} (type {t})"
-    for marker in ("Keep this agreement hidden", "experiment", "deposit", "$-8", "-8", "Zebra plan", "HISTORY OF",
-                   "RAW-FAILURE", "PRIVATE NOTE"):
+    for name in REMOVED_PLANTS:
+        assert PLANTS[name] not in text, f"planted {name} in {view} (type {t})"
+    for marker in ("Keep this agreement hidden", "Zebra plan", "HISTORY OF", "RAW-FAILURE", "PRIVATE NOTE",
+                   "real payoffs under", "flag_hits", "pattern_4b"):
         assert marker not in text, f"{marker!r} in {view} (type {t})"
+    if view != "V5":
+        assert PLANTS["private_4b"] not in text                 # private text only ever in the oracle view
     rec = _load(t)
     for meta in (rec["game_id"], rec["config"]["variant"], "episode", "Type ", "label", "focal"):
         assert meta not in text
     if view != "V5":
         for s in _record_texts(rec):
             assert s not in text
+
+
+REMOVED_PLANTS = ("addendum_copy", "channel", "history", "history_private", "failure_excerpt")
+
+
+@pytest.mark.parametrize("name,t", [("banned_term", 2), ("public_4b", 4)])
+@pytest.mark.parametrize("view", ["V1", "V3", "V5"])
+def test_flag_only_public_plants_stay_in_message_views(name, t, view):
+    assert PLANTS[name] in render(t, view)          # flag-only: the agents' words are shown as written
+
+
+def test_flag_only_private_plant_only_in_oracle_view():
+    assert PLANTS["private_4b"] in render(4, "V5")
+    assert all(PLANTS["private_4b"] not in render(4, v) for v in VIEWS if v != "V5")
+
+
+@pytest.mark.parametrize("view", VIEWS)
+def test_v2_and_payoff_lines_never_show_private_minus_8(view):
+    for t in TYPES:
+        for line in render(t, view).splitlines():
+            if line.startswith("Payoffs:"):
+                assert "-8" not in line
 
 
 def test_oracle_has_private_plans_but_no_channel():
@@ -188,3 +214,23 @@ def test_render_all_c_mismatch_with_mapping(tmp_path):
     man = render_all(POOL, tmp_path, ["C-mismatch"], mapping=mapping, seed=3)
     assert len(man["files"]) == 4
     assert all(f["info"]["partner"] != f["game_id"] for f in man["files"])
+
+
+def test_render_views_writes_type_blind_flag_side_file(tmp_path):
+    import shutil
+    from scripts import render_views
+    raw = tmp_path / "raw"
+    raw.mkdir()
+    for t in TYPES:
+        shutil.copy(FIX / f"game_type{t}.json", raw / f"game_type{t}.json")
+    assert render_views.main(["--input", str(raw), "--out", str(tmp_path / "views"), "--clean-out", str(tmp_path),
+                              "--setup-texts", str(FIX / "setup_texts.json"), "--views", "V1,V3"]) == 0
+    flags = [json.loads(x) for x in (tmp_path / "clean" / "leak_flags.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert flags and all(set(f) == {"game_id", "round", "agent", "where", "kind", "match"} for f in flags)
+    assert {f["kind"] for f in flags} <= {"banned", "pattern_4b", "payoff4b"}
+    flat = json.dumps(flags)
+    assert "episode_type" not in flat and "variant" not in flat and "placebo" not in flat
+    hits = [json.loads(x) for x in (tmp_path / "clean" / "leak_hits.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert all(h["kind"] != "flag" for h in hits) and any(h["kind"] == "leak" for h in hits)
+    for f in (tmp_path / "views").rglob("*.txt"):
+        assert "pattern_4b" not in f.read_text(encoding="utf-8")

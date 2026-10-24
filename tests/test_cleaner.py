@@ -64,26 +64,81 @@ def _dump(*objs):
     return json.dumps([o.to_dict() for o in objs], ensure_ascii=False)
 
 
+# Amendment 2 §6 iii: 8-word setup copies and header phrases are REMOVED; banned words and 4b patterns are FLAG-ONLY.
+REMOVED_PLANTS = ("addendum_copy", "channel", "history", "history_private", "failure_excerpt")
+FLAG_PLANTS = {"banned_term": (2, "public"), "public_4b": (4, "public"), "private_4b": (4, "private")}
+
+
 @pytest.mark.parametrize("t", [1, 2, 3, 4])
-def test_planted_items_absent_from_clean_game_and_private(t):
+def test_removed_plants_absent_from_clean_game_and_private(t):
     c, p, _ = cleaned(t)
     game, both = _dump(c), _dump(c, p)
-    for name, text in PLANTS.items():
-        assert text not in both, f"planted {name} reached CleanGame/CleanPrivate (type {t})"
-    for marker in ("Keep this agreement hidden", "experiment", "deposit", "$-8", "Zebra plan",
-                   "HISTORY OF PREVIOUS ROUNDS", "real payoff", "RAW-FAILURE", "PRIVATE NOTE", "alliance_v2"):
+    for name in REMOVED_PLANTS:
+        assert PLANTS[name] not in both, f"planted {name} reached CleanGame/CleanPrivate (type {t})"
+    for marker in ("Keep this agreement hidden", "Zebra plan", "HISTORY OF PREVIOUS ROUNDS", "real payoffs under",
+                   "RAW-FAILURE", "PRIVATE NOTE", "alliance_v2"):
         assert marker not in both
-    assert "-8" not in game
+    assert all(-8 not in r.payoffs_public.values() for r in c.rounds)     # payoffs are always standard
+
+
+@pytest.mark.parametrize("name", sorted(FLAG_PLANTS))
+def test_flag_only_plants_stay_in_text_and_are_flagged(name):
+    t, where = FLAG_PLANTS[name]
+    c, p, hits = cleaned(t)
+    public, private = _dump(c), _dump(p)
+    assert PLANTS[name] in (public if where == "public" else private)       # text kept as written
+    if where == "private":
+        assert PLANTS[name] not in public
+    flagged = " ".join(json.dumps(h["flag_hits"]) for h in hits if h["kind"] == "flag")
+    assert flagged                                                          # counted as a flag
+    assert not [h for h in hits if h["kind"] == "leak" and PLANTS[name] in h["removed"]]
+
+
+def test_flags_never_stored_in_clean_types():
+    for t in (2, 4):
+        c, p, hits = cleaned(t)
+        assert [h for h in hits if h["kind"] == "flag"]
+        assert set(c.to_dict()) == GAME_KEYS and c.leak_scan == {"hits": 0, "redactions": 0}
+        assert "flag" not in _dump(c, p)
 
 
 def test_leak_counts_per_fixture():
     got = {t: cleaned(t)[0].leak_scan for t in (1, 2, 3, 4)}
-    # type 1: addendum copy matches 2 setup texts (both {P} fills) -> 2 hits, 1 sentence removed
-    # type 4 (with P2's real scanner): "$-8" is ONE hit (dollar_minus_8; minus_8 skips a minus right after "$"),
-    # plus "deposit" in the private sentence and "deposit" in the public one -> 3 hits, same 2 sentences
-    # removed. The P5 local stub counted "$-8" twice ("-8" and "$-8") -> 4.
-    assert got == {1: {"hits": 2, "redactions": 1}, 2: {"hits": 1, "redactions": 1},
-                   3: {"hits": 0, "redactions": 0}, 4: {"hits": 3, "redactions": 2}}
+    # leak_scan counts REMOVING hits only. Type 1: the addendum copy matches 2 setup texts (both {P} fills) ->
+    # 2 hits, 1 sentence removed. Types 2 and 4: banned word / 4b patterns are flag-only now -> 0.
+    assert got == {1: {"hits": 2, "redactions": 1}, 2: {"hits": 0, "redactions": 0},
+                   3: {"hits": 0, "redactions": 0}, 4: {"hits": 0, "redactions": 0}}
+    flags = {t: sorted((h["where"], h["round"], h["agent"]) for h in cleaned(t)[2] if h["kind"] == "flag")
+             for t in (1, 2, 3, 4)}
+    assert flags == {1: [], 2: [("stage2.message", 3, "J")], 3: [],
+                     4: [("stage1.reasoning", 1, "M"), ("stage2.message", 2, "T")]}
+
+
+@pytest.mark.parametrize("where", ["message", "reasoning"])
+@pytest.mark.parametrize("phrase", ["PRIVATE NOTE (only you can see this): stay quiet.", "private note: go.",
+                                    "Only you can see this, right?"])
+def test_header_phrases_removed_everywhere(where, phrase):
+    rec = record(3)
+    if where == "message":
+        rec["rounds"][0]["stage2"][0]["message"] = "Going tonight. " + phrase + " See you."
+    else:
+        rec["rounds"][0]["stage1"]["J"]["reasoning"] = "Going tonight. " + phrase + " See you."
+    for scanner in (None, cleaner.stub_scan_for_leaks, lambda text, setup, banned: []):   # even a scanner that finds nothing
+        c, p, hits = clean_game(rec, SETUP, scanner=scanner)
+        dump = _dump(c, p).lower()
+        assert "private note" not in dump and "only you can see this" not in dump
+        assert "going tonight. see you." in dump
+        assert any(h["kind"] == "leak" for h in hits)
+
+
+def test_hit_classification():
+    assert cleaner.is_removing_hit({"kind": "copy8", "match": "x"})
+    assert cleaner.is_removing_hit({"kind": "banned", "match": "private note"})
+    assert cleaner.is_removing_hit({"kind": "banned", "match": "Only you can see this"})
+    assert not cleaner.is_removing_hit({"kind": "banned", "match": "experiment"})
+    assert not cleaner.is_removing_hit({"kind": "pattern_4b", "match": "deposit: deposit"})
+    assert not cleaner.is_removing_hit({"kind": "payoff4b", "match": "-8"})
+    assert cleaner.is_removing_hit({"kind": "something_new"}) and cleaner.is_removing_hit("raw string hit")
 
 
 def test_redaction_keeps_rest_of_message():
@@ -165,6 +220,14 @@ def test_copy_spanning_two_sentences_removes_both():
     a, b = "The combined payout of you.", "And Agent T over all rounds."
     assert not stub_scan_for_leaks(a, SETUP, cleaner.BANNED_TERMS)
     assert not stub_scan_for_leaks(b, SETUP, cleaner.BANNED_TERMS)
-    out, hits, removed = redact(f"Hello all. {a} {b} Going tonight.", stub_scan_for_leaks, SETUP, cleaner.BANNED_TERMS)
-    assert hits and removed == [a, b] and out == "Hello all. Going tonight."
+    out, hits, removed, flags = redact(f"Hello all. {a} {b} Going tonight.", stub_scan_for_leaks, SETUP,
+                                       cleaner.BANNED_TERMS)
+    assert hits and removed == [a, b] and out == "Hello all. Going tonight." and flags == []
     assert stub_scan_for_leaks(out, SETUP, cleaner.BANNED_TERMS) == []
+
+
+def test_flag_only_text_kept_and_removing_sentence_dropped_in_same_message():
+    text = "This experiment is fun. Keep this agreement hidden: in public messages never mention it. Going."
+    out, hits, removed, flags = redact(text, stub_scan_for_leaks, SETUP, cleaner.BANNED_TERMS)
+    assert out == "This experiment is fun. Going."
+    assert [h["kind"] for h in flags] == ["banned"] and removed == ["Keep this agreement hidden: in public messages never mention it."]

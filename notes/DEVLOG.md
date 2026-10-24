@@ -1030,3 +1030,45 @@ change this rule. The lead chose the wording (short "speak for yourself" option)
 - Machine A: checklist (pull after the commits, env update, Ollama 0.40.3 with auto-update off, check_env, machine
   letter, selftest TEAM CHAT line).
 - Cleaner flag-only change: implement and test before any view is rendered (Amendment 2 §6 iii).
+
+---
+
+## 2026-10-24 — [machine: B] Task 11: analysis tools while the dataset generates (no model calls)
+
+### What was implemented or executed
+- Flag-only cleaner (Amendment 2 §6 iii) in `core/clean/cleaner.py`: removes only ≥ 8-word setup copies and the header
+  phrases (own regex); banned words and 4b patterns become `kind: "flag"` hits (text kept, never in CleanGame /
+  CleanPrivate). `scripts/render_views.py` writes the type-blind `data/clean/leak_flags.jsonl`.
+- `monitor_v3_pairs` (template + manifest; pair_scores first, then suspected_pair, then evidence with maxLength 300;
+  num_predict 250). `monitor.py`: `pairs_extras` (margin, model_suspected_pair) + evidence-length check. No live run.
+- `core/stats/metrics.py` (AUROC, thresholds, stratified / paired bootstrap, FPR per type + rule of three, Spearman,
+  MAD, Kendall tau-b, top-1 pair accuracy).
+- `core/evidence/signals.py` (Study 2.3 signals on CleanGame data; reuses rq01; D_switch, phi-based D_react, C_kw,
+  G_honest / Harm with a dev-Type-2 baseline, Dep, pair and game tables).
+- `study_2_2_views/analysis.py` + `scripts/analyse_22.py` (RQ1–RQ8; test mode refuses without a matching frozen sha256
+  and monitor prompt version).
+- Tests: +71 (cleaner, views, monitor updated; stats, signals, analysis22 new). Full suite once at the end: **483 passed**.
+- No model calls. 0 changes to generator-read files (git status check). No access to data/raw/dataset, labels, split
+  or cache.
+
+### Errors and problems faced
+- `test_dev_then_test_end_to_end` first failed: I expected the best LLM view to be V4/V5, but synthetic V3 was also
+  perfectly separated on dev (tie at AUROC 1.0 → the earlier view, V3). Test expectation wrong, code right.
+- My alternation test showed that pure alternation gives capture = 0, contradicting the wording of Amendment 2 §6 ii
+  ("shows up in capture and G_others").
+
+### How each problem was solved
+- The test now asserts the tie rule itself (the earliest view with the maximum dev AUROC).
+- Signals docstring and test corrected: alternation shows mainly in G_others; capture only reflects joint rounds.
+  The committed amendment was not edited (lead's call).
+
+### Decisions taken
+- Unknown scanner hit kinds count as removing (conservative). C_kw = sum of both directions' shares (literal report 00
+  wording), with whole-word lexicon matches. Tie rules: best single view → V1; best LLM view → earlier view. Threshold
+  candidates = observed dev scores. No golden file needed changing.
+
+### Open questions for the team
+- Correct Amendment 2 §6 ii's explanation (capture vs alternation) with a dated note?
+- C_kw scale (sum vs mean of directions; inflected lexicon forms)?
+- Tie rules for the dev view choices (not pre-registered).
+- `scratch/overremoval_check.py` uses the old `redact` signature (historical script, left unchanged).

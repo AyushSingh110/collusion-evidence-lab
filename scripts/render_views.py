@@ -4,7 +4,8 @@ Run from the repo root:
   conda run -n collusion-lab python scripts/render_views.py --input data/raw --views V1,V2,V3,V4 \
       [--setup-texts setup_texts.json] [--labels data/labels.csv --split data/split.json] [--dry-run]
 
-Writes data/clean/<game_id>.json, data/clean_private/<game_id>.json, data/clean/leak_hits.jsonl and
+Writes data/clean/<game_id>.json, data/clean_private/<game_id>.json, data/clean/leak_hits.jsonl (removals),
+data/clean/leak_flags.jsonl (flag-only hits, type-blind) and
 data/views/<view>/<game_id>.txt + data/views/manifest.json. C-mismatch needs --labels and --split
 (type and split of every game); without them it is skipped and listed in the manifest.
 """
@@ -14,6 +15,7 @@ import argparse
 import csv
 import json
 import sys
+from collections import Counter
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -21,6 +23,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from core.clean.cleaner import clean_game, resolve_scanner  # noqa: E402
 from core.config import REPO_ROOT, atomic_write_text, canonical_json, load_json  # noqa: E402
 from study_2_2_views.views import VIEWS, render_all  # noqa: E402
+
+
+def flag_rows(game_id: str, hits: list[dict]) -> list[dict]:
+    """Flag-only scanner hits as type-blind rows (opaque game id, round, agent, field, kind, match)."""
+    return [{"game_id": game_id, "round": h["round"], "agent": h["agent"], "where": h["where"],
+             "kind": fh.get("kind", "unknown") if isinstance(fh, dict) else "unknown",
+             "match": fh.get("match", "") if isinstance(fh, dict) else str(fh)}
+            for h in hits if h["kind"] == "flag" for fh in h["flag_hits"]]
 
 
 def load_mapping(labels_csv: Path, split_json: Path) -> dict[str, tuple]:
@@ -62,7 +72,8 @@ def main(argv=None) -> int:
 
     cleans, privates, n_hits = [], {}, 0
     hits_path = a.clean_out / "clean" / "leak_hits.jsonl"
-    hit_lines = []
+    flags_path = a.clean_out / "clean" / "leak_flags.jsonl"
+    hit_lines, flag_lines = [], []
     for p in files:
         rec = json.loads(p.read_text(encoding="utf-8"))
         c, priv, hits = clean_game(rec, setup)
@@ -70,12 +81,17 @@ def main(argv=None) -> int:
         privates[c.game_id] = priv
         atomic_write_text(a.clean_out / "clean" / f"{c.game_id}.json", canonical_json(c.to_dict()))
         atomic_write_text(a.clean_out / "clean_private" / f"{c.game_id}.json", canonical_json(priv.to_dict()))
-        hit_lines += [json.dumps({"game_id": c.game_id, **h}, sort_keys=True, ensure_ascii=False) for h in hits]
+        hit_lines += [json.dumps({"game_id": c.game_id, **h}, sort_keys=True, ensure_ascii=False)
+                      for h in hits if h["kind"] != "flag"]
+        flag_lines += flag_rows(c.game_id, hits)
         n_hits += c.leak_scan["hits"]
     atomic_write_text(hits_path, "".join(x + "\n" for x in hit_lines))
+    atomic_write_text(flags_path, "".join(json.dumps(r, sort_keys=True, ensure_ascii=False) + "\n" for r in flag_lines))
+    by_kind = Counter(r["kind"] for r in flag_lines)
     man = render_all(cleans, a.out, views, privates=privates, mapping=mapping, seed=a.seed)
-    print(f"cleaned {len(cleans)} games ({n_hits} leak hits, log: {hits_path}); wrote {len(man['files'])} view files, "
-          f"skipped {len(man['skipped'])}; manifest: {a.out / 'manifest.json'}")
+    print(f"cleaned {len(cleans)} games ({n_hits} removing hits, log: {hits_path}; {len(flag_lines)} flag-only hits "
+          f"{dict(by_kind)}, log: {flags_path}); wrote {len(man['files'])} view files, skipped {len(man['skipped'])}; "
+          f"manifest: {a.out / 'manifest.json'}")
     return 0
 
 

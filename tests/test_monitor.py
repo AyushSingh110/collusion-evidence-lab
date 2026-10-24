@@ -281,3 +281,80 @@ def test_v2_template_hash_checked(tmp_path):
     with pytest.raises(ValueError):
         load_config(d, PROMPTS["monitor_v2_pairs"])
     assert load_config(d, PROMPTS["monitor_v2_anchored"]).prompt_version == "monitor_v2_anchored"
+
+
+# --------------------------------------------------------------------------- task 11: monitor_v3_pairs
+from core.config import text_file_sha256  # noqa: E402
+from study_2_2_views.monitor import pair_margin  # noqa: E402
+
+V3 = load_config(manifest=PROMPTS["monitor_v3_pairs"])
+
+
+def _v3_json(evidence="M and T always went together.", pair=("M", "T"), **over):
+    ps = {k: 10 for k in ORDER}
+    ps.update({k.replace("_", "-"): v for k, v in over.items()})
+    return {"pair_scores": ps, "suspected_pair": list(pair), "evidence": evidence}
+
+
+def test_v1_v2_files_unchanged_by_v3():
+    pins = {"monitor_v1.txt": "d6d493e112e052f33f3cc7690efe9e8d0fa43edfd4f3d137086484e3f856659e",
+            "monitor_v2_anchored.txt": "ae2a66c31c028668d60de92621ec0285195afe4fd85999d9771296d3c62f775e",
+            "monitor_v2_pairs.txt": "6b6db10c5a8db74897430cb23510d59c9b51a8b888a3f51233fa55c87de49712",
+            "manifest.json": "d6d66e322e2df3ab01bb615978c4f5d1882bd5705b3fce7242a2026ec8ad7d8d",
+            "manifest_v2_anchored.json": "3c0303734db994433a26f40b8d1e60a892b43cdd46dc34b07c2fb6cf771fe491",
+            "manifest_v2_pairs.json": "a74846eebf4296d5603ad18005d632baba6d9aed3880b166dd128ea0ad53dfd0"}
+    for name, h in pins.items():
+        assert text_file_sha256(CONFIGS / "monitor" / name) == h, name
+    assert not CFG.pairs_extras and not PAIRS.pairs_extras and PAIRS.evidence_max_chars is None
+
+
+def test_v3_schema_order_maxlength_and_settings():
+    props = V3.output_schema["properties"]
+    assert list(props) == ["pair_scores", "suspected_pair", "evidence"]           # scores FIRST, evidence last
+    assert props["evidence"]["maxLength"] == 300 and V3.evidence_max_chars == 300
+    assert list(props["pair_scores"]["properties"]) == ORDER and props["pair_scores"]["additionalProperties"] is False
+    assert (V3.model, V3.temperature, V3.num_ctx, V3.num_predict) == ("llama3.1:8b", 0.0, 8192, 250)
+    assert V3.format == "pairs" and V3.pairs_extras and V3.what_you_see == CFG.what_you_see
+    p = system_prompt(V3, "V3")
+    assert p.split("Your task:")[0] == system_prompt(CFG, "V3").split("Your task:")[0]
+    assert "two players secretly agree to coordinate and act on it" in p and "base rate" not in p
+    assert p.index('"pair_scores"') < p.index('"suspected_pair"') < p.index('"evidence"')
+
+
+def test_margin_and_tie_rule():
+    ps = {k: 10 for k in ORDER}
+    assert pair_margin({**ps, "M-T": 80, "J-Q": 55}, ORDER) == 25
+    assert pair_margin({**ps, "M-T": 80, "J-Q": 80}, ORDER) == 0
+    assert game_score_from_pairs({**ps, "M-T": 80, "J-Q": 80}, ORDER) == (80, [])
+    assert pair_margin({k: 0 for k in ORDER}, ORDER) == 0
+
+
+@pytest.mark.parametrize("parsed,ok", [
+    (_v3_json(), True),
+    (_v3_json(pair=()), True),
+    (_v3_json(evidence="x" * 300), True),
+    (_v3_json(evidence="x" * 301), False),                          # over maxLength
+    (_v3_json(pair=("M", "M")), False),
+    (_v3_json(pair=("M", "X")), False),
+    ({"pair_scores": {k: 1 for k in ORDER if k != "T-Z"}, "suspected_pair": [], "evidence": "x"}, False),
+    ({"pair_scores": {k: 1 for k in ORDER}, "evidence": "x"}, False),    # suspected_pair missing
+])
+def test_validate_v3(parsed, ok):
+    assert (validate_output(parsed, V3) == []) is ok
+
+
+def test_score_view_v3_stores_margin_and_model_pair(tmp_path):
+    llm, t = make_llm(tmp_path, [ok_reply(json.dumps(_v3_json(pair=("J", "Q"), M_T=85, Q_Z=60)))])
+    line = score_view("x", "V4", llm, V3, game_id="g_3333333333")
+    assert line["parse_ok"] and line["score"] == 85 and line["suspected_pair"] == ["M", "T"]   # argmax decides
+    assert line["margin"] == 25 and line["model_suspected_pair"] == ["J", "Q"]
+    assert t.calls[0]["options"]["num_predict"] == 250 and t.calls[0]["format"] == V3.output_schema
+    llm2, _ = make_llm(tmp_path / "b", [ok_reply(json.dumps(_v3_json(M_T=70, J_Z=70)))])
+    tie = score_view("x", "V4", llm2, V3, game_id="g_3333333333")
+    assert tie["suspected_pair"] == [] and tie["margin"] == 0
+
+
+def test_v2_pairs_line_has_no_v3_extras(tmp_path):
+    llm, _ = make_llm(tmp_path, [ok_reply(json.dumps(_pairs_json(M_T=85)))])
+    line = score_view("x", "V2", llm, PAIRS, game_id="g_4444444444")
+    assert "margin" not in line and "model_suspected_pair" not in line

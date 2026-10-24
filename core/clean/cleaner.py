@@ -88,31 +88,62 @@ def resolve_scanner(scanner: Optional[Scanner] = None) -> tuple[Scanner, str]:
 
 _SENT_SPLIT = re.compile(r"(?<=[.!?])\s+|\n+")
 
+# Amendment 2 §6 iii: only these are REMOVED. Every other scanner hit is flag-only (text kept, hit counted
+# type-blind in a side file, never in any field a view renders).
+HEADER_PHRASES = ("private note", "only you can see this")
+HEADER_RE = re.compile(r"private\s+note|only\s+you\s+can\s+see\s+this", re.I)
+FLAG_ONLY_KINDS = ("banned", "pattern_4b", "payoff4b")     # P2 scanner + local stub kind names
+
+
+def _hit_kind(h: Any) -> Optional[str]:
+    return h.get("kind") if isinstance(h, dict) else None
+
+
+def is_removing_hit(h: Any) -> bool:
+    """8-word setup copies and the header phrases remove; banned words and 4b patterns are flag-only.
+
+    A hit without a known kind is treated as removing (conservative: an unknown scanner must not let text through).
+    """
+    kind = _hit_kind(h)
+    if kind == "banned":
+        return str(h.get("match", "")).strip().lower() in HEADER_PHRASES
+    return kind not in FLAG_ONLY_KINDS
+
+
+def _removing(text: str, scan: Scanner, setup_texts: Sequence[str], banned_terms: Sequence[str]) -> list:
+    hits = [h for h in (scan(text, setup_texts, banned_terms) or []) if is_removing_hit(h)]
+    m = HEADER_RE.search(text)
+    if m and not any(_hit_kind(h) == "banned" for h in hits):
+        hits.append({"kind": "header", "match": m.group(0)})
+    return hits
+
 
 def redact(text: Optional[str], scan: Scanner, setup_texts: Sequence[str],
-           banned_terms: Sequence[str]) -> tuple[str, list, list[str]]:
-    """Remove every sentence that carries a leak. Returns (clean_text, scanner_hits, removed_sentences).
+           banned_terms: Sequence[str]) -> tuple[str, list, list[str], list]:
+    """Remove only sentences with an 8-word setup copy or a header phrase; flag everything else.
 
-    Works with any hit format: only the truthiness of the scanner's result is used. A copy that spans
-    two sentences removes both; if hits remain after that, the whole text is removed.
+    Returns (clean_text, removing_hits, removed_sentences, flag_hits). A copy that spans two sentences removes
+    both; if removing hits remain after that, the whole text is removed. Flag hits never change the text.
     """
     text = text or ""
-    hits = list(scan(text, setup_texts, banned_terms) or [])
+    all_hits = list(scan(text, setup_texts, banned_terms) or [])
+    flags = [h for h in all_hits if not is_removing_hit(h)]
+    hits = _removing(text, scan, setup_texts, banned_terms)
     if not hits:
-        return text, [], []
+        return text, [], [], flags
     sents = [s for s in _SENT_SPLIT.split(text) if s.strip()]
-    drop = [bool(scan(s, setup_texts, banned_terms)) for s in sents]
+    drop = [bool(_removing(s, scan, setup_texts, banned_terms)) for s in sents]
 
     def rest() -> str:
         return " ".join(s for s, d in zip(sents, drop) if not d)
 
-    if scan(rest(), setup_texts, banned_terms):
+    if _removing(rest(), scan, setup_texts, banned_terms):
         for i in range(len(sents) - 1):
-            if scan(sents[i] + " " + sents[i + 1], setup_texts, banned_terms):
+            if _removing(sents[i] + " " + sents[i + 1], scan, setup_texts, banned_terms):
                 drop[i] = drop[i + 1] = True
-    if scan(rest(), setup_texts, banned_terms):
+    if _removing(rest(), scan, setup_texts, banned_terms):
         drop = [True] * len(sents)
-    return rest(), hits, [s for s, d in zip(sents, drop) if d]
+    return rest(), hits, [s for s, d in zip(sents, drop) if d], flags
 
 
 # --------------------------------------------------------------------------- payoffs
@@ -143,9 +174,10 @@ def clean_game(record: dict[str, Any], setup_texts: Sequence[str] = (), scanner:
                banned_terms: Sequence[str] = BANNED_TERMS) -> tuple[CleanGame, CleanPrivate, list[dict]]:
     """Build CleanGame + CleanPrivate from a GameRecord dict.
 
-    Returns (clean, private, hits). `hits` entries have kind "leak" (with where/round/agent, the
-    scanner hits and the removed sentences) or "payoff_mismatch" (record payoffs_public differ from
-    the standard rules). Unknown record fields are ignored.
+    Returns (clean, private, hits). `hits` entries have kind "leak" (removal: where/round/agent, the
+    removing scanner hits and the removed sentences), "flag" (flag-only hits: where/round/agent and the hits;
+    the text is kept) or "payoff_mismatch" (record payoffs_public differ from the standard rules).
+    Flags are never stored in CleanGame or CleanPrivate. Unknown record fields are ignored.
     """
     scan, _ = resolve_scanner(scanner)
     cfg = record.get("config") or {}
@@ -157,12 +189,14 @@ def clean_game(record: dict[str, Any], setup_texts: Sequence[str] = (), scanner:
 
     def scrub(text, where, t, a):
         nonlocal n_hits, n_red
-        out, h, removed = redact(text, scan, setup_texts, banned_terms)
+        out, h, removed, flags = redact(text, scan, setup_texts, banned_terms)
         if h:
             n_hits += len(h)
             n_red += len(removed)
             hits.append({"kind": "leak", "where": where, "round": t, "agent": a, "scanner_hits": h,
                          "removed": removed})
+        if flags:
+            hits.append({"kind": "flag", "where": where, "round": t, "agent": a, "flag_hits": flags})
         return out
 
     c_rounds, p_rounds = [], []
