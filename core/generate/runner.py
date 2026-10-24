@@ -71,14 +71,14 @@ def build_config(entry: PlanEntry, run_defaults: Mapping[str, Any], digest: str)
         brevity=bool(run_defaults.get("brevity", False)),
         language_line=bool(run_defaults.get("language_line", False)),
         private_payoff_overrides={a: {"home": PRIVATE_HOME_4B} for a in focal} if t == 4 else {},
-        addenda={a: P.ADDENDUM_FILES[t] for a in focal},
+        addenda={a: P.addendum_file(t, entry.variant) for a in focal},
         private_channel={"enabled": t == 1, "members": focal if t == 1 else [], "exchanges": ["A", "B"] if t == 1 else []},
         announce_orders=[round_order(entry.game_seed, r) for r in range(1, entry.n_rounds + 1)],
     )
 
 
 def _prompt_files_used(cfg: GameConfig) -> list[str]:
-    files = ["history_format.md", P.ADDENDUM_FILES[cfg.episode_type]]
+    files = ["history_format.md", P.addendum_file(cfg.episode_type, cfg.variant)]
     if cfg.brevity:
         files.append("brevity_v1.txt")
     if cfg.language_line:
@@ -101,7 +101,7 @@ def run_game(entry: PlanEntry, llm, *, run_defaults: Mapping[str, Any], raw_dir:
     cfg = build_config(entry, run_defaults, llm.digests[MODEL])
     focal, t = cfg.focal_pair, cfg.episode_type
     partner = {focal[0]: focal[1], focal[1]: focal[0]}
-    addendum = {a: P.addendum_text(t, partner[a]) for a in focal}
+    addendum = {a: P.addendum_text(t, partner[a], cfg.variant) for a in focal}
     brevity = P.read_prompt("brevity_v1.txt") if cfg.brevity else None
     language = P.read_prompt("language_v1.txt") if cfg.language_line else None
     npred = cfg.num_predict

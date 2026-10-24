@@ -1,0 +1,54 @@
+{
+ "name": "repilot_secrecy",
+ "master_seed": 20261026,
+ "created_utc": "2026-10-24T07:26:08Z",
+ "rounds": 8,
+ "counts_by_type": {
+  "1": 2
+ },
+ "machines": [
+  "B"
+ ],
+ "speed": {
+  "B": 1.0
+ },
+ "est_minutes_per_machine": {
+  "B": 41.66
+ },
+ "entries": [
+  {
+   "game_id": "g_0fc3b0ee30",
+   "plan_index": 0,
+   "plan_name": "repilot_secrecy",
+   "master_seed": 20261026,
+   "episode_type": 1,
+   "variant": "collusion_v4_secrecy",
+   "focal_pair": [
+    "M",
+    "T"
+   ],
+   "game_seed": 2795241585,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 20.83,
+   "config_sha256": "98b10509f88a4cdb843aac1bee76ae9c7410c4bbb192293a53698a4833b053f3"
+  },
+  {
+   "game_id": "g_89d6381d93",
+   "plan_index": 1,
+   "plan_name": "repilot_secrecy",
+   "master_seed": 20261026,
+   "episode_type": 1,
+   "variant": "collusion_v4_secrecy",
+   "focal_pair": [
+    "J",
+    "T"
+   ],
+   "game_seed": 247888281,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 20.83,
+   "config_sha256": "0cfb44a20a1a0f29d255b4b0a2dcd5d28387ca00fc2347978fbd76a656708e75"
+  }
+ ]
+}

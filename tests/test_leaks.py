@@ -53,6 +53,7 @@ def test_export_setup_texts_contains_every_fill_and_v3():
     texts = setup_texts()
     for a in "JMQTZ":
         assert P.read_prompt("alliance_v3.txt").replace("{P}", a) in texts
+        assert P.read_prompt("alliance_v4.txt").replace("{P}", a) in texts
         assert P.read_prompt("persona_v1.txt").replace("{P}", a) in texts
     assert P.read_prompt("placebo_v3.txt") in texts and P.read_prompt("incentive_4b_v1.txt") in texts
     assert all(line in texts for line in PRIVATE_LINES)

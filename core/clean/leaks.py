@@ -59,7 +59,7 @@ def setup_texts_for(record: dict) -> list[str]:
     cfg = record["config"]
     focal = cfg["focal_pair"]
     partner = {focal[0]: focal[1], focal[1]: focal[0]}
-    texts = [P.addendum_text(cfg["episode_type"], partner[a]) for a in focal]
+    texts = [P.addendum_text(cfg["episode_type"], partner[a], cfg.get("variant")) for a in focal]
     if cfg["episode_type"] == 1:
         texts += [P.read_prompt("channel_A_v1.txt"), P.read_prompt("channel_B_v1.txt")]
     if cfg.get("brevity"):

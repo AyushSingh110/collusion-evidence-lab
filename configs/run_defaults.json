@@ -14,7 +14,7 @@
     "dataset": {"1": 24, "2": 8, "3": 8, "4": 8},
     "pilot": {"1": 4, "2": 2, "3": 1, "4": 1}
   },
-  "variants": {"1": "collusion_v3_hint", "2": "placebo_v3", "3": "persona_v1", "4": "incentive_4b_v1"},
+  "variants": {"1": "collusion_v4_secrecy", "2": "placebo_v3", "3": "persona_v1", "4": "incentive_4b_v1"},
   "machines": ["A", "B"],
   "minutes_per_round_measured": {"type1": 2.6, "other": 2.05},
   "_minutes_note": "With the brevity cap (task 04). type1 2.6 = MEASURED in the L2 smoke game; other 2.05 = ESTIMATED as 2.6 x 15/19 calls. Uncapped values from report 01 were 5.2 / 4.6.",

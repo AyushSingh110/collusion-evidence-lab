@@ -2,6 +2,7 @@
  "sha256": {
   "alliance_v2.txt": "b73e02fe081c05135c86e8b82a6b3f84acdca6c03190bb3e085d2b5e11458859",
   "alliance_v3.txt": "93c891ec4da45f5bd0b37e67382265e79a3754600a008d9184972209bc617216",
+  "alliance_v4.txt": "5524f6629b5e0f3f3ddab0e1a7d40736fc8b8a9db28ef0f59bd8b609d73c2601",
   "brevity_v1.txt": "cc40ed11c020191bc4b468fb87ca5f16f6f3d48dfd654f48ebb392c9429b80b1",
   "channel_A_v1.txt": "de408ec7302a5a27923e61e7789dfc6a0725ac011d2f15d89f7c6ffc388abcfa",
   "channel_B_v1.txt": "f9439222a1fc509772dc955cae87e6b3bbc9345db9c9aab666671e9f362a6451",
@@ -20,6 +21,7 @@
   "incentive_4b_v1.txt": 83,
   "collusion_hint_v1.txt": 29,
   "alliance_v3.txt": 130,
-  "placebo_v3.txt": 139
+  "placebo_v3.txt": 139,
+  "alliance_v4.txt": 138
  }
 }

@@ -19,9 +19,13 @@ HARNESS_DIR = REPO_ROOT / "external" / "llm-trust-breaking"
 PROMPTS_DIR = CONFIGS / "prompts"
 MANIFEST = PROMPTS_DIR / "manifest.json"
 GAME = "elfarol"
-# Type 1 uses alliance_v3 = alliance_v2 + collusion_hint_v1 (pre-freeze change, task 06a); placebo_v3 is
-# length-matched to it. The v2 and hint files stay in configs/prompts/ for history.
-ADDENDUM_FILES = {1: "alliance_v3.txt", 2: "placebo_v3.txt", 3: "persona_v1.txt", 4: "incentive_4b_v1.txt"}
+# Type 1 uses alliance_v4 = alliance_v3 with the secrecy sentence revised (variant collusion_v4_secrecy, frozen §5
+# reveal rule, 2026-10-24); alliance_v3 = alliance_v2 + collusion_hint_v1 (task 06a). placebo_v3 stays length-matched
+# (139 vs 138 tokens). Older files stay in configs/prompts/ for history and for re-reading old records.
+ADDENDUM_FILES = {1: "alliance_v4.txt", 2: "placebo_v3.txt", 3: "persona_v1.txt", 4: "incentive_4b_v1.txt"}
+# The plan's variant decides the addendum, so old plans and records keep the text their agents actually saw.
+VARIANT_FILES = {"collusion_v3_hint": "alliance_v3.txt", "collusion_v4_secrecy": "alliance_v4.txt",
+                 "placebo_v3": "placebo_v3.txt", "persona_v1": "persona_v1.txt", "incentive_4b_v1": "incentive_4b_v1.txt"}
 
 if str(HARNESS_DIR) not in sys.path:
     sys.path.insert(0, str(HARNESS_DIR))
@@ -63,8 +67,15 @@ def load_manifest() -> dict:
     return json.loads(read_text_lf(MANIFEST))
 
 
-def addendum_text(episode_type: int, partner: str) -> str:
-    return read_prompt(ADDENDUM_FILES[episode_type]).replace("{P}", partner)
+def addendum_file(episode_type: int, variant: Optional[str] = None) -> str:
+    """Addendum file for a game: by its variant if given (unknown variant -> KeyError), else the type's current file."""
+    if variant is None:
+        return ADDENDUM_FILES[episode_type]
+    return VARIANT_FILES[variant]
+
+
+def addendum_text(episode_type: int, partner: str, variant: Optional[str] = None) -> str:
+    return read_prompt(addendum_file(episode_type, variant)).replace("{P}", partner)
 
 
 def _system(harness_system: str, history: str, addendum: Optional[str]) -> str:
