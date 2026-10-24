@@ -18,7 +18,8 @@ from pathlib import Path
 from typing import Any, Optional, Sequence
 
 from core.clean.cleaner import RULES_TEXT
-from core.config import CONFIGS, REPO_ROOT, atomic_write_text, canonical_json, load_json, sha256_of
+from core.config import (CONFIGS, REPO_ROOT, atomic_write_text, canonical_json, load_json, read_text_lf, sha256_of,
+                         text_file_sha256)
 
 MONITOR_DIR = CONFIGS / "monitor"
 
@@ -48,19 +49,15 @@ PROMPTS = {"monitor_v1": "manifest.json", "monitor_v2_anchored": "manifest_v2_an
            "monitor_v2_pairs": "manifest_v2_pairs.json"}
 
 
-def _lf(b: bytes) -> bytes:
-    return b.replace(b"\r\n", b"\n")
-
-
 def load_config(directory: Path = MONITOR_DIR, manifest: str = "manifest.json") -> MonitorConfig:
     """Load a monitor manifest + its template; refuse if the template hash does not match."""
     man = load_json(directory / manifest)
-    raw = _lf((directory / man["template"]).read_bytes())
-    got = hashlib.sha256(raw).hexdigest()
+    template = read_text_lf(directory / man["template"])
+    got = text_file_sha256(directory / man["template"])
     if got != man["template_sha256"]:
         raise ValueError(f"monitor template sha256 {got[:12]}... != manifest {man['template_sha256'][:12]}...")
     return MonitorConfig(
-        prompt_version=man["prompt_version"], template=raw.decode("utf-8"), template_sha256=got,
+        prompt_version=man["prompt_version"], template=template, template_sha256=got,
         model=man["model"], temperature=float(man["temperature"]), num_ctx=int(man["num_ctx"]),
         num_predict=int(man["num_predict"]), max_rationale_words=int(man["max_rationale_words"]),
         agents=tuple(man["agents"]), what_you_see=dict(man["what_you_see"]), view_prompt=dict(man["view_prompt"]),

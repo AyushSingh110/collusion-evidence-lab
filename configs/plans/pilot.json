@@ -1,0 +1,159 @@
+{
+ "name": "pilot",
+ "master_seed": 20261024,
+ "created_utc": "2026-10-24T03:04:14Z",
+ "rounds": 8,
+ "counts_by_type": {
+  "1": 4,
+  "2": 2,
+  "3": 1,
+  "4": 1
+ },
+ "machines": [
+  "B"
+ ],
+ "speed": {
+  "B": 1.0
+ },
+ "est_minutes_per_machine": {
+  "B": 148.92
+ },
+ "entries": [
+  {
+   "game_id": "g_2ee8776318",
+   "plan_index": 0,
+   "plan_name": "pilot",
+   "master_seed": 20261024,
+   "episode_type": 1,
+   "variant": "collusion_v3_hint",
+   "focal_pair": [
+    "M",
+    "Z"
+   ],
+   "game_seed": 1613891577,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 20.83,
+   "config_sha256": "d3cbd3d175918145756d7862b2eba6e14770a0b7e14f8a4f99d74425576c6d52"
+  },
+  {
+   "game_id": "g_ddbd009b35",
+   "plan_index": 1,
+   "plan_name": "pilot",
+   "master_seed": 20261024,
+   "episode_type": 1,
+   "variant": "collusion_v3_hint",
+   "focal_pair": [
+    "T",
+    "Z"
+   ],
+   "game_seed": 3658831071,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 20.83,
+   "config_sha256": "6310b3d38e3b1f835edff2bc6cc64bb87bc8a6f35d19f4e4d75822c8dbc8f368"
+  },
+  {
+   "game_id": "g_cdc380dd58",
+   "plan_index": 2,
+   "plan_name": "pilot",
+   "master_seed": 20261024,
+   "episode_type": 1,
+   "variant": "collusion_v3_hint",
+   "focal_pair": [
+    "M",
+    "T"
+   ],
+   "game_seed": 704904142,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 20.83,
+   "config_sha256": "eb61feb17d1c4ee3b4c90704f31a41d0fcbab716140805dc7f9dba3cc6dc8b61"
+  },
+  {
+   "game_id": "g_7cf2a14a92",
+   "plan_index": 3,
+   "plan_name": "pilot",
+   "master_seed": 20261024,
+   "episode_type": 1,
+   "variant": "collusion_v3_hint",
+   "focal_pair": [
+    "Q",
+    "T"
+   ],
+   "game_seed": 406449108,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 20.83,
+   "config_sha256": "81bfc56dde286d8a837b2157f27b49143465e5afa2b99407c261e0206edd4988"
+  },
+  {
+   "game_id": "g_ea303a65b5",
+   "plan_index": 4,
+   "plan_name": "pilot",
+   "master_seed": 20261024,
+   "episode_type": 2,
+   "variant": "placebo_v3",
+   "focal_pair": [
+    "J",
+    "Q"
+   ],
+   "game_seed": 64778507,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 16.4,
+   "config_sha256": "dc59174434acc88875b5f638a8b0d6b1922cfa883fc9480c7c3738dbf3704f95"
+  },
+  {
+   "game_id": "g_63598a8320",
+   "plan_index": 5,
+   "plan_name": "pilot",
+   "master_seed": 20261024,
+   "episode_type": 2,
+   "variant": "placebo_v3",
+   "focal_pair": [
+    "J",
+    "T"
+   ],
+   "game_seed": 2969764174,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 16.4,
+   "config_sha256": "bd0656c9c83de5c29e937ca829f21c36dc4ab05d50acbbb3f1d1bcda4ade18cc"
+  },
+  {
+   "game_id": "g_52b129d208",
+   "plan_index": 6,
+   "plan_name": "pilot",
+   "master_seed": 20261024,
+   "episode_type": 3,
+   "variant": "persona_v1",
+   "focal_pair": [
+    "M",
+    "Z"
+   ],
+   "game_seed": 172775347,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 16.4,
+   "config_sha256": "da98741a0f263a85477f1e51dcdef2ed71652bbfbf79375ed14efcf5601d0444"
+  },
+  {
+   "game_id": "g_49bfa9575d",
+   "plan_index": 7,
+   "plan_name": "pilot",
+   "master_seed": 20261024,
+   "episode_type": 4,
+   "variant": "incentive_4b_v1",
+   "focal_pair": [
+    "M",
+    "Q"
+   ],
+   "game_seed": 375542121,
+   "n_rounds": 8,
+   "machine": "B",
+   "est_minutes": 16.4,
+   "config_sha256": "28591bf09509f6c4e373e6b925cab02520adef71653e68902938121fcf8c35d8"
+  }
+ ]
+}

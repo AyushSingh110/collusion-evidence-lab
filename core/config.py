@@ -28,6 +28,21 @@ def canonical_json(obj: Any) -> str:
     return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 
 
+def normalize_newlines(text: str) -> str:
+    """"\\r\\n" and lone "\\r" -> "\\n", so a checkout's line endings never change a hash or a model input."""
+    return text.replace("\r\n", "\n").replace("\r", "\n")
+
+
+def read_text_lf(path: Path) -> str:
+    """Read a UTF-8 text file with line endings normalised to LF (use for every prompt/config text)."""
+    return normalize_newlines(Path(path).read_bytes().decode("utf-8"))
+
+
+def text_file_sha256(path: Path) -> str:
+    """sha256 of a text file's LF-normalised UTF-8 content (identical for LF and CRLF checkouts)."""
+    return hashlib.sha256(read_text_lf(path).encode("utf-8")).hexdigest()
+
+
 def sha256_of(obj: Any) -> str:
     data = obj if isinstance(obj, (bytes, str)) else canonical_json(obj)
     if isinstance(data, str):

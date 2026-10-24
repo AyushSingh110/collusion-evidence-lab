@@ -4,6 +4,7 @@ import re
 
 import pytest
 
+from core.config import read_text_lf
 from core.generate import prompts as P
 from core.generate.elfarol import AGENTS, outcome
 from core.generate.runner import call_seed, check_manifest, run_game
@@ -95,10 +96,10 @@ def test_placebo_alliance_length_ratio():
 
 
 def test_alliance_v3_is_v2_plus_hint_byte_exact():
-    d = P.PROMPTS_DIR
-    v2 = (d / "alliance_v2.txt").read_bytes().rstrip(b"\n")
-    hint = (d / "collusion_hint_v1.txt").read_bytes().rstrip(b"\n")
-    assert (d / "alliance_v3.txt").read_bytes() == v2 + b" " + hint + b"\n"
+    d = P.PROMPTS_DIR   # content check on LF-normalised text, so a CRLF checkout cannot fail it (task 08)
+    v2 = read_text_lf(d / "alliance_v2.txt").rstrip("\n")
+    hint = read_text_lf(d / "collusion_hint_v1.txt").rstrip("\n")
+    assert read_text_lf(d / "alliance_v3.txt") == v2 + " " + hint + "\n"
 
 
 HEADER = "PRIVATE NOTE (only you can see this):"

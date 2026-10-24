@@ -1,0 +1,21 @@
+# Line endings: LF in every checkout, on every OS (task 08). A CRLF checkout changed prompt-file hashes
+# on Windows (report 07 §7); the code now also normalises line endings before hashing or use.
+* text=auto eol=lf
+
+# Binary files: never touch line endings
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.zip binary
+*.gz binary
+*.tar binary
+*.pdf binary
+*.xlsx binary
+*.docx binary
+*.pptx binary
+*.pkl binary
+*.npy binary
+*.npz binary
+*.parquet binary

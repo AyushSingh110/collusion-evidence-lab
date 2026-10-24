@@ -6,13 +6,12 @@ Imports only the harness prompt builders and games - never its settings.py, LLM 
 """
 from __future__ import annotations
 
-import hashlib
 import json
 import sys
 from pathlib import Path
 from typing import Any, Mapping, Optional, Sequence
 
-from core.config import CONFIGS, REPO_ROOT, atomic_write_text
+from core.config import CONFIGS, REPO_ROOT, atomic_write_text, read_text_lf, text_file_sha256
 from core.generate.elfarol import AGENTS, STANDARD_PARAMS
 
 HARNESS_DIR = REPO_ROOT / "external" / "llm-trust-breaking"
@@ -38,11 +37,12 @@ CHANNEL_SCHEMA = {"type": "object", "properties": {"message": {"type": "string",
 
 
 def read_prompt(name: str) -> str:
-    return (PROMPTS_DIR / name).read_text(encoding="utf-8").rstrip("\n")
+    return read_text_lf(PROMPTS_DIR / name).rstrip("\n")
 
 
 def file_sha256(name: str) -> str:
-    return hashlib.sha256((PROMPTS_DIR / name).read_bytes()).hexdigest()
+    """LF-normalised sha256, so CRLF checkouts match configs/prompts/manifest.json."""
+    return text_file_sha256(PROMPTS_DIR / name)
 
 
 def prompt_files() -> list[str]:
@@ -51,7 +51,7 @@ def prompt_files() -> list[str]:
 
 def write_manifest(measured_tokens: Optional[Mapping[str, Any]] = None) -> dict:
     """Recompute sha256 of every prompt file (keeps the stored measured token counts)."""
-    old = json.loads(MANIFEST.read_text(encoding="utf-8")) if MANIFEST.exists() else {}
+    old = json.loads(read_text_lf(MANIFEST)) if MANIFEST.exists() else {}
     doc = {"sha256": {n: file_sha256(n) for n in prompt_files()},
            "measured_tokens_qwen2.5_7b": dict(measured_tokens or old.get("measured_tokens_qwen2.5_7b", {}))}
     atomic_write_text(MANIFEST, json.dumps(doc, indent=1) + "\n")
@@ -59,7 +59,7 @@ def write_manifest(measured_tokens: Optional[Mapping[str, Any]] = None) -> dict:
 
 
 def load_manifest() -> dict:
-    return json.loads(MANIFEST.read_text(encoding="utf-8"))
+    return json.loads(read_text_lf(MANIFEST))
 
 
 def addendum_text(episode_type: int, partner: str) -> str:

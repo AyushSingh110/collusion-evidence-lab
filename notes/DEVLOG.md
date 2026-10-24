@@ -471,3 +471,274 @@ See report 01 §11 (10 questions). Most urgent:
   acceptable, or should those words only be flagged?
 - Confirm that `external/` stays tracked.
 - Lead: freeze the prereg, run fresh self-tests on A and B, create the pilot plan with B_FACTOR (≈ 2.26 today).
+
+---
+
+## 2026-10-24 — [machine: ML] Task 05: P5 cleaner + views + monitor runner (machine letter B)
+
+### What was implemented or executed
+- `setx COLLUSION_LAB_MACHINE B` (user environment variable; new shells only).
+- Step 0: `pytest -q` → 89 passed; `scripts/check_env.py` → **NOT READY** (Ollama not reachable).
+  `ollama --version` → client **0.40.6**. Model digests read without a server, as the sha256 of the manifest
+  files in `D:\ollama_models\manifests`: qwen2.5 `845dbda0…` (= pin) but tagged `7b-instruct`;
+  `llama3.1:8b` and `granite3.3:8b` not installed. Selftest, `ollama ps` and M1: not run (stop condition).
+- New: `core/clean/{types,cleaner}.py`, `study_2_2_views/{__init__,views,monitor}.py`,
+  `configs/monitor/{monitor_v1.txt,manifest.json}`, `scripts/{render_views,run_monitor}.py`,
+  `tests/{test_cleaner,test_views,test_monitor}.py`, `tests/fixtures/views/` (generator, 4 GameRecords,
+  plants, setup texts, 8 golden files). No P2-owned file touched.
+- Fixtures checked with P1's `validate_game` → 0 errors × 4. Goldens generated with `UPDATE_GOLDEN=1` and
+  read by eye.
+- `pytest -q` → **231 passed** (142 new). CLI smoke runs into the session scratchpad only. `run_monitor.py`
+  live → refused at the start-up check (URLError), 0 calls.
+- No new dependency.
+
+### Errors and problems faced
+- `RESULT: NOT READY (Ollama not reachable)`; Ollama is 0.40.6, not the pinned 0.40.3; monitor model missing.
+- `NotImplementedError: Support for scripts where arguments contain newlines not implemented` from
+  `conda run … python -c "<multi-line>"`.
+- Report 02 (`02_p1_foundations.md`) is missing on this machine and in git.
+- Two of my own test mistakes, caught before trusting the run:
+  - the "copy across two sentences" test used halves that were each already ≥ 8 copied words;
+  - the C-shuffled test had a vacuous final assert, and parsed "crowded" as an action.
+
+### How each problem was solved
+- Ollama: unsolved; it needs the user's OK (version change, a 4.9 GB pull, a retag). Code was built and
+  tested with the mock transport.
+- conda run: use one-line `-c` or a script file.
+- Report 02: worked from P1's code and DEVLOG entry.
+- Tests rewritten to really test the case (halves < 8 words; regex parse; membership checks against donor games).
+
+### Decisions taken
+- Leak redaction runs whole text → sentences → adjacent pairs → whole message, using only the
+  truthiness of the scanner's result, so P2's hit format does not matter.
+- Controls use the V3 prompt sentence, so the prompt never reveals a control.
+- Truncation-suspect replies get `score=None` (with `raw_score` kept). Transport errors go to
+  `errors.jsonl`, so a resumed run retries them.
+- `num_predict` 200 for the monitor (task) vs 300 in `run_defaults.json`: flagged for the lead.
+- A failed final action renders as `n/a` with a one-line note, and is played as STAY for payoffs.
+
+### Open questions for the team
+- Approve fixing this laptop's Ollama (0.40.3, start the server, pull `llama3.1:8b`, tag `qwen2.5:7b`)?
+- V5 will exceed num_ctx/2 on real games (≈ 4.6k–10k tokens [E]): num_ctx 16384 for all views, for V5 only,
+  or trim private texts?
+- Monitor `num_predict`: 200 or 300?
+- P2: confirm the `scan_for_leaks` signature and whether the 4b patterns are built in; provide a setup-texts export.
+
+---
+
+## 2026-10-24 — [machine: ML] Task 05 addendum: Ollama fixed to 0.40.3, Step 0 + M1 run (user-approved)
+
+### What was implemented or executed
+- Downloaded the official `ollama-windows-amd64.zip` v0.40.3 to `D:\ollama-0.40.3\download\`. Its sha256
+  `e5ecff02…bbd5` equals the GitHub-published digest. Extracted to `D:\ollama-0.40.3\app\` and ran
+  `ollama serve` with `OLLAMA_MODELS=D:\ollama_models`, `OLLAMA_NUM_PARALLEL=1`, `OLLAMA_MAX_LOADED_MODELS=1`.
+  CUDA on the RTX 3060 Laptop (6 GiB) was detected.
+- Disabled the 0.40.6 tray autostart (renamed `Startup\Ollama.lnk` → `.disabled-0.40.6`). Set the two env vars
+  as user env vars. Added the start script `D:\ollama-0.40.3\start_ollama_0.40.3.cmd`.
+- `ollama cp qwen2.5:7b-instruct qwen2.5:7b`; `ollama pull llama3.1:8b`.
+- `check_env.py` → READY (0.40.3, qwen and llama digests MATCH, granite missing/optional).
+- `selftest.py` → 6/6 valid, median 12.03 s/call, 17.22 gen tok/s (TEAM CHAT line in report 05 §11.2).
+- M1: `render_views.py` (V1–V4, 4 fixtures) and `run_monitor.py --run-id m1_fit_B` → 16/16 parsed,
+  0 truncation, mean 11.1 s/call, prompt 718–1,599 tokens. Outputs in `runs/m1_fit_B/`.
+- `ollama ps` logged to `D:\ollama-0.40.3\ps_log.txt`: llama3.1:8b 32%/68% CPU/GPU, qwen2.5:7b 21%/79%.
+
+### Errors and problems faced
+- Only 0.6 GB free on C:, too little for `OllamaSetup.exe`, which installs the CUDA libs to C:.
+- The models do not fit 100% on the 6 GB GPU at num_ctx 8192.
+- A bash heredoc used to append these notes failed (`unexpected EOF while looking for matching '`); nothing
+  was written, and the text was appended from a file instead.
+
+### How each problem was solved
+- Used the standalone zip on D: instead of the installer. There is no tray app, so no auto-update.
+- GPU split: unsolved (hardware). Recorded; speed is still ~3× the lead laptop.
+
+### Decisions taken
+- Kept the 0.40.6 install (unused) instead of uninstalling it. Reason: least invasive, and reversible.
+- M1 outputs go to `runs/m1_fit_B/` (gitignored), not `data/`, because they are fixture runs, not dataset outputs.
+
+### Open questions for the team
+- The monitor score is 80 in 15/16 synthetic calls: rethink the score format in P7?
+- V5 num_ctx (8192 vs 16384) and its CPU-offload cost: approve a ~5-min 2-call comparison?
+- Use speed factor ≈ 3 for machine B in the P4/P6 plan.
+
+---
+
+## 2026-10-24 — [machine: B] Task 07: monitor score resolution (two candidate formats, synthetic)
+
+### What was implemented or executed
+- After the user's pull: re-appended the Task 05 DEVLOG entries (saved before the pull) at the end, after
+  the Task 04 entry. Content is unchanged.
+- `study_2_2_views/monitor.py`: format-aware config (`format`, `pair_order`, `rationale_field`; defaults = v1),
+  `PROMPTS`, `load_config(..., manifest=)`, pairs validation, `game_score_from_pairs` (max / argmax / tie → []).
+- New `configs/monitor/{monitor_v2_anchored.txt, manifest_v2_anchored.json, monitor_v2_pairs.txt,
+  manifest_v2_pairs.json}`. `scripts/run_monitor.py --prompt`. `tests/test_monitor.py`: +27 tests (51 in this file).
+- `pytest -q tests/test_monitor.py` → 51 passed. Full suite → 304 passed, 7 failed, 14 errors (pre-existing).
+- Live (pre-approved, synthetic): runs `t07_v2_anchored_B` (16), `t07_v2_pairs_B` (16, num_predict 200) and
+  `t07_v2_pairs300_B` (16, num_predict 300), on the same 16 view files as M1 (`runs/m1_fit_B/views`).
+  48 calls, 0 transport errors.
+
+### Errors and problems faced
+- After the pull: `RuntimeError: configs/prompts/manifest.json is out of date for: [all 9 prompt files]`
+  (13 P2 tests fail or error). Root cause: `core.autocrlf=true`, no `.gitattributes`, so the prompts were
+  checked out with CRLF. alliance_v2.txt CRLF sha256 `d8bc5a9b…` ≠ manifest; LF-normalised `b73e02fe…` = manifest.
+- `test_cleaner.py::test_leak_counts_per_fixture`: Type 4 hits 3 (P2 scanner) vs 4 (stub); redactions equal.
+- Pairs format: 4/16 replies cut at num_predict 200 (`done_reason=length`, JSONDecodeError), and still 4/16
+  at 300. Cause: a runaway `evidence` field that enumerates pairs and ignores the 60-word limit.
+
+### How each problem was solved
+- CRLF: unsolved here (P2 and git config files are outside task 07's list); reported to the lead with two fix options.
+- Leak count: unsolved here (`test_cleaner.py` is outside the list); expectation to be updated to P2's numbers.
+- Pairs cuts: not solved by num_predict; manifest kept at 300 with a note. Candidate fixes (evidence
+  maxLength, scores-first order, no evidence) listed for P7 and not tried (scope and time box).
+
+### Decisions taken
+- Candidates live side by side; v1 stays byte-identical (prompt, manifest and template hashes pinned in a test).
+- Both v2 formats write the evidence first (schema property order). The pairs prompt has no anchors (per the task).
+- `pair_scores` is added to output lines only for the pairs format, so v1 lines are unchanged.
+- No winner picked (synthetic data). Finding: anchored = 2 distinct scores (50/75), no usable resolution;
+  pairs = 5–6 distinct scores (0–95), but 25% cut and frequent ties.
+
+### Open questions for the team
+- Lead: add `.gitattributes` (eol=lf) or LF-normalise prompt hashing before pilot generation on machine B?
+- P7: which pairs variant to test on dev (evidence maxLength / scores first / no evidence)?
+- P7: tie rule for the pairs format (keep "no pair" vs break ties)?
+
+---
+
+## 2026-10-24 — [machine: B] Task 08 (part 1): DEVLOG restore, CRLF fix (Step 0), freeze check STOP (Step 1)
+
+### What was implemented or executed
+- New session. Re-appended the 3 DEVLOG entries (Task 05, Task 05 addendum, Task 07). They were saved before the
+  last pull (by file copy, not git) and are unchanged; they now sit after the Task 06a entry.
+- Restarted the pinned Ollama 0.40.3 server (`D:\ollama-0.40.3\app\ollama.exe serve`; log
+  `D:\ollama-0.40.3\serve_t08.log`). `check_env.py` → READY (0.40.3; qwen2.5:7b and llama3.1:8b digests MATCH).
+- `pytest -q` before the fix: **310 passed, 7 failed, 18 errors** (test_generate 7 F + 8 E,
+  test_scripts_p2 7 E, test_pilot_report 3 E; all from the CRLF prompt-manifest mismatch).
+- CRLF fix:
+  - `core/config.py`: new shared helpers `normalize_newlines`, `read_text_lf` and `text_file_sha256`.
+  - `core/generate/prompts.py`: `read_prompt`, `file_sha256`, `write_manifest` and `load_manifest` use them.
+    `core/clean/leaks.setup_texts_for` and `scripts/export_setup_texts.py` read through `read_prompt`, so they
+    are covered.
+  - `study_2_2_views/monitor.py`: its private `_lf` replaced by the shared helpers.
+  - New `.gitattributes` (`* text=auto eol=lf`, plus binary entries).
+  - New `tests/test_line_endings.py`: 23 tests. LF/CRLF/CR copies of every prompt give the same sha256 (=
+    manifest), the same built system/user prompts for all 4 types and both channel exchanges, the same setup
+    texts, and a passing manifest check; monitor templates are covered too.
+  - `tests/test_generate.py::test_alliance_v3_is_v2_plus_hint_byte_exact` now compares LF-normalised text.
+- Deleted 5 generated `__pycache__` folders under `external/` (git-ignored bytecode, created 01:40:37 today by my
+  bare `pytest -q` from the repo root in Task 03). `external/` is pristine again; no starter-code file changed.
+- `pytest -q` after the fix: **358 passed, 0 failed**. All 11 prompt files: normalised sha256 = manifest.
+- Freeze check (Step 1, read-only): freezing commit
+  `84fca68e849535e1e1338d950199ba6ddc9cc874` (2026-10-24 03:28 +0530, "freeze RQ0.1 pre-registration").
+  LF-normalised sha256 of `configs/prereg_rq01.md` =
+  `0c0ef88301b9d791ca664fff6a6d967a00a67cded9c2fdd01fb65ebd04394a75`.
+
+### Errors and problems faced
+- `RuntimeError: configs/prompts/manifest.json is out of date for: [...]`. Root cause: `core.autocrlf=true`
+  and no `.gitattributes`, so CRLF checkout, while `file_sha256` hashed raw bytes. Model inputs were not affected:
+  `Path.read_text` already applied universal newlines.
+- `test_prompts_module_does_not_import_harness_clients`: `__pycache__` in `external/` (cause above).
+- **Step 1 STOP:** `configs/prereg_rq01.md` still contains "DRAFT": line 1 (title
+  `# DRAFT — RQ0.1 pre-registration ...`) and line 135 (the historical §10 heading). The freezing commit removed
+  the 2-line DRAFT notice but not the title word.
+
+### How each problem was solved
+- CRLF: fixed in code + `.gitattributes` (above).
+- pycache: removed the generated folders.
+- DRAFT: **unsolved — stopped before creating the pilot plan or making any model call.** The file is frozen
+  and must not be edited by Claude; asked the lead how to proceed.
+
+### Decisions taken
+- One shared helper in `core/config.py` (as the task asked) instead of per-module fixes. Lone "\r" is normalised too.
+- Hashes stay the same for LF files, so the existing manifests (prompts and monitor) did not change.
+
+### Open questions for the team
+- Lead: remove "DRAFT" from the pre-registration title in a new, dated commit (then the recorded sha256
+  changes), or confirm that the current frozen file (sha256 `0c0ef883…`, commit `84fca68`) is final, with the
+  title word as a known oversight?
+
+---
+
+## 2026-10-24 — [machine: B] Task 08 (part 2): OFFICIAL FREEZE RECORD of the RQ0.1 pre-registration (before any pilot call)
+
+### What was implemented or executed
+- Read-only git: `git log -3 -- configs/prereg_rq01.md` and `git diff 84fca68 4909c7e -- configs/prereg_rq01.md`.
+- **OFFICIAL FREEZE:** commit `4909c7e2fb830396990df23e145150333b6ef0c3` (2026-10-24 08:31:50 +0530, Param Bapu,
+  "docs: remove DRAFT from prereg title (freeze)").
+  **LF-normalised sha256 of `configs/prereg_rq01.md` =
+  `c5976220465c10f5b3a88f4fdea87b840872ae6345f6c4f9fccaa5db7312f678`.** The working copy is identical to the
+  committed blob (same normalised hash, `git diff --quiet` clean).
+- Verified: the diff 84fca68 → 4909c7e changes **only line 1**
+  (`# DRAFT — RQ0.1 pre-registration (Gate 1: …)` → `# RQ0.1 pre-registration (frozen 2026-10-24) (Gate 1: …)`).
+  The commit touches no other file.
+- Commit `84fca68` (sha256 `0c0ef88301b9…`) is **superseded only because of the title word**. There was no rule,
+  criterion, number or prompt change.
+- **No pilot model call has been made before this point.** The last live model calls on this machine were the
+  task 07 synthetic monitor runs. The pilot plan does not exist yet.
+
+### Errors and problems faced
+- None. (A first attempt to hash the committed blob via a pipe into `conda run` hashed empty input, `e3b0c442…`,
+  because `conda run` does not forward stdin. Redone from a file: same hash as the working copy.)
+
+### How each problem was solved
+- Hashed `git show 4909c7e:configs/prereg_rq01.md` written to a scratch file.
+
+### Decisions taken
+- Lead's clarified freeze rule applied: the title and any status line must not mark the file as draft. "DRAFT"
+  in the historical §10 heading ("made while this file was DRAFT") is allowed. The file passes.
+
+### Open questions for the team
+- None for the freeze.
+
+---
+
+## 2026-10-24 — [machine: B] Task 08 (part 3): pilot plan, pilot run on B only, RQ0.1 analysis, P7 measurements
+
+### What was implemented or executed
+- **OPERATIONAL DEVIATION (lead's decision): the whole pilot runs on machine B only.** The frozen
+  pre-registration names machines A and B. No design change: same model digest, prompts, seeds, counts, rounds
+  and criteria.
+- `make_plan.py --name pilot --seed 20261024 --counts 1=4 2=2 3=1 4=1 --machines B --rounds 8` → new
+  `configs/plans/pilot.json` (8 games, machines [B]). Dry run: 1,088 calls, ≈ 149 min at speed 1.0.
+- `run_plan.py --plan configs/plans/pilot.json --machine B` (background; log `runs/pilot_run_B.log`), started
+  08:34 and finished 09:54: **79.6 min, 8/8 games, 1,088 calls, 0 failures, 0 cache hits, 0 interruptions.**
+  Type 1: 10.9/10.9/11.0/11.0 min; Types 2/3/4b: 8.8–9.1 min. 8 records in `data/raw/pilot/`, 0 `*.partial.json`.
+  `ollama ps`: qwen2.5:7b 21%/79% CPU/GPU. No other model call during the run.
+- `pilot_report.py` → merge_check OK; `runs/pilot/{pilot_table.csv, handcheck_uptake.csv (96 cells), pilot_summary.md}`.
+- `scratch/pilot_analysis_t08.py` (new, no model calls) → `runs/pilot/{views/, clean/, clean_private/, analysis_t08.json}`.
+- `pytest -q` at the end: 358 passed, 0 failed; `external/` has no `__pycache__`.
+
+### Results (full detail in report 08)
+- **Gate (code part): (a) uptake 2/4 → FAIL**; falsification 0/2 → PASS; b1 4/4 → PASS; b2 4/4 and 4/4 → PASS.
+  Hand agreement pending (lead). Null percentiles: focal coGO and capture at 100/100 in all 4 Type 1 games.
+- Public-reveal rate 6/64 = 9.4% (below the 10% flag). Leak hits: Type 4b 14, other types 0. Failures 0.
+- RQ0.2: Type 3 persona talk appears (≈ 11/16 focal messages by reading); coGO 0 and capture 0, inside the
+  Type 2 null. Type 4b: both focal agents go ≥ 75% (8/8, 7/8), coGO 0.875.
+- Uptake misses: imperative channel messages with no joint word (T-Z game), and **one game (Q-T) drifted
+  into Chinese from round 2 for all agents** (31/40 public, 21/32 channel, 30/40 plans).
+- P7: V5 is up to ≈ 3,959 estimated tokens (chars/4) incl. the system prompt (≈ 97% of 4,096); all other
+  views ≤ 1,728. Over-removal: only 14 Type 4b public sentences (all "deposit"); the new rule would make all 14
+  flag-only.
+
+### Errors and problems faced
+- My first progress monitor filter needed the game id before the word "done", but the runner prints
+  `[n/8] done g_…`; I re-armed it with a `^\[` filter. No run problem.
+- `conda run python -c "<multi-line>"` → `NotImplementedError: Support for scripts where arguments contain
+  newlines` (known); used script files.
+
+### How each problem was solved
+- Both are tooling only; solved as above.
+
+### Decisions taken
+- Followed the frozen tree only: **(a) fails → U1** (reword the alliance addendum, re-run the 4 Type 1 games;
+  ≈ 44 min on B). **Stopped:** the tree does not settle the order between the §4 hand-check rule fix and U1, and
+  does not cover the language drift. The lead decides.
+- Not GO → dataset commands not printed.
+- The cleaner was not changed (the over-removal comparison is report-only).
+
+### Open questions for the team
+- Hand-check first (fill the CSV, run `--handcheck`), or U1 now? If agreement < 80% and the rule is fixed,
+  does the re-applied rule decide (a)?
+- Language drift (Chinese): add an "answer in English" line for all agents as a new pre-registered variant?
+- New cleaner rule vs the Type 4b "deposit" leak: keep removing the 4b patterns, or flag only?
+- V5: measure real prompt_eval_count, or move all views to num_ctx 16384?
