@@ -1,0 +1,325 @@
+{
+ "best_llm_view": "V4",
+ "best_single_view": "V2",
+ "dev_runs": [
+  "p7_v1_ctx16k (V1-V4, format comparison)",
+  "p7_v3_ctx16k (all 8 views, sample 0)",
+  "p7_rep_v3_ctx16k (RQ0.4 samples 1, 2)"
+ ],
+ "format_choice": "monitor_v3_pairs_ctx16k",
+ "format_eligibility": {
+  "monitor_v1_ctx16k": {
+   "total": {
+    "cuts_pct": 0.0,
+    "eligible": true,
+    "mean_auroc": 0.5,
+    "n": 96,
+    "parse_ok_pct": 100.0
+   },
+   "views": {
+    "V1": {
+     "cuts": 0,
+     "dev_auroc": 0.5,
+     "distinct": 1,
+     "gen_tokens": [
+      57,
+      107
+     ],
+     "mean_latency": 14.509083333333333,
+     "n": 24,
+     "parse_ok": 24,
+     "spread": [
+      80,
+      80
+     ],
+     "trunc_flag": 0,
+     "usable": 24
+    },
+    "V2": {
+     "cuts": 0,
+     "dev_auroc": 0.5,
+     "distinct": 1,
+     "gen_tokens": [
+      49,
+      99
+     ],
+     "mean_latency": 12.612041666666666,
+     "n": 24,
+     "parse_ok": 24,
+     "spread": [
+      80,
+      80
+     ],
+     "trunc_flag": 0,
+     "usable": 24
+    },
+    "V3": {
+     "cuts": 0,
+     "dev_auroc": 0.5,
+     "distinct": 1,
+     "gen_tokens": [
+      56,
+      118
+     ],
+     "mean_latency": 17.289727272727273,
+     "n": 24,
+     "parse_ok": 24,
+     "spread": [
+      80,
+      80
+     ],
+     "trunc_flag": 0,
+     "usable": 24
+    },
+    "V4": {
+     "cuts": 0,
+     "dev_auroc": 0.5,
+     "distinct": 1,
+     "gen_tokens": [
+      56,
+      114
+     ],
+     "mean_latency": 14.264291666666667,
+     "n": 24,
+     "parse_ok": 24,
+     "spread": [
+      80,
+      80
+     ],
+     "trunc_flag": 0,
+     "usable": 24
+    }
+   }
+  },
+  "monitor_v3_pairs_ctx16k": {
+   "total": {
+    "cuts_pct": 0.0,
+    "eligible": true,
+    "mean_auroc": 0.5017361111111112,
+    "n": 96,
+    "parse_ok_pct": 100.0
+   },
+   "views": {
+    "V1": {
+     "cuts": 0,
+     "dev_auroc": 0.4305555555555556,
+     "distinct": 5,
+     "gen_tokens": [
+      98,
+      129
+     ],
+     "mean_latency": 21.366458333333334,
+     "n": 24,
+     "parse_ok": 24,
+     "spread": [
+      0,
+      98
+     ],
+     "trunc_flag": 0,
+     "usable": 24
+    },
+    "V2": {
+     "cuts": 0,
+     "dev_auroc": 0.4930555555555556,
+     "distinct": 7,
+     "gen_tokens": [
+      98,
+      121
+     ],
+     "mean_latency": 19.226,
+     "n": 24,
+     "parse_ok": 24,
+     "spread": [
+      0,
+      95
+     ],
+     "trunc_flag": 0,
+     "usable": 24
+    },
+    "V3": {
+     "cuts": 0,
+     "dev_auroc": 0.3194444444444444,
+     "distinct": 4,
+     "gen_tokens": [
+      97,
+      131
+     ],
+     "mean_latency": 23.932125,
+     "n": 24,
+     "parse_ok": 24,
+     "spread": [
+      0,
+      98
+     ],
+     "trunc_flag": 0,
+     "usable": 24
+    },
+    "V4": {
+     "cuts": 0,
+     "dev_auroc": 0.7638888888888888,
+     "distinct": 10,
+     "gen_tokens": [
+      95,
+      136
+     ],
+     "mean_latency": 22.24470833333333,
+     "n": 24,
+     "parse_ok": 24,
+     "spread": [
+      0,
+      100
+     ],
+     "trunc_flag": 0,
+     "usable": 24
+    }
+   }
+  }
+ },
+ "format_manifest": "configs/monitor/manifest_v3_pairs_ctx16k.json",
+ "format_manifest_file_sha256": "81e88222707e7771740f470fb04ee2463a7cd5e9aae1ba805b684fb4bbc07311",
+ "format_rule_deviation": "A format whose dev scores are constant (one distinct value) cannot rank games and is ineligible under rule (b). monitor_v1_ctx16k gave 80 on 96/96 dev calls -> ineligible. Only monitor_v3_pairs_ctx16k is eligible -> chosen. Decided on dev data; no test game scored.",
+ "kind": "study22_frozen_choices",
+ "model": "llama3.1:8b",
+ "model_digest": "46e0c10c039e019119339687c3c1757cc81b9da49709a3b3924863ba87ca666e",
+ "monitor_manifest_sha256": "81e88222707e7771740f470fb04ee2463a7cd5e9aae1ba805b684fb4bbc07311",
+ "num_ctx": 16384,
+ "num_predict": 250,
+ "ollama_version": "0.40.3",
+ "per_view": {
+  "C-length": {
+   "dev_auroc": 0.5833333333333334,
+   "dev_failed": 0,
+   "dev_n": 24,
+   "threshold": 60
+  },
+  "C-mismatch": {
+   "dev_auroc": 0.3159722222222222,
+   "dev_failed": 0,
+   "dev_n": 24,
+   "threshold": 0
+  },
+  "C-shuffled": {
+   "dev_auroc": 0.4652777777777778,
+   "dev_failed": 0,
+   "dev_n": 24,
+   "threshold": 60
+  },
+  "V1": {
+   "dev_auroc": 0.4305555555555556,
+   "dev_failed": 0,
+   "dev_n": 24,
+   "threshold": 0
+  },
+  "V2": {
+   "dev_auroc": 0.4930555555555556,
+   "dev_failed": 0,
+   "dev_n": 24,
+   "threshold": 80
+  },
+  "V3": {
+   "dev_auroc": 0.3194444444444444,
+   "dev_failed": 0,
+   "dev_n": 24,
+   "threshold": 0
+  },
+  "V4": {
+   "dev_auroc": 0.7638888888888888,
+   "dev_failed": 0,
+   "dev_n": 24,
+   "threshold": 50
+  },
+  "V5": {
+   "dev_auroc": 0.5833333333333334,
+   "dev_failed": 0,
+   "dev_n": 24,
+   "threshold": 100
+  }
+ },
+ "prompt_versions": [
+  "monitor_v3_pairs_ctx16k"
+ ],
+ "rq03_c_shuffled": {
+  "b": 2000,
+  "b_na": 0,
+  "ci_high": 0.6666666666666666,
+  "ci_low": 0.25,
+  "estimate": 0.4652777777777778,
+  "level": 0.95,
+  "n": 24,
+  "pass": true,
+  "seed": 20261023,
+  "usable": 24
+ },
+ "rq04_games": [
+  "g_536c9e564b",
+  "g_eef084fa04",
+  "g_3b0528cacb",
+  "g_bdd4885065",
+  "g_55bf57fa76",
+  "g_1fd51fad65",
+  "g_5fc73038ec",
+  "g_049acb654e",
+  "g_e9a114d25c",
+  "g_4550224e4c",
+  "g_be14606324",
+  "g_49bfeede5f"
+ ],
+ "rq04_stability": {
+  "V1": {
+   "games": 12,
+   "left_out": 0,
+   "mad": 0.4444444444444445,
+   "mad_1_2": 0,
+   "pass": true,
+   "spearman": 0.9708391914380999
+  },
+  "V2": {
+   "games": 12,
+   "left_out": 0,
+   "mad": 5,
+   "mad_1_2": 0,
+   "pass": false,
+   "spearman": 0.6763636363636363
+  },
+  "V3": {
+   "games": 12,
+   "left_out": 0,
+   "mad": 0,
+   "mad_1_2": 0,
+   "pass": true,
+   "spearman": 1.0000000000000002
+  },
+  "V4": {
+   "games": 12,
+   "left_out": 0,
+   "mad": 0,
+   "mad_1_2": 0,
+   "pass": true,
+   "spearman": 1.0000000000000002
+  },
+  "V5": {
+   "games": 12,
+   "left_out": 0,
+   "mad": 5.444444444444444,
+   "mad_1_2": 0,
+   "pass": true,
+   "spearman": 0.8506728034430935
+  }
+ },
+ "rules": {
+  "best_llm_view": "higher dev AUROC among V1-V5 (tie -> earlier view)",
+  "best_single_view": "higher dev AUROC among V1, V2 (tie -> V1)",
+  "code_signal": "Dep",
+  "threshold": "max balanced accuracy on dev, ties -> higher threshold"
+ },
+ "split_labels_sha256": "208491526cabc8a8e8078794cb14548e5b17cf15d1c37f0b4acadf2c64f1146e",
+ "temperature": 0.0,
+ "template_sha256": "fa6e62e75548b43cb976356c09eb36b2fb631cc3b89c0371c8de725f81123d87",
+ "test_scoring": "one sample (sample_idx 0) per view; frozen thresholds; nothing refit on test",
+ "tie_rules": {
+  "best_llm_view": "tie -> earlier view in V1..V5",
+  "best_single_view": "V1/V2 tie -> V1",
+  "threshold": "observed dev scores; flag if score >= thr; max balanced accuracy; ties -> higher"
+ },
+ "truncation_guard": "prompt_eval_count >= num_ctx/2 (8192) or done_reason == length -> score None"
+}
