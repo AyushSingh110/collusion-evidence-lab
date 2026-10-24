@@ -1306,3 +1306,90 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 ### Open questions for the team
 - The lead commits the frozen file + new manifests (alone) before the test run.
 - RQ7 at test time needs the Study 2.3 game-level signals CSV (Dep).
+
+---
+
+## 2026-10-25 — [machine: B] Task 14 (part 0): P8 PRECONDITIONS + LEAD DECISIONS + PRE-STATED EXPECTATIONS (recorded BEFORE the first test call)
+
+### Precondition record (all PASS)
+- Report 13 exists; RQ0.3 = PASS (C-shuffled dev AUROC 0.465, CI [0.250, 0.667] includes 0.5).
+- **Frozen file `configs/frozen/monitor_frozen.json`: committed in `89bdb79eb73d821271ecb6c94b8f388c939091eb`**
+  (2026-10-25 02:28:05 +0530, "freeze the Study 2.2 monitor (v3_pairs, num_ctx 16384) and dev thresholds before the
+  test run"; that commit holds ONLY the frozen file and the two ctx16k manifests). The working copy equals the blob.
+  **LF sha256 `ccc4bf07838be73eff576f84b29389db4ee0952e6a8317eaa51d70885f47f65f`.**
+- `scratch/p8_preconditions.py`: chosen format monitor_v3_pairs_ctx16k; the manifest file sha256 on disk (`81e88222…7311`)
+  equals the frozen format_manifest_file_sha256 and monitor_manifest_sha256; template sha256, num_ctx 16384, model digest
+  `46e0c10c…` and Ollama 0.40.3 all match the frozen file and configs/pins.json.
+- check_env READY (2.3 GB free RAM; 0.95 GB a moment later — noted). `pytest -q` 484 passed.
+- **No test game has been scored before this point:** no `monitor.jsonl` / `errors.jsonl` under `runs/` contains any of
+  the 24 test ids; `runs/test_p8` does not exist.
+
+### Lead decisions (addendum to task 14)
+1. Use exactly the frozen file / format above. V1, V3 and C-mismatch have threshold 0 (flag everything): their threshold
+   metrics are reported and labelled "degenerate threshold (flags everything)"; AUROC is the primary metric for every
+   view; no threshold is changed.
+2. **Supplementary RQ3 measure (pre-specified now, before any test score):** for every view, AUROC of Type 1 vs each
+   negative type separately (vs Type 2, vs Type 3, vs Type 4b), with 95% bootstrap CIs (resample games within each pair of
+   types, B = 2000, seed 20261023), plus the mean score per type per view. Labelled "supplementary, pre-specified before
+   test scoring". Used to judge the expectations below.
+3. RQ2: the dev-chosen best single view is V2, which FAILED RQ0.4; report RQ2 as pre-registered with that caveat.
+4. RQ5 (primary): V4 − V3 and V4 − C-length as pre-registered; also C-length − V3 (exploratory, "less is more").
+5. Cross-session nondeterminism: test scores are one sample from a new session (limitation).
+6. ~71 min of monitor calls pre-approved: one run, resume on crash, no re-scoring.
+
+### Pre-stated expectations (from report 12 §5)
+- Type 3 (talk only) should raise false positives mainly in V1; Type 4b (same incentive) mainly in V2; V3/V4 should be
+  fooled less by both.
+- Exploratory subgroups (labelled exploratory): V1 on Type 1 games with vs without a public reveal; Type 4b false
+  positives in V1/V3 given public "deposit" talk.
+- RQ2 wording rule: CI above 0 → "combining helps"; CI includes 0 → "no clear difference at this sample size"; CI below
+  0 → "combining hurts".
+
+### Errors and problems faced
+- None.
+
+### How each problem was solved
+- —
+
+### Decisions taken
+- Test run id: `test_p8` (`runs/test_p8/`), sample_idx 0, all 24 test ids × 8 views, prompt monitor_v3_pairs_ctx16k.
+
+### Open questions for the team
+- None.
+
+---
+
+## 2026-10-25 — [machine: B] Task 14 (part 1): P8 frozen TEST run + Study 2.2 results
+
+### What was implemented or executed
+- `run_monitor.py --run-id test_p8 --prompt monitor_v3_pairs_ctx16k` on the 24 TEST ids × 8 views, sample 0, ONE run:
+  02:34:15 → 03:44:35 (70.3 min), **192 calls, 0 transport errors, 0 parse failures, 0 truncation flags, 0 missing
+  scores**. `ollama ps`: llama3.1:8b 7.3 GB 43%/57% CPU/GPU 16384 throughout. No re-scoring.
+- `scratch/p8_signals.py`: Study 2.3 signals for all games, honest baseline from the 4 DEV Type 2 games only (Dep NA in
+  3 games).
+- `analyse_22.py --mode test` with the frozen file (sha256 check passed) + `--signals` → `runs/test_p8/`.
+  `scratch/p8_extras.py` → supplementary RQ3, exploratory items, `runs/test_p8/errors.md`.
+- **Results (test, n = 24):**
+  - RQ1 AUROC: V1 0.490, V2 0.372, V3 0.736, **V4 0.896 [0.771, 0.979]**, V5 0.705, C-mismatch 0.549, C-length 0.611,
+    C-shuffled 0.632 [0.431, 0.833].
+  - **RQ2 (primary): V3 − V2 = +0.365 [0.094, 0.611] → "combining helps"** (caveat: V2 failed RQ0.4; V2 < 0.5 on test).
+  - RQ4: V3 − C-mismatch +0.188 [−0.028, 0.386].
+  - **RQ5 (primary): V4 − V3 +0.160 [−0.021, 0.351] (no clear difference); V4 − C-length +0.285 [0.017, 0.556].**
+    Exploratory C-length − V3 −0.125 [−0.378, 0.122].
+  - RQ6: V5 − V3 −0.031 [−0.267, 0.236]. RQ7: Dep − V4 −0.173 [−0.382, −0.009] (n = 21).
+  - RQ8: V4 7/12, V2 6/12, V5 5/12, Dep 5/12 (chance 1/10).
+  - Expectations: Type 3 fools V1 — NOT confirmed (reversed: Type 3 fools V2); Type 4b fools V2 — confirmed (and fools
+    V1 more); V3/V4 fooled less — confirmed for V4, partly for V3.
+
+### Errors and problems faced
+- None in the run. V1 / V3 / C-mismatch thresholds are degenerate (0) by the frozen dev rule, as expected and labelled.
+
+### How each problem was solved
+- —
+
+### Decisions taken
+- None beyond the frozen configuration and the lead's addendum (recorded in part 0).
+
+### Open questions for the team
+- Write-up: wording of RQ2 given the V2 caveat; dev-vs-test instability of V3 (0.319 → 0.736).
+- Study 2.3 decision rules (R1–R7) on the same data: next task?
