@@ -35,6 +35,7 @@ def main(argv=None) -> int:
     ap.add_argument("--out", type=Path, default=REPO_ROOT / "runs" / "analysis22")
     ap.add_argument("--freeze-out", type=Path, help="dev mode: where to write the frozen choices JSON")
     ap.add_argument("--monitor-manifest", type=Path, help="dev mode: monitor manifest to record (sha256)")
+    ap.add_argument("--freeze-extra", type=Path, help="dev mode: JSON object added to the frozen file (own keys)")
     ap.add_argument("--frozen", type=Path, help="test mode: frozen choices JSON written in dev mode")
     ap.add_argument("--frozen-sha256", help="test mode: the sha256 recorded in the DEVLOG")
     ap.add_argument("--b", type=int, default=2000)
@@ -56,7 +57,8 @@ def main(argv=None) -> int:
         print(text)
         if a.freeze_out:
             man_sha = A.file_sha256(a.monitor_manifest) if a.monitor_manifest else None
-            sha = A.write_frozen(choices, versions, man_sha, a.freeze_out)
+            extra = A.json.loads(A.read_text_lf(a.freeze_extra)) if a.freeze_extra else None
+            sha = A.write_frozen(choices, versions, man_sha, a.freeze_out, extra)
             print(f"FROZEN choices written to {a.freeze_out}\nsha256 {sha}\n"
                   "Record this sha256 in the DEVLOG BEFORE any test run.")
         return 0

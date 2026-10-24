@@ -131,9 +131,16 @@ def dev_choices(scores: Mapping, labels: Mapping, dev: Sequence[str], views: Seq
                       "code_signal": CODE_SIGNAL}}
 
 
-def write_frozen(choices: dict, prompt_versions: set, monitor_manifest_sha256: Optional[str], path: Path) -> str:
+def write_frozen(choices: dict, prompt_versions: set, monitor_manifest_sha256: Optional[str], path: Path,
+                 extra: Optional[dict] = None) -> str:
+    """Write the frozen dev choices; `extra` (e.g. format choice, num_ctx, digest, RQ0.3 / RQ0.4 outcomes) is added
+    under its own keys and may not overwrite a dev choice."""
     doc = {"kind": "study22_frozen_choices", "prompt_versions": sorted(v for v in prompt_versions if v),
            "monitor_manifest_sha256": monitor_manifest_sha256, **choices}
+    clash = sorted(set(extra or {}) & set(doc))
+    if clash:
+        raise ValueError(f"freeze extra would overwrite {clash}")
+    doc.update(extra or {})
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(doc, indent=1, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
     return file_sha256(path)

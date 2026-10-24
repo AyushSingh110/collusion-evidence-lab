@@ -118,3 +118,21 @@ def test_duplicate_monitor_line_rejected(tmp_path):
     p.write_text(line + "\n" + line + "\n", encoding="utf-8")
     with pytest.raises(ValueError):
         A.load_monitor(p)
+
+
+def test_freeze_extra_added_and_cannot_overwrite_choices(tmp_path):
+    _setup(tmp_path)
+    extra = tmp_path / "extra.json"
+    extra.write_text(json.dumps({"format_choice": "monitor_v1_ctx16k", "num_ctx": 16384, "rq03": {"pass": True}}),
+                     encoding="utf-8")
+    frozen = tmp_path / "frozen.json"
+    assert analyse_22.main(["--mode", "dev", *_args(tmp_path, "--freeze-out", str(frozen), "--freeze-extra",
+                                                    str(extra))]) == 0
+    doc = json.loads(frozen.read_text(encoding="utf-8"))
+    assert doc["format_choice"] == "monitor_v1_ctx16k" and doc["num_ctx"] == 16384 and doc["rq03"] == {"pass": True}
+    assert doc["best_single_view"] == "V1"
+    bad = tmp_path / "bad.json"
+    bad.write_text(json.dumps({"best_single_view": "V2"}), encoding="utf-8")
+    with pytest.raises(ValueError):
+        analyse_22.main(["--mode", "dev", *_args(tmp_path, "--freeze-out", str(tmp_path / "f2.json"), "--freeze-extra",
+                                                 str(bad))])

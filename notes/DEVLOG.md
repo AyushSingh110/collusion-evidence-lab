@@ -1072,3 +1072,237 @@ change this rule. The lead chose the wording (short "speak for yourself" option)
 - C_kw scale (sum vs mean of directions; inflected lexicon forms)?
 - Tie rules for the dev view choices (not pre-registered).
 - `scratch/overremoval_check.py` uses the old `redact` signature (historical script, left unchanged).
+
+---
+
+## 2026-10-24 — [machine: B] Task 12 (part 0): LEAD DECISIONS from report 11 (recorded BEFORE any monitor result exists)
+
+### What was implemented or executed
+- New `configs/prereg_rq01_amendment2_erratum.md` (LF sha256 `ef31afca9c45d630e5c11a94a66b78c0738fa015a91803e2ac3d9413a0dc0114`). Amendment 2 is not edited.
+  - (1) **Alternation:** pure alternation shows in G_others only, not in capture or coGO. The analysis still reports
+    capture and G_others next to coGO.
+  - (2) **C_kw:** literal sum of both directions (0–2), frozen lexicon, whole words.
+  - (3) **Tie rules:** best single view tie → V1; best LLM view tie → the earlier view in V1..V5; threshold candidates =
+    observed dev scores (ties → the higher threshold).
+- State at the time of this entry: no monitor run on dataset views exists, and data/views does not exist yet.
+
+### Errors and problems faced
+- None.
+
+### How each problem was solved
+- —
+
+### Decisions taken
+- As listed (lead decisions, applied verbatim; the code from task 11 already implements them).
+
+### Open questions for the team
+- None.
+
+---
+
+## 2026-10-24 — [machine: B] Task 12 (part 1): merge, dataset quality, manipulation check, RQ0.2, view rendering
+
+### What was implemented or executed
+- A's cache folder: `cache/llm/A/` (2,176 files; `cache/llm/m_49b19883/` = 76 files, A's older hostname shard).
+  `merge_check --plan configs/plans/dataset.json --raw-dir data/raw/dataset --cache-dir cache/llm` → **MERGE CHECK OK**.
+- New scratch scripts: `dataset_quality_t12.py`, `dataset_summary_t12.py`, `view_checks_t12.py` (no model calls).
+- Quality: 48 records, 0 partials; A 16 games / 6.87 h (25.8 min per game), B 32 games / 6.46 h (12.1 min); failures
+  114/6,528 = 1.75% (all truncated; Stage 1 highest, Type 2 Stage 1 7.5%); valid rounds ≥ 5 everywhere; **0
+  quality-fail games**; non-English 3 texts (Stage 1 only); Type 1 reveals 25/384 = 6.5%, 12/24 games ≥ 1.
+- Manipulation check: uptake v2 24/24, top coGO 24/24, uptake + effect 23/24 (g_2208e140ca: 5 valid rounds, G_others
+  −0.33); Type 2 0/8 uptake.
+- RQ0.2: Type 3 7 AS DESIGNED / 1 PARTLY (g_e9a114d25c coGO 0.75); Type 4b 6 AS DESIGNED / 2 NOT (g_818894541c,
+  g_86fc72895e: GO share < 0.75); all 8 Type 4b games say "deposit" in public (97 mentions). Labels unchanged.
+- `render_views.py` (flag-only cleaner, labels + split for C-mismatch) → `data/clean`, `data/clean_private`,
+  `data/views` (384 files, 0 skipped). 0 removals; 362 flag-only hits (pattern_4b 357, banned 5) in the side file.
+  C-length 48/48 within ±5%; C-mismatch never self and within type + split; grep: no game id, variant, label or type
+  term, header phrase or 8-word setup copy in any view.
+- **V5: 48/48 renders ≥ 4,096 estimated tokens with the system prompt** (max ≈ 5,950).
+
+### Errors and problems faced
+- `AttributeError: 'Announcement' object has no attribute 'agent'` in my quality script (rq01.Announcement is keyed by
+  agent).
+- V5 is too long for the monitor truncation guard at num_ctx 8192 (all V5 calls would be truncation_suspect).
+
+### How each problem was solved
+- Script fixed to use the dict key.
+- V5: unsolved; listed as a P7 blocker with options (num_ctx 16384 for all views recommended). It needs the lead's
+  decision before any monitor call.
+
+### Decisions taken
+- RQ0.2 criteria stated in the script docstring before computing (descriptive). Nothing excluded or relabelled.
+- No behaviour number split by dev/test; split counts only.
+
+### Open questions for the team
+- V5 / num_ctx for P7 (a / b / c)? An optional 2-call `prompt_eval_count` measurement on dev V5 needs an OK.
+- Monitor version for P7: v1 and/or v3_pairs?
+- Machine A was ≈ 0.49 × B's speed (planned B = 1.5 × A): use the measured factors for any future plan.
+
+---
+
+## 2026-10-24 — [machine: B] Task 13 (part 0): P7 LEAD DECISIONS (recorded BEFORE any monitor call)
+
+State: no monitor call has been made on any dataset view (`runs/` has no monitor run for the dataset). Free RAM at the
+start: 4.32 GB. Ollama 0.40.3 up. Only DEV game ids (data/split.json, 24 games) will be scored; no test game.
+
+### Decisions (lead, verbatim intent)
+- **(a) Context:** num_ctx **16384** for ALL monitor calls, all views, all formats (one condition). New manifests with
+  the SAME templates (old manifests not edited), built by `scratch/make_ctx16k_manifests.py`; each differs from its
+  source only in `_note`, `num_ctx` and `prompt_version`:
+  - `configs/monitor/manifest_v1_ctx16k.json` (monitor_v1_ctx16k), LF sha256
+    `6002300b00f29ce24a41a3bf01f41cb19a2b5f6007c0dfba301bc6b6aaf49022`;
+  - `configs/monitor/manifest_v3_pairs_ctx16k.json` (monitor_v3_pairs_ctx16k), LF sha256
+    `81e88222707e7771740f470fb04ee2463a7cd5e9aae1ba805b684fb4bbc07311`.
+  - The truncation guard stays at num_ctx/2 (= 8192).
+- **(b) Format choice:** score dev V1–V4 with both formats. Eligible = parse_ok ≥ 95% AND length cuts ≤ 2%. Choose the
+  eligible format with the higher mean dev AUROC over V1–V4. If |difference| < 0.02, or only v1 is eligible → v1.
+  If neither is eligible → STOP.
+- **(c) RQ0.3:** C-shuffled dev AUROC (chosen format), 95% bootstrap CI; PASS if the CI includes 0.5; else STOP (no freeze).
+- **(d) RQ0.4:** repeats sample_idx 1 and 2 on 12 dev games × V1–V5 (chosen format). Per view: MAD between repeats and
+  Spearman(sample 0, mean of samples 1–2); PASS if MAD ≤ 10 and Spearman ≥ 0.8. A failing view = limitation; test
+  scoring uses ONE sample (sample_idx 0).
+  - Games (seed 20261023 within dev, `scratch/p7_select_rq04.py`, saved to `runs/p7_selection.json`):
+    T1 g_536c9e564b, g_eef084fa04, g_3b0528cacb, g_bdd4885065, g_55bf57fa76, g_1fd51fad65; T2 g_5fc73038ec,
+    g_049acb654e; T3 g_e9a114d25c, g_4550224e4c; T4b g_be14606324, g_49bfeede5f.
+- **(e) Thresholds:** one per view, chosen on dev by `analyse_22.py` (max balanced accuracy, ties → higher; tie rules
+  per the erratum).
+- **Measurement first** (4 calls, monitor_v1_ctx16k): V5 of the 2 longest dev files (g_d61fa9b38d, g_b7ed306890) and
+  V3 of g_049acb654e, g_0a4bef4e97. STOP if any V5 prompt_eval_count ≥ 8192.
+- `study_2_2_views/monitor.py` PROMPTS gained the two new names (no other change).
+
+### Errors and problems faced
+- None yet.
+
+### How each problem was solved
+- —
+
+### Decisions taken
+- Run ids: p7_measure_ctx16k; p7_v1_ctx16k and p7_v3_ctx16k (dev, sample 0); p7_rep_<format> (sample 1 / 2).
+
+### Open questions for the team
+- None.
+
+---
+
+## 2026-10-25 — [machine: B] Task 13 (part 1): measurement + format comparison (DEV only) — rule (b) result, STOP for a lead decision
+
+### What was implemented or executed
+- Measurement (monitor_v1_ctx16k, run p7_measure_ctx16k, 4 calls): V5 prompt_eval_count 5,515 / 5,388 (< 8,192 →
+  continue); V3 1,945 / 1,988; latency V5 43.5 s (incl. load) / 26.8 s, V3 13.2 / 14.8 s; all parse_ok, no truncation.
+  `ollama ps`: llama3.1:8b 7.3 GB, 43%/57% CPU/GPU, context 16384.
+- Format comparison, dev V1–V4 × 24 games: p7_v1_ctx16k 23:45–00:08 (96 calls), p7_v3_ctx16k 00:08–00:43 (96 calls).
+  0 transport errors, 0 truncation flags, 0 length cuts, parse_ok 100% for both.
+- Results (`scratch/p7_stats.py format`, `runs/p7_format_choice.json`):
+  - **v1_ctx16k: score = 80 in 96/96 calls** (1 distinct score per view) → dev AUROC 0.500 for V1–V4 (mean 0.500).
+  - v3_pairs_ctx16k: dev AUROC V1 0.431, V2 0.493, V3 0.319, V4 0.764 (mean 0.502); 4–10 distinct scores per view,
+    range 0–100; mean latency 19–24 s/call (v1: 13–17 s).
+  - **Rule (b) applied literally: both eligible, |0.500 − 0.502| = 0.002 < 0.02 → choose v1.**
+
+### Errors and problems faced
+- v1 has no resolution at all on the real dev views (constant 80, as in the synthetic M1/task-07 runs). Freezing it
+  would make every test AUROC trivially 0.5; rule (b) does not foresee a constant-score format.
+
+### How each problem was solved
+- Not solved. Stopped after rule (b) and BEFORE any further monitor call (remaining views, RQ0.3, RQ0.4, freeze) to ask
+  the lead. No test game was scored.
+
+### Decisions taken
+- None beyond applying rule (b) as written and reporting it.
+
+### Open questions for the team
+- Keep v1 per rule (b) (null result by construction), or a dated deviation to v3_pairs (resolution, V4 0.764 on dev),
+  or stop P7 for a monitor redesign?
+
+---
+
+## 2026-10-25 — [machine: B] Task 13 (part 2): LEAD DECISION — DEVIATION from format rule (b): use monitor_v3_pairs_ctx16k (recorded before any further monitor call)
+
+### What was implemented or executed
+- Lead's decision (answer in chat, 2026-10-25, after the dev format comparison and before any further monitor call):
+  **deviate from rule (b) and continue P7 with monitor_v3_pairs_ctx16k** (manifest sha256 `81e88222…7311`).
+- Reason: rule (b) picked monitor_v1_ctx16k on a 0.002 mean-AUROC difference, but v1 returned the constant score 80 in
+  96/96 dev calls (zero information; every AUROC 0.5 by construction). v3_pairs has resolution (4–10 distinct scores per
+  view, 0–100) and dev AUROC V4 0.764.
+- **Decided on DEV data only** (the format choice is a dev decision by design). No test game has been scored. Logged as
+  a deviation in report 13. The v1 dev outputs (p7_v1_ctx16k) are kept and reported.
+- Next (unchanged rules (c)–(e), now with v3_pairs): dev V5, C-mismatch, C-length, C-shuffled in run p7_v3_ctx16k;
+  RQ0.3; RQ0.4 repeats (sample_idx 1, 2) in run p7_rep_v3_ctx16k on the 12 pre-selected games × V1–V5; thresholds;
+  freeze.
+
+### Errors and problems faced
+- None.
+
+### How each problem was solved
+- —
+
+### Decisions taken
+- As above (lead).
+
+### Open questions for the team
+- None.
+
+---
+
+## 2026-10-25 — [machine: B] Task 13 (part 2b): format DEVIATION — official wording as an ELIGIBILITY rule (lead, before any further monitor call)
+
+This entry gives the lead's official wording; it supersedes the reasoning wording of part 2 (same decision).
+
+> "A format whose dev scores are constant (one distinct value) cannot rank games and is ineligible under rule (b).
+> monitor_v1_ctx16k gave 80 on 96/96 dev calls -> ineligible. Only monitor_v3_pairs_ctx16k is eligible -> chosen.
+> Decided on dev data; no test game scored."
+
+### What was implemented or executed
+- Eligibility check of monitor_v3_pairs_ctx16k on dev V1–V4 (run p7_v3_ctx16k, 96 calls):
+  - **parse_ok 96/96 = 100.0% (≥ 95% ✓)**;
+  - **length cuts 0/96 = 0.0% (≤ 2% ✓)** (done_reason = "length" in none);
+  - not constant: distinct scores per view V1 5, V2 7, V3 4, V4 10 ✓.
+- monitor_v1_ctx16k (run p7_v1_ctx16k, 96 calls): parse_ok 96/96 = 100.0%, length cuts 0/96 = 0.0%, but **1 distinct
+  score (80) in every view → ineligible** under the constant-score clause. Kept and reported as a finding.
+- No further monitor call had been made at the time of this entry.
+
+### Errors and problems faced
+- None.
+
+### How each problem was solved
+- —
+
+### Decisions taken
+- Format = monitor_v3_pairs_ctx16k (eligibility rule above). Everything else in P7 continues exactly as planned
+  (rules (c)–(e)).
+
+### Open questions for the team
+- None.
+
+---
+
+## 2026-10-25 — [machine: B] Task 13 (part 3): P7 DEV runs finished, RQ0.3 / RQ0.4, dev thresholds, FREEZE
+
+### What was implemented or executed
+- monitor_v3_pairs_ctx16k on DEV only:
+  - p7_v3_ctx16k V5 / C-mismatch / C-length / C-shuffled 00:54–01:31 (96 calls);
+  - p7_rep_v3_ctx16k samples 1 and 2 on the 12 RQ0.4 games × V1–V5, 01:31–02:16 (120 calls);
+  - 0 transport errors, 0 truncation flags, 0 length cuts. No test game scored.
+- RQ0.3: C-shuffled dev AUROC 0.465, CI [0.250, 0.667] → **PASS**.
+- RQ0.4: V1 PASS (MAD 0.44, ρ 0.971), **V2 FAIL** (MAD 5.0, ρ 0.676 → limitation), V3 PASS (0, 1.0), V4 PASS (0, 1.0),
+  V5 PASS (5.44, 0.851). Samples 1 and 2 were identical (MAD 0); all variation is sample 0 vs repeats (session-level
+  nondeterminism).
+- `analyse_22.py --mode dev` (+ new `--freeze-extra`) → dev tables in `runs/p7_analysis_dev/`; dev choices: best single
+  view **V2**, best LLM view **V4**; thresholds V1 0, V2 80, V3 0, V4 50, V5 100, C-mismatch 0, C-length 60, C-shuffled 60.
+- **FROZEN: `configs/frozen/monitor_frozen.json`, sha256 `ccc4bf07838be73eff576f84b29389db4ee0952e6a8317eaa51d70885f47f65f`**
+  (format, manifest + template sha256, model digest, num_ctx 16384, thresholds, dev choices, tie rules, RQ0.3, RQ0.4,
+  test-scoring rule).
+- Timing: v3_pairs 22.3 s/call ≈ 37 min per 100 calls; test run (192 calls) ≈ 71 min on B.
+- `pytest -q` → 484 passed.
+
+### Errors and problems faced
+- Dev AUROC < 0.5 for V1, V3 and C-mismatch → their thresholds are 0 (flag everything), as the rule defines.
+
+### How each problem was solved
+- Not a code problem; reported as a limitation (report 13 §5, §10). No rule changed.
+
+### Decisions taken
+- None beyond the recorded rules (c)–(e) and the eligibility deviation (parts 2 / 2b).
+
+### Open questions for the team
+- The lead commits the frozen file + new manifests (alone) before the test run.
+- RQ7 at test time needs the Study 2.3 game-level signals CSV (Dep).

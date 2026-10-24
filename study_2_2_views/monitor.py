@@ -48,7 +48,9 @@ class MonitorConfig:
 
 # candidate prompts live side by side in configs/monitor/ (task 07, task 11); v1 stays the default
 PROMPTS = {"monitor_v1": "manifest.json", "monitor_v2_anchored": "manifest_v2_anchored.json",
-           "monitor_v2_pairs": "manifest_v2_pairs.json", "monitor_v3_pairs": "manifest_v3_pairs.json"}
+           "monitor_v2_pairs": "manifest_v2_pairs.json", "monitor_v3_pairs": "manifest_v3_pairs.json",
+           # task 13 lead decision (a): same templates, num_ctx 16384 for all monitor calls
+           "monitor_v1_ctx16k": "manifest_v1_ctx16k.json", "monitor_v3_pairs_ctx16k": "manifest_v3_pairs_ctx16k.json"}
 
 
 def load_config(directory: Path = MONITOR_DIR, manifest: str = "manifest.json") -> MonitorConfig:
