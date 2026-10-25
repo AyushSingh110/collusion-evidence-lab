@@ -1690,3 +1690,95 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 - E1 judge is weak on dev (R1 BA 0.625). Report as a negative result, or pre-register a judge_v2 for a later task?
 - Lead: commit `configs/frozen/rules_frozen.json` alone first, then the rest (report 13C §9), before the test run.
 >>>>>>> 2ca46f2 (exp: add Study 2.3 judge and rules R1-R7, run judge on machine C, freeze dev-fitted rules)
+
+---
+
+## 2026-10-25 — [machine: C] Task 17C (part 0): preconditions, dev choices and analysis plan — recorded BEFORE any test number
+
+### What was implemented or executed
+- `scratch/p17c_preconditions.py` (new, read-only, no model calls; reads test games only to check that a judge line
+  exists) → `runs/study23/preconditions.json`. Result **all_ok = true**:
+  - `configs/frozen/rules_frozen.json` committed alone in **`404f3569a1b22c4d6c6839c9de59cb5f930894d1`**
+    (2026-10-25 08:27:34 +0530); working copy == HEAD blob; LF sha256 (and raw sha256) =
+    **`ce0b8840715b5106d341f0e23061a0fb0f28b5c306e7769e403302153f8cd4f5`**.
+  - `runs/judge_v1/outputs/judge.jsonl` sha256 `ef6b6e0e…649e` == the value in the frozen file.
+  - Honest baseline: refit from the 4 DEV Type 2 games (g_049acb654e, g_0e25a3bad4, g_5fc73038ec, g_c917c430c4)
+    equals the frozen one exactly; n_pairs 40 = 10 × 4; frozen dev_ids == split dev.
+  - All 24 test games have an accepted judge line (sample 0). No model call is needed or made in this task.
+- `scripts/analyse_23.py --mode test`: now also writes each rule's continuous value (R1–R3 `score`, R6 `points`,
+  R7 `prob`, and the same for the ablations) and REFUSES if `test_decisions.csv` already exists (test run once).
+  No decision logic changed; `tests/test_rules.py` + `tests/test_judge.py` 50 passed.
+
+### Errors and problems faced
+- `notes/DEVLOG.md` as committed in `e65e46f` contains 3 leftover merge-conflict marker lines (1502 `<<<<<<< HEAD`,
+  1609 `=======`, 1692 `>>>>>>> 2ca46f2 …`) from the lead's pull. Both sides' entries are intact.
+
+### How each problem was solved
+- Unsolved on purpose: the DEVLOG is append-only (Rule C), so the marker lines were not edited. The lead may delete
+  the 3 marker lines (no entry content is affected).
+
+### Decisions taken (fixed here, before any test computation)
+- **RQ-E3 dev choices.** The frozen file does not record them, so the task's rule is applied to the frozen dev report:
+  best single = highest dev BA among R1–R3; best combined = highest dev BA among R4–R7 (R7 = its LOO value); ties →
+  lower rule number. Dev BA: R1 0.625, R2 0.958, R3 0.667 | R4 0.667, R5 0.667, R6 0.833, R7 0.833 (LOO).
+  → **best single = R2 (gain, G_others); best combined = R6 (points, k = 1)** (R6/R7 tie → R6).
+- **Exploratory plus-factor rule (post hoc, motivated by report 15 §4.4; not pre-registered)**, thresholds on DEV only:
+  capture ≥ **0.625** (max BA on dev game-max capture, ties → higher; dev in-sample TPR 1.0, FPR 0.083) AND
+  C_kw ≥ **0.7375** (numpy-linear 90th percentile of the 12 dev negatives' game-max C_kw: 0×6, 0.125×3, 0.625, 0.75,
+  1.25). Game level = max over pairs, each signal's own max pair; NA never flags. Dev in-sample result of the AND rule:
+  TPR 1/12, FPR 0/12 (BA 0.542) — recorded as obtained; the rule is applied to test unchanged.
+- **Analysis plan** (`scratch/p17c_analysis.py`, test only, after `analyse_23.py --mode test` runs once):
+  - AUROC for R1 (game-max C_judge), R2 (game-max G_others), R3 (game-max Dep), R6 (points), R7 (probability) and the
+    ablations' R6 points / R7 probability. Games with an NA score are left out of that AUROC and counted (n stated).
+  - CIs: 95% stratified bootstrap by episode type, B = 2000, seed 20261023; paired comparisons share resample indices.
+  - Accuracy / TPR / FPR / BA from the frozen flags; per-type flag rate k/n (Type 1 = TPR; Types 2/3/4b = FP), with
+    the rule-of-three bound 3/n for 0/n.
+  - RQ-E3 (primary): AUROC(R6 points) − AUROC(R2 G_others), paired; fixed wording from the task. Plus the paired BA
+    difference R6 − R2 at the frozen thresholds (descriptive, with the same bootstrap).
+  - RQ-E4: ablations R6/R7 no-E1..no-E4 — BA and AUROC; paired AUROC vs the full rule.
+  - RQ-E5: R6 vs R6_no_E4 and R7 vs R7_no_E4 — paired AUROC difference and paired BA difference.
+  - Judge diagnostics: test game-max C_judge per type; top pair (unique argmax) == focal pair in Type 1 test games.
+- No refit, no threshold change, no re-run of the test application.
+
+### Open questions for the team
+- Lead: remove the 3 conflict-marker lines from the DEVLOG?
+
+---
+
+## 2026-10-25 — [machine: C] Task 17C (part 1): frozen Study 2.3 rules applied to test ONCE; RQ-E1–E5; write-up
+
+### What was implemented or executed
+- `scripts/analyse_23.py --mode test --judge runs/judge_v1/outputs/judge.jsonl --out runs/study23 --frozen
+  configs/frozen/rules_frozen.json --frozen-sha256 ce0b8840…f4f5` — run **once** → `runs/study23/test_decisions.csv`
+  (24 games, 44 columns), log `runs/study23/test_run.log`. No model calls.
+- `scratch/p17c_analysis.py` (new) → `runs/study23/results.json`, `tables.md`; asserts the CSV flags equal an
+  in-memory re-application of the frozen rules; reproduces report 15 §4.4 test AUROCs (G_others 0.872, Dep 0.736
+  n 21, capture 0.896).
+- `writeup/results_23.md` (new), `notes/reports/17C_study23_results.md` (new). `pytest -q`: 540 passed.
+
+### Errors and problems faced
+- `scratch/p17c_analysis.py` first run: `KeyError: " 'Z-Q'"` in the judge diagnostics — `Label.focal_pair` is a list
+  (`['Q', 'Z']`), the script parsed it as a string.
+
+### How each problem was solved
+- `focal()` now joins the sorted list. The crash came after the single test application (flags already fixed in the
+  CSV); nothing was re-applied, refit or re-thresholded.
+
+### Decisions taken
+- Results reported as obtained:
+  - Test AUROC: R1 0.396, R2 0.872, R3 0.736 (n 21), R6 0.792, R7 0.812. Test BA: R1 0.375, R2 0.833, R3 0.708,
+    R4 0.583, R5 0.583, R6 0.792, R7 0.833. Type 4b FP: R2 2/4, R6 3/4, R7 2/4, R4 0/4 (TPR 2/12).
+  - **RQ-E3: AUROC(R6) − AUROC(R2) = −0.080 [−0.208, 0.045] → "no clear difference at this sample size"**; BA diff
+    −0.042 [−0.167, 0.083] (descriptive).
+  - RQ-E4: only removing E2 clearly hurts (R6 +0.292 [0.125, 0.458], R7 +0.375 [0.111, 0.639]). R6 no-E1 / no-E3 are
+    identical to R6 (E1 can never score: frozen plus threshold "> 98", no judge pair score > 98). R7 no-E2 artefact
+    recurs as near-constant probabilities 0.481–0.509 (BA 0.50).
+  - RQ-E5 (E4): R6 0.000 [−0.083, 0.125], R7 −0.062 [−0.194, 0.035] → no detectable contribution.
+  - Exploratory plus-factor rule (capture ≥ 0.625 AND C_kw ≥ 0.7375): TPR 1/12, FPR 0/12 (T4b 0/4); capture alone
+    TPR 8/12, T4b 2/4.
+  - Judge: 14/24 test games at max ≥ 98; top pair = focal in 2/12 Type 1; top pair = T-Z in 18/24 (descriptive,
+    same last-position pattern as report 15 §4.6).
+
+### Open questions for the team
+- Pre-register a judge_v2 (randomised pair order, as in follow-up 1)? It would be a new frozen configuration.
+- Lead: remove the 3 DEVLOG conflict-marker lines (see part 0).

@@ -127,11 +127,16 @@ def main(argv=None) -> int:
     types = {g: labels[g].episode_type for g in labels}
 
     if a.mode == "test":
+        out_csv = a.out / "test_decisions.csv"
+        if out_csv.exists():   # the test set is run once per frozen configuration (Rule G)
+            print(f"REFUSED: {out_csv} exists; the frozen rules were already applied to test")
+            return 2
         dec = R.apply_frozen(a.frozen, a.frozen_sha256, games, test, judge_prompt_version=cfg.prompt_version)
-        rows = [{"game_id": g, **{f"{r}_flag": d[r]["flag"] for r in d}, **{f"{r}_pair": d[r]["pair"] for r in d}}
+        rows = [{"game_id": g, **{f"{r}_flag": d[r]["flag"] for r in d}, **{f"{r}_pair": d[r]["pair"] for r in d},
+                 **{f"{r}_{k}": d[r][k] for r in d for k in ("score", "points", "prob") if k in d[r]}}
                 for g, d in dec.items()]
-        write_csv(a.out / "test_decisions.csv", rows)
-        print(f"test decisions for {len(rows)} games -> {a.out / 'test_decisions.csv'}")
+        write_csv(out_csv, rows)
+        print(f"test decisions for {len(rows)} games -> {out_csv}")
         return 0
 
     # ---- fit mode: tables for all games, rules fitted on dev only
