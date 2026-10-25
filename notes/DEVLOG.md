@@ -2449,3 +2449,96 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 - Lead: transfer data/replication/* and runs/replication_llama/outputs/monitor.jsonl to machine C; OK for the judge
   and granite runs.
 - Write-up update with the replication results (separate task).
+
+---
+
+## 2026-10-25 — [machine: C] Task 22C (part 0): replication preconditions on C — recorded BEFORE any model call
+
+### What was implemented or executed
+- Read-only checks, all PASS:
+  - Tool shell `COLLUSION_LAB_MACHINE=C`; working tree clean; HEAD `f2224fb`.
+  - `configs/prereg_replication.md` (`2bc3d3a`, LF sha256 `d9d25b58…a1f9`) and
+    `configs/prereg_replication_amendment1.md` (`306502e`, LF sha256 `778cf66b…c7bf7`) == their blobs.
+  - Task 19C code (`5d9acae`) and task 20C code (`f2224fb`) committed, == HEAD.
+  - `data/replication/{clean (48 + 2 leak files), clean_private (48), views (8 × 48 + manifest), labels.csv,
+    quality_fail.json}` present (set up from the lead's transfer, 2026-10-25 23:26; ids consistent across labels,
+    clean and all 8 view folders; 0 overlap with the original 48). `labels.csv` sha256
+    `27a0d4bfcfd5831b0e100482276d5ab36f663bd010ef0a84ada5194771742114` == report 18b. `quality_fail` = [] (0 games).
+  - Ollama 0.40.3; llama3.1:8b `46e0c10c…` and granite3.3:8b `fd429f23…` MATCH (check_env NOT READY only for
+    qwen2.5:7b, accepted). `ollama ps` empty. No `runs/judge_v1_replication/` or `runs/rq9_granite_replication/` yet.
+  - Machine B's `runs/replication_llama/outputs/monitor.jsonl` is NOT on this machine yet (step 4 pending).
+
+### Errors and problems faced
+- None.
+
+### How each problem was solved
+- n/a.
+
+### Decisions taken
+- Order: judge (pre-approved, ~25 min) → one Study 2.3 analysis → granite (3 measured calls, then the rest if the
+  estimate ≤ 3.5 h) → G1–G4 only once B's llama file is here. One model at a time.
+
+### Open questions for the team
+- None yet.
+
+---
+
+## 2026-10-26 — [machine: C] Task 22C (part 1): replication judge (48 calls) + the ONE Study 2.3 replication analysis
+
+### What was implemented or executed
+- `scripts/run_replication_c.py --run judge --yes` (pre-approved): 2026-10-25 23:33:06 → 23:53:23 (20.3 min), run
+  `judge_v1_replication`. 48/48 written, 48 parse_ok, 48 accepted, 0 transport errors, 0 truncation-suspect,
+  0 length cuts; digest `46e0c10c…` and `judge_v1` on every line; sample 0 only; machine id `C` (cache
+  `cache/llm/C/`); latency median 26.7 s, max 37.1 s; prompt_eval max 1,510 (guard 8,192); eval max 138.
+- ONE run of `scripts/analyse_replication_23.py --clean-dir data/replication/clean --labels
+  data/replication/labels.csv --judge runs/judge_v1_replication/outputs/judge.jsonl --quality
+  data/replication/quality_fail.json` → `runs/replication_23/{results.json, decisions.csv}`; side-by-side tables with
+  17C by `scratch/p22c_tables.py` → `runs/replication_23/tables.md`.
+- Results (primary, n = 48; sensitivity identical, 0 quality-fail games):
+  - E1 AUROC(R2 gain) 0.885 [0.786, 0.961] → **confirmed** (17C: 0.872 [0.736, 0.986]).
+  - E2 AUROC(R1 judge) 0.543 [0.392, 0.693] → **confirmed** (17C: 0.396 [0.205, 0.597]).
+  - E3 AUROC(R6) − AUROC(R2) −0.059 [−0.135, 0.010] → **not replicated** (17C: −0.080 [−0.208, 0.045]).
+  - E3b AUROC(R7) − AUROC(R2) −0.042 [−0.155, 0.067] → **not replicated** (secondary).
+  - E4 R2 flags T1 18/24, T2 1/8, T3 1/8, T4b 3/8; R6 flags T1 23/24, T2 3/8, T3 2/8, T4b 3/8.
+  - Secondary plus-factor rule: 0/24 T1, 0/24 negatives (17C: 1/12, 0/12).
+  - R3 Dep NA in 1 game (left out of its AUROC).
+
+### Errors and problems faced
+- None. (The part-1 timestamps above are 2026-10-25 local time; the DEVLOG date is the entry date.)
+
+### How each problem was solved
+- n/a.
+
+### Decisions taken
+- Results recorded as obtained; nothing re-run. Granite run started next (one model at a time).
+
+### Open questions for the team
+- None.
+
+---
+
+## 2026-10-26 — [machine: C] Task 22C (part 2): granite replication run (192 calls); G1–G4 pending the llama file
+
+### What was implemented or executed
+- 3 measured calls (V3, sample 0, run `rq9_granite_replication`): 32.8 / 25.1 / 35.5 s, prompt_eval 2,276 / 2,376 /
+  2,364, eval 117 / 127 / 136, 3/3 parse_ok, 0 truncation, done_reason stop. `ollama ps`: 7.8 GB, 100% GPU, 16384.
+- Estimate 189 × 55 s ≈ 2.9 h (≤ 3.5 h, pre-approved). Full run 2026-10-26 00:12:25 → 03:02:29 (2 h 50 min):
+  189 written + 3 skipped (measured), 0 transport errors, 0 truncation-suspect. Total 192/192 parse_ok, 0 length
+  cuts, 0 missing scores; digest `fd429f23…` and `monitor_v3_pairs_ctx16k_granite` on every line; both sessions
+  machine `C`; `ollama ps` 78/78 snapshots 7.8 GB, 100% GPU, context 16384. Mean latency V1 44.8 / V2 39.3 /
+  V3 69.8 / V4 46.7 s.
+- `runs/replication_llama/outputs/monitor.jsonl` (machine B) is NOT on this machine → `analyse_replication_granite.py`
+  NOT run; G1–G4 pending. No granite-only number was computed or looked at.
+- `notes/reports/22C_replication_c.md` written.
+
+### Errors and problems faced
+- None.
+
+### How each problem was solved
+- n/a.
+
+### Decisions taken
+- Keep the single amendment-1 analysis run blind: no granite AUROC or G number before the llama file is here.
+
+### Open questions for the team
+- Machine B: ETA for `runs/replication_llama/outputs/monitor.jsonl` (+ manifest)?
