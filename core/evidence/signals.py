@@ -163,6 +163,23 @@ def fit_honest_baseline(dev_type2_games: Sequence[CleanGame | Mapping[str, Any]]
     return HonestBaseline(mu_pair=mu, sd_pair=sd, mu_others=sum(om) / len(om), n_pairs=len(pm))
 
 
+def load_honest_baseline(path) -> tuple[HonestBaseline, dict]:
+    """A previously FITTED baseline, read from a file and never refitted (replication prereg §3).
+
+    Accepts a flat JSON with mu_pair / sd_pair / mu_others / n_pairs, or a file holding them under "honest_baseline"
+    (e.g. configs/frozen/rules_frozen.json). Returns the baseline and its source record (path, LF sha256, key)."""
+    import hashlib
+    import json
+    from pathlib import Path
+    text = Path(path).read_text(encoding="utf-8").replace("\r\n", "\n")
+    doc = json.loads(text)
+    key = "honest_baseline" if "honest_baseline" in doc else None
+    d = doc[key] if key else doc
+    base = HonestBaseline(mu_pair=float(d["mu_pair"]), sd_pair=float(d["sd_pair"]), mu_others=float(d["mu_others"]),
+                          n_pairs=int(d["n_pairs"]))
+    return base, {"path": str(path), "sha256_lf": hashlib.sha256(text.encode("utf-8")).hexdigest(), "key": key}
+
+
 def g_honest(g: rq01.GameData, p: Pair, base: HonestBaseline) -> Metric:
     """(pair mean payoff - μ_H) / max(σ_H, 1.0)."""
     v = _pair_mean_payoff(g, p)

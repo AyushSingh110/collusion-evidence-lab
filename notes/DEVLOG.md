@@ -2127,3 +2127,41 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 ### Open questions for the team
 - Lead: approve/commit the draft amendment ALONE before any replication view is rendered?
 - Machine B: write the quality-fail list in the agreed JSON format and render with `--clean-out data/replication`?
+
+---
+
+## 2026-10-25 — [machine: B] Task 18c: additive Study 2.2 code for the replication (no model calls; generation running)
+
+### What was implemented or executed
+- Additive edits:
+  - `scripts/render_views.py`: `--no-split` + `load_mapping_unsplit` (C-mismatch within type across the whole set).
+  - `core/evidence/signals.py`: `load_honest_baseline` (baseline from a file + source record, never refitted).
+- New files:
+  - `scripts/signals_from_clean.py`;
+  - `study_2_2_views/replication.py` (R1–R10 SPEC + RULES with the prereg outcome maps; secondary measures);
+  - `scripts/analyse_replication_22.py` (primary all games + sensitivity without quality-fail; refusal checks);
+  - `scratch/p18_ready.py` (post-generation checklist; prints only without --after-generation);
+  - `tests/test_replication22.py` (53 tests).
+- `pytest -q`: 631 passed, 1 skipped (machine C's 17C test, outputs not on B).
+- Regression proofs on the original data, all byte-identical:
+  - the default render reproduces data/views (manifest equal; 384 view + 48 clean files);
+  - `analyse_22 --mode test` reproduces runs/test_p8's four CSVs;
+  - the replication module reproduces report 14's R1/R2/R3/R4/R5/R8/R9 numbers on the test set;
+  - `signals_from_clean.py` with the loaded baseline reproduces runs/p8_signals game + pair tables.
+- Nothing under data/raw/replication read; no model calls; no generator or study_2_3_evidence file edited.
+
+### Errors and problems faced
+- The first test run had 1 failure: a monitor file with only sample-1 lines hit the frozen prompt-version check
+  (empty version set) before the sample check. It was still refused, but with a misleading message.
+
+### How each problem was solved
+- The sample-index check now runs first. 53/53 pass.
+
+### Decisions taken
+- R2 / R10a "below" and R9 "above / below" are coded with the prereg's "otherwise" outcome (not confirmed / fail).
+- Last-position-max = T-Z-max share (fixed order), with the tie-aware no-bias expectation.
+- Quality input = {"quality_fail": [...]}.
+
+### Open questions for the team
+- A writer for the replication quality file is still needed (report 12's scratch script as the template).
+- Machine C: a split-free Study 2.3 entry point (its own folder).

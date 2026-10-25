@@ -40,6 +40,13 @@ def load_mapping(labels_csv: Path, split_json: Path) -> dict[str, tuple]:
         return {r["game_id"]: (int(r["episode_type"]), which.get(r["game_id"], "unsplit")) for r in csv.DictReader(f)}
 
 
+def load_mapping_unsplit(labels_csv: Path) -> dict[str, tuple]:
+    """Game set WITHOUT a split (replication prereg §2): every game in one group, so C-mismatch partners are drawn
+    within episode type across the whole set (never self)."""
+    with open(labels_csv, encoding="utf-8", newline="") as f:
+        return {r["game_id"]: (int(r["episode_type"]), "unsplit") for r in csv.DictReader(f)}
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--input", type=Path, default=REPO_ROOT / "data" / "raw", help="folder of GameRecord .json files")
@@ -50,8 +57,13 @@ def main(argv=None) -> int:
     ap.add_argument("--labels", type=Path, help="data/labels.csv (only for C-mismatch)")
     ap.add_argument("--split", type=Path, help="data/split.json (only for C-mismatch)")
     ap.add_argument("--seed", type=int, default=20261023)
+    ap.add_argument("--no-split", action="store_true",
+                    help="game set without a split: C-mismatch within type across all games (needs --labels, "
+                         "refuses --split)")
     ap.add_argument("--dry-run", action="store_true", help="print what would be written, write nothing")
     a = ap.parse_args(argv)
+    if a.no_split and (a.split or not a.labels):
+        ap.error("--no-split needs --labels and must not be given --split")
 
     views = [v.strip() for v in a.views.split(",") if v.strip()]
     bad = [v for v in views if v not in VIEWS]
@@ -60,7 +72,8 @@ def main(argv=None) -> int:
     files = sorted(p for p in a.input.glob("*.json") if not p.name.startswith("."))
     setup = load_json(a.setup_texts) if a.setup_texts else []
     _, source = resolve_scanner()
-    mapping = load_mapping(a.labels, a.split) if a.labels and a.split else None
+    mapping = (load_mapping_unsplit(a.labels) if a.no_split
+               else load_mapping(a.labels, a.split) if a.labels and a.split else None)
     print(f"{len(files)} game records in {a.input}; views {views}; scanner: {source}; "
           f"setup texts: {len(setup)}; C-mismatch mapping: {'yes' if mapping else 'no'}")
     if not setup:
