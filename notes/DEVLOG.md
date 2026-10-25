@@ -2266,3 +2266,127 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 
 ### Open questions for the team
 - Audit issue 4 (granite amendment G1–G4 not verifiable on B) is still open until machine C commits the amendment.
+
+---
+
+## 2026-10-25 — [machine: B] Task 21 (part 0): replication preconditions — recorded BEFORE any processing
+
+### What was implemented or executed
+- `configs/prereg_replication.md`: committed ALONE in 2bc3d3aa19edb0aa43ccf5a6cb09e37f2dd2deeb (2026-10-25 09:55:12
+  +0530); working copy == blob; LF sha256 d9d25b583b1d6052778f8668d8a55d7680069ba1ce6e9f8b61a72c49e1f7a1f9.
+- `configs/prereg_replication_amendment1.md` (granite G1–G4): committed ALONE in
+  306502e7011995bca72e5c83c64d4b99aa1931c7 (2026-10-25 20:34:15 +0530); working copy == blob; LF sha256
+  778cf66b03bdea1f27a121aed59962ae5f95ea2e21c6f9fd3902b08f8bc7cbf7 (= the draft hash in report 19C; audit 20B
+  issue 4 is now verified). Committed before any rendering (no replication view exists).
+- `configs/frozen/monitor_frozen.json` == HEAD; LF sha256 ccc4bf07838be73eff576f84b29389db4ee0952e6a8317eaa51d70885f47f65f.
+- check_env READY (Ollama 0.40.3; qwen2.5:7b and llama3.1:8b MATCH; granite optional on B; 5.2 GB free RAM).
+  `pytest -q`: 631 passed, 1 skipped (machine C's 17C test), 0 failed.
+- data/raw/replication: 48 g_*.json, 0 *.partial.json. cache/llm/A and cache/llm/B present.
+- No generator or Ollama process was running before this task (generation finished). Ollama started for this task.
+
+### Errors and problems faced
+- None. (The amendment's text still says "Status: DRAFT"; by its own rule it is binding once committed alone.)
+
+### How each problem was solved
+- —
+
+### Decisions taken
+- None.
+
+### Open questions for the team
+- None.
+
+---
+
+## 2026-10-25 — [machine: B] Task 21 (part 1): readiness, quality, views, transfer list, signals; llama monitor started
+
+### What was implemented or executed
+- **Step 1:** `scratch/p18_ready.py --after-generation` → READY (records OK incl. machine_id = plan for 48/48: B 32,
+  A 16; merge_check OK; labels == plan).
+- **Step 2:** `scratch/p21_quality.py` + `scratch/p21_quality_summary.py`: copies of the task-12 scripts with ONLY the
+  paths changed (diff-checked), plus a writer for `data/replication/quality_fail.json`.
+  - Quality-fail: none → {"quality_fail": []}.
+  - Wall time: A 395.2 min (16 games), B 362.3 min (32 games).
+  - Failures: 81/6528 = 1.24% (all truncated); valid rounds 8: 37 games, 7: 11.
+  - Type 1: uptake v2 24/24, top coGO 24/24. Script "effect" 24/24, but g_ec16a9027c has G_others = 2.2e-16 (a
+    floating-point zero counted as > 0), so effect = 23/24 if that is read as 0.
+  - Type 3: 8/8 AS DESIGNED. Type 4b: 5 AS DESIGNED, 1 PARTLY, 2 NOT; deposit talk in public 8/8 (106 mentions).
+  - Type 1 reveals 13/384 = 3.4%, 9/24 games ≥ 1. Non-English: 2 texts (stage3 reasoning). Leak flags: banned 6,
+    pattern_4b 406; 0 removals.
+- **Step 3:** `render_views.py --input data/raw/replication --out data/replication/views --clean-out data/replication
+  --setup-texts configs/monitor/setup_texts.json --labels data/replication/labels.csv --no-split --seed 20261023`
+  → 384 files, 0 skipped.
+  - The original data/clean + data/views (435 files) are byte-identical before / after (sha256 lists in
+    runs/replication/guard/).
+  - `scratch/p21_view_checks.py` (task-12 copy, paths + no-split only): RQ0.3 grep over 384 files clean; C-mismatch
+    never self, within type, partners distinct; C-length 48/48 within ±5%; V5 max ≈ 5,855 est. tokens (< 8,192
+    guard). 0 original-dataset ids in any replication view.
+- **Step 4:** transfer list printed (clean/, clean_private/, views/, labels.csv, quality_fail.json; later
+  runs/replication_llama/outputs/monitor.jsonl).
+- **Step 5 (started):** 3 measured calls (V3, part of run replication_llama): 28.0 / 21.4 / 21.4 s, all parse_ok;
+  `ollama ps` llama3.1:8b 7.3 GB 43%/57% CPU/GPU 16384. Estimate for the remaining 381 calls ≈ 140 min (within the
+  3.5 h pre-approval). Full run started in the background.
+- **Step 6:** `signals_from_clean.py --clean data/replication/clean` → runs/replication/signals (48 games; frozen
+  baseline from rules_frozen.json ce0b8840…, refitted: false; Dep NA in 1).
+
+### Errors and problems faced
+- A sed command failed ("unknown option to `s'": my replacement text contained the `#` delimiter). Re-run with
+  another delimiter; no effect on files.
+- G_others float-zero artefact (above).
+
+### How each problem was solved
+- The artefact is reported, not changed (the task-12 rule stays as frozen).
+
+### Decisions taken
+- The quality and view checks reuse the task-12 scripts as path-only copies, so the definitions are exactly
+  report 12's.
+
+### Open questions for the team
+- None yet.
+
+---
+
+## 2026-10-25 — [machine: B] Task 21 (part 2): frozen llama monitor on the replication + the ONE Study 2.2 analysis
+
+### What was implemented or executed
+- **Run replication_llama** (frozen monitor_v3_pairs_ctx16k, ccc4bf07…):
+  - 3 measured calls + 381 calls ≈ 21:25 → 23:34:55;
+  - 384/384 lines; 0 parse failures, 0 truncations, 0 missing, 0 length cuts, 0 transport errors, 0 cache hits;
+  - one digest 46e0c10c039e, sample 0 only; 130.7 min of call time;
+  - `ollama ps` 65/65 snapshots 7.3 GB 43%/57% CPU/GPU 16384. Ollama stopped afterwards.
+- `scratch/p21_run_stats.py` (per-view stats) and `scratch/p21_print_secondary.py` (formatting of the analysis
+  output only).
+- **ONE analysis run:** `scripts/analyse_replication_22.py` → runs/replication/analysis_22. Input sha256: labels
+  27a0d4bf…, monitor 25e5010e…, signals 3df65cbf…, quality 66613393…. Primary n = 48; sensitivity identical
+  (no quality-fail game).
+  - R1 V1 0.505 [0.363, 0.655] confirmed.
+  - R2 V4 0.636 [0.507, 0.751] confirmed.
+  - R3 V3 − V2 +0.241 [0.063, 0.419] replicated.
+  - R4 V4 − V3 +0.071 [−0.128, 0.247] not replicated.
+  - R5 V4 − C-length −0.034 [−0.212, 0.133] not confirmed.
+  - R6 V1 T1 vs T4b 0.495 [0.297, 0.716] confirmed.
+  - R7 V2 T1 vs T3 0.352 [0.154, 0.578] not confirmed.
+  - R8 V5 − V3 −0.022 [−0.192, 0.155] not replicated.
+  - R9 C-shuffled 0.457 [0.315, 0.591] pass.
+  - R10a capture 0.900 [0.811, 0.965] confirmed; R10b capture − V4 +0.264 [0.121, 0.412] capture better.
+- Secondary: last-position-max V1 44/48, C-shuffled 48/48 (llama bias replicates); V4 FP on Type 3 = 8/8 at its
+  frozen threshold; G_others 0.885, coGO 0.816, Dep 0.682 (n = 47), C_kw 0.541.
+- New `notes/reports/21_replication_22.md`.
+
+### Errors and problems faced
+- `conda run python -c` with a multi-line script failed again (NotImplementedError, newlines). Replaced with
+  `scratch/p21_run_stats.py`.
+- My first draft of report 21 numbered two summary lines "7" and left blank cells in the frozen-threshold table.
+  Both fixed before finishing.
+
+### How each problem was solved
+- As above.
+
+### Decisions taken
+- No analysis beyond the pre-registered script. V2 / V3 point estimates in the report are derived by subtracting
+  reported estimates, labelled as such.
+
+### Open questions for the team
+- Lead: transfer data/replication/* and runs/replication_llama/outputs/monitor.jsonl to machine C; OK for the judge
+  and granite runs.
+- Write-up update with the replication results (separate task).
