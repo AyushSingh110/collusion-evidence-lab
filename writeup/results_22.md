@@ -110,11 +110,11 @@ Both studies point the same way: behaviour evidence carries the signal, and LLM 
 2. **Position / recency bias in the pair list.**
    - With the fixed order (J-M … T-Z), the last pair T-Z got the top score in 21/24 V1 and 17/24 V3 test replies, and in 24/24 C-shuffled replies, but in only 7/24 V4 replies (R15 §4.6). T-Z is the true pair in 1 of 12 test collusion games (R15 §4.6).
    - Randomising the order cut this to 10/24 (V1) and 9/24 (V3) (R16 §4.3).
-   - In V1 the last-listed pair still gets the top score more often than chance (0.417 [0.250, 0.625] vs an expected 0.217), so V1 has a recency bias beyond the T-Z habit (R16 §4.7).
+   - In V1 the last-listed pair still gets the top score more often than chance (0.417 [0.250, 0.625] vs an expected 0.217), so V1 has a recency bias beyond the T-Z habit (R16 §4.3, §4.7).
    - The bias changes **who** is named (RQ8) but not **how well** games are ranked (R16 §5).
 3. **Session effect (Ollama nondeterminism at temperature 0).**
    - **Within one session,** repeats are identical (MAD 0 between samples 1 and 2 in every view; R13 §4).
-   - **Between sessions,** V2 changes most: RQ0.4 Spearman 0.676 (R13 §4). In the follow-up, V2 re-scored unchanged gave AUROC 0.559 vs 0.372 (+0.188 [+0.007, +0.389]), with MAD 10.79 and Spearman 0.653 (R16 §4.4).
+   - **Between sessions,** V2 changes most: RQ0.4 Spearman 0.676 (R13 §4). In the follow-up, V2 re-scored unchanged gave AUROC 0.559 vs 0.372 (+0.188 [+0.007, +0.389]), with MAD 10.79 and Spearman 0.653 (R16 §4.2, §4.4).
    - V1 and V3 were nearly identical across sessions (23/24 and 22/24 identical scores). V4 moved more (MAD 7.92, Spearman 0.775) (R16 §4.4).
 4. **RQ0.4 summary:** PASS for V1, V3, V4, V5; FAIL for V2 (R13 §4). The test run used one sample per view (R13 §4), so V2-based results carry this caveat.
 5. **Other:**

@@ -2196,3 +2196,45 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 ### Open questions for the team
 - Add an RQ9 qualifier to §d (position bias)?
 - Commit the granite amendment from machine C, so §g can quote G1–G4.
+
+---
+
+## 2026-10-25 — [machine: B] Task 20B: independent number audit of the write-up (no model calls)
+
+### What was implemented or executed
+- Audited `writeup/results_22.md`, `writeup/results_23.md`, `writeup/excerpts_22.md`, `writeup/figures/captions.md`
+  and `README.md` with scratchpad scripts (not committed):
+  - 763 tokens (731 numeric + 32 hashes) looked up in the cited report, then all reports, write-ups, prereg files and
+    local outputs;
+  - 106 CI triplets matched whole, with a context check;
+  - a section-level citation check;
+  - results_23 vs report 17C;
+  - the 20 excerpt cells and the Figure 2 claim vs `runs/test_p8/outputs/monitor.jsonl`;
+  - 13 commits (git) and 8 LF sha256 values; 8 figures and 13 cited reports exist.
+- **Result: no wrong number found.**
+  - Findings: 2 citation-section MISMATCHES (fixed), 2 UNSUPPORTED (a missing citation in results_23 line 32; the
+    granite amendment hash / G1–G4 not verifiable on B), 1 WRONG LABEL (Figure 1 caption "only V4 has a CI clearly
+    above chance" is false: V3 and V5 CIs also exclude 0.5).
+  - Token level: OK 739, MISMATCH 12, UNSUPPORTED 9, WRONG LABEL 3 (all tokens on the 5 flagged lines).
+- Fixed in `results_22.md`: line 113 "(R16 §4.7)" → "(R16 §4.3, §4.7)"; line 117 "(R16 §4.4)" → "(R16 §4.2, §4.4)".
+- New `notes/reports/20B_audit.md` with the per-line table (215 rows).
+
+### Errors and problems faced
+- The first report write via a bash heredoc failed ("unexpected EOF while looking for matching `''", an apostrophe in
+  the text), the known shell quirk.
+- Self-audit caveat: I wrote most of the audited text in earlier tasks. Two of the findings (the Figure 1 caption,
+  the two citations) are my own earlier errors.
+
+### How each problem was solved
+- Report written with the Write tool; the table appended with cat.
+- Every check was made against sources by script, not from memory; the caveat is stated in the report (§0).
+
+### Decisions taken
+- Only clear copy errors fixed (two citation sections). The Figure 1 wording, the missing results_23 citation, the
+  "(llama only)" label for "structure beats same length" and an RQ9 qualifier in §d are left for the lead.
+- Appendix A has one row per line (all values listed), not one per token; the 763-row token table stays in the
+  scratchpad.
+
+### Open questions for the team
+- Lead: fix the Figure 1 caption claim? Add "(report 15 §4.4)" in results_23 line 32? Commit the granite amendment
+  (G1–G4)? Review the "(llama only)" label and §d.
