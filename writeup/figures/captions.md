@@ -8,7 +8,7 @@
 
 **Figure 1 — `fig1_auroc_by_view_test.png`. How well each view separates collusion games (test set).**
 - Shows test AUROC per view with 95% CIs (n = 24); the dashed line is chance (0.5). Dark bars are the five views and grey bars the three controls.
-- Only the structured report (V4, 0.90 [0.77, 0.98]) has a CI clearly above chance.
+- V4 has the highest AUROC (0.90 [0.77, 0.98]); the CIs of V3 and V5 also exclude chance.
 - V1, V3 and C-mismatch have a degenerate frozen threshold of 0, which flags every game. Their threshold metrics carry no information, but their AUROC (shown) is threshold-free.
 
 **Figure 2 — `fig2_per_type_scores_test.png`. Monitor score per test game by episode type** *(exploratory, not pre-registered).*

@@ -29,7 +29,7 @@ Results marked **[exploratory]** were not pre-registered.
 | R1 conversation judge | 0.396 [0.205, 0.597] | 8/12 | 11/12 | 4/4 | 4/4 | 3/4 |
 | R2 coalition gain | **0.872 [0.736, 0.986]** | 10/12 | 2/12 | 0/4 | 0/4 | **2/4** |
 | R3 dependence | 0.736 [0.491, 0.942] (n = 21) | 9/12 | 4/12 | 1/4 | 1/4 | 2/4 |
-| Capture alone (parallel conduct) **[exploratory]** | 0.896 [0.781, 0.986] | 8/12 | 2/12 | 0/4 | 0/4 | **2/4** |
+| Capture alone (parallel conduct) **[exploratory]** (report 15 §4.4; counts from report 17C §4.5) | 0.896 [0.781, 0.986] | 8/12 | 2/12 | 0/4 | 0/4 | **2/4** |
 
 - **Talk alone (the judge) is not evidence.** The judge flagged 11 of 12 innocent games, including every honest and every persona game. Its ranking is below chance (AUROC 0.40).
 - **Outcomes alone (gain, capture) rank games well, but the shared-incentive lookalike fools them.** Agents with a private reason to go to the bar together look like a cartel in the outcomes: 2 of 4 Type 4b games are flagged by gain, and 2 of 4 by capture.

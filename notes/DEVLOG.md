@@ -2238,3 +2238,31 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 ### Open questions for the team
 - Lead: fix the Figure 1 caption claim? Add "(report 15 §4.4)" in results_23 line 32? Commit the granite amendment
   (G1–G4)? Review the "(llama only)" label and §d.
+
+---
+
+## 2026-10-25 — [machine: B] Task 20B-FIX: the lead's decisions from the audit applied (no model calls)
+
+### What was implemented or executed
+- `writeup/figures/captions.md` Figure 1: "Only the structured report (V4, 0.90 [0.77, 0.98]) has a CI clearly above
+  chance." → "V4 has the highest AUROC (0.90 [0.77, 0.98]); the CIs of V3 and V5 also exclude chance."
+  (audit issue 1)
+- `writeup/results_23.md` "Capture alone" row: added "(report 15 §4.4; counts from report 17C §4.5)" (issue 2).
+- `writeup/results_22.md` robustness table, "Structure beats same length": label "ROBUST (llama only)" → "ROBUST
+  (llama only; not tested with granite — C-length not scored, R15C §2)". The existing note is kept (issue 5a).
+- `writeup/results_22.md` §d item 2 heading: added "— llama-specific (RQ9: granite shows no last-position preference
+  beyond ties, R15C §4.5)" (issue 5b).
+- `git diff --word-diff` confirms only these four lines changed and no number changed.
+
+### Errors and problems faced
+- None.
+
+### How each problem was solved
+- —
+
+### Decisions taken
+- Item 2: the source goes in the row's label cell, so the table columns stay intact.
+- Item 4: added to the §d item 2 heading line, so it qualifies all its sub-bullets.
+
+### Open questions for the team
+- Audit issue 4 (granite amendment G1–G4 not verifiable on B) is still open until machine C commits the amendment.
