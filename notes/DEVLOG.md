@@ -1782,3 +1782,171 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 ### Open questions for the team
 - Pre-register a judge_v2 (randomised pair order, as in follow-up 1)? It would be a new frozen configuration.
 - Lead: remove the 3 DEVLOG conflict-marker lines (see part 0).
+
+---
+
+## 2026-10-25 — [machine: B] Task 17: final Study 2.2 synthesis, results table, README (no model calls)
+
+### What was implemented or executed
+- New `writeup/results_22.md`:
+  - (a) headline; (b) RQ status table (RQ0.1–0.4, RQ1–8, RQ9 pending, follow-up 1); (c) robustness table, 11 claims ×
+    test / dev / pooled / follow-up with ROBUST / FRAGILE / NOT SUPPORTED labels; (d) monitor reliability; (e)
+    limitations + next steps; (f) pre-registration story + 22-row deviations table.
+  - Every number is cited to a report section; nothing recomputed.
+- `writeup/excerpts_22.md`: only the case (c) reference "Report 15 §6" → "§4.6".
+- New `README.md` (93 lines).
+- New `notes/reports/17_synthesis_22.md`.
+- `pytest -q`: 490 passed. Read-only git log / git show for the pre-registration commits and hashes.
+
+### Errors and problems faced
+- My first draft had four errors, caught in self-review before finishing:
+  - an RQ9 citation to a check_env line that report 16 does not contain;
+  - "R10 §A2" instead of §A5;
+  - "0 length cuts" for the follow-up (R16 reports truncation flags);
+  - "only V4 is clearly above chance" — wrong, since V3 [0.535, 0.920] and V5 [0.517, 0.882] test CIs also exclude
+    0.5.
+
+### How each problem was solved
+- Corrected in `results_22.md` and `README.md` (sed edits, re-read).
+
+### Decisions taken
+- Robustness labels: "private plans do not help" = ROBUST as "no detectable gain" (absence-of-evidence caveat in the
+  cell). "Code action signals competitive" = ROBUST (exploratory), because pooled includes test. Cells without a reported
+  paired CI show the reported AUROCs, not a new difference.
+
+### Open questions for the team
+- Does the lead agree with the robustness labels (especially RQ6 and the code-signal row)?
+- RQ9 on machine C: when?
+
+---
+
+## 2026-10-25 — [machine: B] Pull preparation + repair of merge-conflict markers in this DEVLOG (no git writes by Claude)
+
+### What was implemented or executed
+- Before the lead's pull (read-only check): local main was 2 commits behind origin/main (404f356, e65e46f: Study 2.3
+  judge + rules R1–R7, machine C). The only file changed on both sides was `notes/DEVLOG.md`.
+  - Backed up every local change to `runs/backup_before_pull_20261025/` (git-ignored).
+  - Set the working-copy DEVLOG back to HEAD (byte-identical, checked with cmp) so the pull could fast-forward.
+- The lead pulled and committed 5b895d9 (README, results_22, report 17, excerpts fix).
+- **Found afterwards:** commit e65e46f (machine C) had committed this DEVLOG WITH unresolved merge-conflict markers
+  (`<<<<<<< HEAD` / `=======` / `>>>>>>> 2ca46f2`) around B's Task 16 (part 2a–3) entries and C's Task 13C entries.
+- Repair (task 18a, before the replication pre-registration):
+  - removed ONLY the three marker lines; the `=======` line became the usual `---` separator;
+  - both sides kept in full (`git diff` shows exactly 3 removed marker lines and the separator).
+  - Checked that every B entry in the backup is present (the B side equals the backup except one blank line) and that
+    both C entries are intact.
+- Re-appended the Task 17 entry (from the backup, unchanged) and this entry.
+
+### Errors and problems faced
+- Conflict markers committed in e65e46f (machine C's merge of its own commit 2ca46f2).
+- `git status` always shows `notes/DEVLOG.md` as modified because the committed blob is CRLF on every line while
+  `.gitattributes` says `* text=auto eol=lf`. That blocks pulls. Claude's appends used CRLF, which kept this going.
+
+### How each problem was solved
+- Markers removed as above; no entry deleted or reworded. (Rule C: old entries are not rewritten. The markers are
+  merge artefacts, not entries.)
+- Permanent line-ending fix: the lead's decision, one commit (`git add --renormalize notes/DEVLOG.md`). Until then CRLF
+  is kept so the file stays consistent.
+
+### Decisions taken
+- The Task 17 entry (written before the machine-C entries were pulled) is appended after them, not inserted earlier:
+  the DEVLOG is append-only.
+
+### Open questions for the team
+- Lead: do the one-time LF renormalisation commit of notes/DEVLOG.md?
+- Machine C: check for conflict markers before committing a merge (`grep -n '^<<<<<<<' notes/DEVLOG.md`).
+
+---
+
+## 2026-10-25 — [machine: B] Task 18a: replication pre-registration (Study 2.2 + 2.3) and plan (no model calls)
+
+### What was implemented or executed
+- `writeup/results_22.md`: two robustness labels changed (lead decision): "CONSISTENT NULL (no detectable gain at
+  n = 24)" and "CONSISTENT (exploratory; pooled includes test)". README does not repeat them, so it is unchanged.
+- New `configs/prereg_replication.md` (LF sha256 `5f08ab68d571efae1e77281fd5753528ddf43f066b5619713d15a30ad6e0c0a6`),
+  written before any replication game exists:
+  - Amendment 2 §5 protocol, seed 20261027, separate labels file, no split, quality rule with/without;
+  - Study 2.2 R1–R10 on the frozen monitor (89bdb79);
+  - Study 2.3 E1–E4 on the frozen judge_v1 + rules (404f356);
+  - order of work; outcome-neutral statement; limitations.
+- `make_plan --name replication --seed 20261027 --counts 1=24 2=8 3=8 4=8 --machines A B --rounds 8 --speed A=1.0
+  B=2.0` → `configs/plans/replication.json` (LF sha256 d15ffe5e…451f). Re-run refused (exists).
+  - 0 id overlap with all earlier plans and data/labels.csv.
+  - A 16 / B 32 games, the same type mix as the dataset.
+- `run_plan` commands printed, not run. Estimate: A ≈ 412 min, B ≈ 388 min (measured dataset basis, report 12 §4.2);
+  plan units 298 / 298.
+- New `notes/reports/18a_replication_prereg.md`.
+
+### Errors and problems faced
+- No report 17C exists, but the task's E3 refers to "dev choices recorded for task 17C".
+
+### How each problem was solved
+- The prereg fixes a fallback now from the frozen dev report (best single family R2, best combined R6 via the
+  lower-number tie rule). It applies unless a 17C record is committed before the first replication game. Flagged
+  for the lead.
+
+### Decisions taken
+- `data/replication/labels.csv` separate. `labels_split_from_plan.py` is not run on this plan.
+- C-mismatch partners within type across the 48 games.
+- Complete outcome maps for every decision rule.
+- Primary analysis on all 48 games; sensitivity analysis without quality-fail games.
+
+### Open questions for the team
+- Confirm the E3 fallback (R2 vs R6), or commit the 17C record before generation.
+- Additive code needed before processing (labels-only writer, one-group control pairing, split-free analysis entry
+  points, rules application to new ids): separate tasks.
+
+---
+
+## 2026-10-25 — [machine: B] Task 18b (part 0): replication prereg commit verified — recorded BEFORE any replication output
+
+### What was implemented or executed
+- Re-appended above, verbatim from `runs/backup_before_pull2_20261025/`: the three machine-B entries (Task 17,
+  pull-preparation / marker repair, Task 18a). They were missing after the lead's marker fix (commit 68b9211).
+- Read-only check: `configs/prereg_replication.md` committed ALONE in
+  `2bc3d3aa19edb0aa43ccf5a6cb09e37f2dd2deeb` (2026-10-25 09:55:12 +0530); working copy == HEAD blob; LF sha256
+  `d9d25b583b1d6052778f8668d8a55d7680069ba1ce6e9f8b61a72c49e1f7a1f9`.
+- Plan committed in aa295f2; report 18a and the relabelled results_22 in 5f4bda7.
+- `data/replication/` and `data/raw/replication/` do not exist at this point.
+
+### Errors and problems faced
+- None.
+
+### How each problem was solved
+- —
+
+### Decisions taken
+- **Correction to the Task 18a entry above:** its prereg sha256 `5f08ab68…` is superseded. Before the commit, at the
+  lead's request, §4 E3 was edited: the R2 vs R6 choice became primary (the same rule as task 17C), and the secondary
+  E3b = AUROC(R7) − AUROC(R2) was added. The committed value is `d9d25b58…a1f9`.
+
+### Open questions for the team
+- None.
+
+---
+
+## 2026-10-25 — [machine: B] Task 18b (part 1): replication labels file (no model calls)
+
+### What was implemented or executed
+- New `scripts/labels_from_plan.py`: plan → `core.labels.label_from_config` → `core.labels.write_labels` at a required
+  `--out`. Refuses `data/labels.csv` / `data/split.json` (resolved paths; case-insensitive on Windows) and any existing
+  file. Never writes a split.
+- New `tests/test_labels_from_plan.py`: 9 mock-plan tests. `pytest -q`: 549 passed, 0 failed.
+- Ran once: `--plan configs/plans/replication.json --out data/replication/labels.csv` → 48 labels, per type
+  1: 24, 2: 8, 3: 8, 4: 8; sha256 `27a0d4bfcfd5831b0e100482276d5ab36f663bd010ef0a84ada5194771742114`.
+- Protected files unchanged (sha256 before = after): data/labels.csv 20849152…146e; data/split.json 22503c45…60fa.
+  A re-run and a run with `--out data/labels.csv` were both REFUSED (exit 1), as intended.
+- Generation commands printed again (report 18b §4), not run.
+
+### Errors and problems faced
+- None. (One test I first wrote used a convoluted throw expression for the case-variant check; replaced with a clean
+  skipif test before finishing.)
+
+### How each problem was solved
+- —
+
+### Decisions taken
+- The overwrite refusal is stricter than `write_labels` (refuses even identical content), as the task asks.
+
+### Open questions for the team
+- Lead's OK for generation (A ≈ 412 min, B ≈ 388 min).
