@@ -1499,7 +1499,6 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 
 ---
 
-<<<<<<< HEAD
 ## 2026-10-25 — [machine: B] Task 16 (part 2a): prereg commit verified — recorded BEFORE any follow-up call
 
 ### What was implemented or executed
@@ -1606,7 +1605,9 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 - Write-up wording for RQ2, given V2's session sensitivity (same-session V2 AUROC 0.559 vs 0.372 in report 14).
 - Report RQ8 V1/V3 with the order-artefact caveat?
 - Fix the "report 15 §6" typo in `writeup/excerpts_22.md` (case (c)) — needs your OK (outside this task's file list).
-=======
+
+---
+
 ## 2026-10-25 — [machine: C] Task 13C (part 1): setup verification on machine C + Study 2.3 judge/rules code (before any live call)
 
 ### What was implemented or executed
@@ -1689,7 +1690,6 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 ### Open questions for the team
 - E1 judge is weak on dev (R1 BA 0.625). Report as a negative result, or pre-register a judge_v2 for a later task?
 - Lead: commit `configs/frozen/rules_frozen.json` alone first, then the rest (report 13C §9), before the test run.
->>>>>>> 2ca46f2 (exp: add Study 2.3 judge and rules R1-R7, run judge on machine C, freeze dev-fitted rules)
 
 ---
 
