@@ -2064,3 +2064,66 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 - Lead: move/alias `cache/llm/m_5acffc7a/` to `C`, or leave it with this note? Set the machine id for tool shells
   (e.g. in `.env` or the conda env vars) before the next run on C?
 - Write-up: report the Study 2.2 view ranking as monitor-dependent (RQ9)?
+
+---
+
+## 2026-10-25 — [machine: C] Task 19C (part 0): replication prereg verified — recorded BEFORE any replication code
+
+### What was implemented or executed
+- Read-only: `configs/prereg_replication.md` committed ALONE in **`2bc3d3aa19edb0aa43ccf5a6cb09e37f2dd2deeb`**
+  (2026-10-25 09:55:12 +0530; the commit touches only that file); working copy == HEAD blob; LF sha256
+  **`d9d25b583b1d6052778f8668d8a55d7680069ba1ce6e9f8b61a72c49e1f7a1f9`** (= report 18b).
+- No replication data on this machine: `data/replication/` and `data/raw/replication/` do not exist. None will be read
+  in this task. No model calls.
+- HEAD `57206cb` (task 15C commit, rebased onto 3ff75f4); working tree clean at start.
+
+### Errors and problems faced
+- None.
+
+### How each problem was solved
+- n/a.
+
+### Decisions taken
+- The Study 2.3 replication analysis follows prereg §4 exactly (E1, E2, E3 = R6 − R2, E3b = R7 − R2, E4 = k/n per
+  type for R2 and R6), primary = all 48 games, sensitivity = without quality-fail games; the 17C plus-factor rule
+  (capture ≥ 0.625 AND C_kw ≥ 0.7375, recorded in the DEVLOG "Task 17C (part 0)" before the 17C test run) as SECONDARY.
+
+### Open questions for the team
+- None yet.
+
+---
+
+## 2026-10-25 — [machine: C] Task 19C (part 1): machine-id fix, Study 2.3 replication code, DRAFT amendment 1 (no model calls)
+
+### What was implemented or executed
+- `~/.zshenv` (new): `export COLLUSION_LAB_MACHINE=C` (`~/.zshrc` unchanged). Fresh `zsh -c 'echo $COLLUSION_LAB_MACHINE'`
+  → C; `conda run -n collusion-lab python -c "…COLLUSION_LAB_MACHINE…"` → C; new tool-shell calls → C.
+- `cache/llm/m_5acffc7a/` (96 entries) holds the task 15C granite calls (recorded under the hostname id because the
+  variable was not set in the tool shell then). It stays as is.
+- New, additive: `study_2_3_evidence/replication.py`, `scripts/analyse_replication_23.py`,
+  `scripts/run_replication_c.py`, `tests/test_replication_23.py` (27 tests). `rules.py`, `judge.py`, `analyse_23.py`
+  unchanged. `test_reproduces_17c_test_tables` ran on C and reproduces 17C exactly (flags, scores, AUROC CIs, R6 − R2,
+  per-type k/n, plus-factor table).
+- `configs/prereg_replication_amendment1.md` (new, **DRAFT**, LF sha256 `778cf66b…c7bf7`): granite3.3:8b second monitor
+  (exact 15C manifest `d6b38e3f…ac40`), 48 × V1–V4 = 192 calls on C, G1–G4. Not committed; lead decision pending.
+- `run_replication_c.py` dry-run plan printed (judge 48 calls ≈ 22 min; granite 192 calls ≈ 172 min ≈ 2.9 h).
+- `pytest -q`: 578 passed, 1 skipped (machine B's Windows-only path test).
+
+### Errors and problems faced
+- First test run: 5 failures, `KeyError: 'game_id'` in `core.evidence.signals.game_signals` — the synthetic pair rows
+  in the test helper lacked `game_id`.
+- `run_replication_c.py --run judge` without a labels file raised `FileNotFoundError`.
+
+### How each problem was solved
+- Added `game_id` to the synthetic rows (test-only). Added an explicit "REFUSED: labels file … does not exist" check.
+
+### Decisions taken
+- Quality-file format fixed here (prereg names none): JSON list of ids or {"quality_fail": [...]}.
+- Default replication paths on C: `data/replication/{clean,views,labels.csv,quality_fail.json}` (overridable).
+- The analysis also refuses frozen DEV ids (rules were fitted on them).
+- Draft G2 given a full outcome map (above → not confirmed; below → not confirmed (below chance)); G4 note: "confirmed"
+  = no detected difference, not equivalence.
+
+### Open questions for the team
+- Lead: approve/commit the draft amendment ALONE before any replication view is rendered?
+- Machine B: write the quality-fail list in the agreed JSON format and render with `--clean-out data/replication`?
