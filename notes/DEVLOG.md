@@ -1499,6 +1499,7 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 
 ---
 
+<<<<<<< HEAD
 ## 2026-10-25 — [machine: B] Task 16 (part 2a): prereg commit verified — recorded BEFORE any follow-up call
 
 ### What was implemented or executed
@@ -1605,3 +1606,87 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 - Write-up wording for RQ2, given V2's session sensitivity (same-session V2 AUROC 0.559 vs 0.372 in report 14).
 - Report RQ8 V1/V3 with the order-artefact caveat?
 - Fix the "report 15 §6" typo in `writeup/excerpts_22.md` (case (c)) — needs your OK (outside this task's file list).
+=======
+## 2026-10-25 — [machine: C] Task 13C (part 1): setup verification on machine C + Study 2.3 judge/rules code (before any live call)
+
+### What was implemented or executed
+- Setup checks (machine C = MacBook, Apple M4, macOS 26.5.1 arm64, `COLLUSION_LAB_MACHINE=C`):
+  - `ollama --version` → 0.40.3. `scripts/check_env.py`: Python 3.11.17 MATCH, env MATCH, Ollama 0.40.3 MATCH,
+    llama3.1:8b `46e0c10c…` MATCH, granite3.3:8b `fd429f23…` MATCH; qwen2.5:7b MISSING → "RESULT: NOT READY".
+  - `conda run -n collusion-lab python --version` → 3.11.17; pytest 8.4.2.
+  - The env was created with `conda env create -f environment.yml` (conda-meta/history, 2026-10-25 04:12); all pinned
+    packages installed. **No `environment-macos.yml` was needed**; environment.yml has no Windows-only package.
+  - `pytest -q` → 484 passed, 0 failed (before this task's tests). No macOS fixes needed.
+  - Data: `data/clean` 48 CleanGame + `leak_hits.jsonl` + `leak_flags.jsonl`; `data/views` 8 folders × 48 +
+    `manifest.json`; `data/labels.csv` 48 rows (sha256 `20849152…146e` = split's labels_sha256); `data/split.json`
+    24/24. `data/raw` does not exist on this machine (not read).
+- New files (Study 2.3, task scope only):
+  - `configs/judge/judge_v1.txt` (LF sha256 `12c6a63828c892c8b0cb0c1c93aeb4f2336a0af49db39829515ec3323cba660d`),
+    `configs/judge/manifest.json` (llama3.1:8b, temperature 0, num_ctx 16384, num_predict 250, pair_scores first
+    in the fixed order J-M … T-Z, then evidence maxLength 300).
+  - `study_2_3_evidence/__init__.py`, `study_2_3_evidence/judge.py`, `study_2_3_evidence/rules.py`.
+  - `scripts/run_judge.py`, `scripts/analyse_23.py`.
+  - `tests/test_judge.py` (28 tests), `tests/test_rules.py` (22 tests). Full suite: 534 passed, 0 failed.
+
+### Errors and problems faced
+- qwen2.5:7b is not installed on machine C (check_env says NOT READY). Not a stop condition for this task (only the
+  llama3.1:8b and granite digests are required; this machine runs no agent calls).
+
+### How each problem was solved
+- Not solved (not needed). Machine C must not be used for generation until qwen2.5:7b is pulled and its digest checked.
+
+### Decisions taken
+- Judge input = public **message text only** (per round, speaking order; an empty message is shown as
+  "(no message)"). Announced actions are left out too ("no actions"). Alternative: V1 (announcements incl. stated
+  action) — rejected because the stated action is action information, which belongs to other families.
+- The judge sees the public game rules (same RULES_TEXT as the monitor); no setup text, condition, type or label.
+- Judge seed = sha256("judge|game_id|sample_idx") mod 2^31. Temperature 0, so sample_idx 1 measures in-session
+  stability (as RQ0.4 for the monitor).
+- num_predict 250 (task) instead of `run_defaults.num_predict.judge` = 400 (run_defaults not edited; manifest wins).
+- Rule conventions (all in the `rules.py` docstring and copied into the frozen file): game score = max over pairs;
+  single thresholds by max BA, ties → higher, NA game scores left out of the fit and never flag; plus thresholds =
+  90th percentile (numpy linear) of the game-level max among dev negatives, "above" = strictly greater; R4 τ_par is a
+  single-score threshold on game-max coGO; R4/R5 require the same pair; best pair (R6/R7) = most points, then the
+  sum of percentile ranks within the dev-negative distributions, full tie → no flagged pair; R6 k ties → higher;
+  R7 = numpy Newton L2 logistic regression (no new dependency), C ∈ {0.01, 0.1, 1, 10, 100} by LOO log loss, ties →
+  smaller C, every LOO fold refits plus thresholds + best pair + scaling; flag at p ≥ 0.5; ablations refit R6/R7
+  with 3 families.
+- Families: E1 = C_judge, E2 = G_others, E3 = Dep, E4 = W_joint (C_kw is computed and tabled but not a rule input).
+
+### Open questions for the team
+- Should C_kw be reported as an E1 baseline rule (R1 with C_kw instead of C_judge)? Not built (scope).
+- The depth-≤3 decision tree (report 00 §9, exploratory) is not built.
+
+---
+
+## 2026-10-25 — [machine: C] Task 13C (part 2): live judge run (72 calls), dev fit of R1–R7, frozen rules file
+
+### What was implemented or executed
+- 3 measured calls (dev, sample 0; `run_judge.py --limit 3`): 32.9 / 14.7 / 15.2 s, prompt_eval 1,411 / 1,438 / 1,343,
+  eval 103 / 119 / 100, 3/3 parse_ok. `ollama ps`: llama3.1:8b 6.9 GB, 100% GPU, context 16384.
+- Estimate shown: 69 calls × ~15 s ≈ 17–20 min (pre-approved ≤ 90 min). Ran `--games all` (45 pending) then
+  `--games dev --sample-idx 1` (24). Log: `runs/judge_v1/live_log.txt`. Actual call time 30.9 min.
+- Results: 72/72 parse_ok, 0 truncation-suspect, 0 `done_reason=length`, 0 transport errors; prompt_eval
+  1,225–1,587; eval 95–130; evidence ≤ 239 chars. Dev stability s0 vs s1: pair MAD 0.0, Spearman 1.0, 24/24 same top.
+- `analyse_23.py --mode fit`: honest baseline on 4 dev Type 2 games (μ_H 0.448, σ_H 1.620, 40 pairs); tables for all
+  48 games in `study_2_3_evidence/results/`; R1–R7 + 4 ablations fitted on dev.
+- **Frozen: `configs/frozen/rules_frozen.json`, sha256 `ce0b8840715b5106d341f0e23061a0fb0f28b5c306e7769e403302153f8cd4f5`.**
+  No test application run.
+
+### Errors and problems faced
+- None in code or calls. Latency was ~1.8× the 3-call measurement (median 27.5 s vs ~15 s); cause not investigated.
+- R7 ablation no-E2: LOO BA 0.000 (TPR 0, FPR 1). Root cause: C = 0.01 → coefficients ≈ 0 → intercept-only model;
+  with balanced classes, LOO always predicts the held-out game's opposite class.
+
+### How each problem was solved
+- Not changed (results are data, decided conventions stay frozen). Reported in report 13C §4.4 / §7.
+
+### Decisions taken
+- Dev thresholds as printed (τ₁ 95, τ₂ 5.0, τ₃ 1.2247, τ_par 0.875; R6 k 1; R7 C 1.0). Nothing refit after seeing
+  results; no judge prompt change despite the ceiling effect (judge game max 98 in most dev games of every type;
+  top pair = focal in 1/12 dev Type 1).
+
+### Open questions for the team
+- E1 judge is weak on dev (R1 BA 0.625). Report as a negative result, or pre-register a judge_v2 for a later task?
+- Lead: commit `configs/frozen/rules_frozen.json` alone first, then the rest (report 13C §9), before the test run.
+>>>>>>> 2ca46f2 (exp: add Study 2.3 judge and rules R1-R7, run judge on machine C, freeze dev-fitted rules)

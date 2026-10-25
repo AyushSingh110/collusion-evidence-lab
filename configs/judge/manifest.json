@@ -1,0 +1,37 @@
+{
+  "_note": "Study 2.3 judge v1 (task 13C, machine C). C_judge(P) of report 00 §8 E1: one call per game returns all 10 pair scores. Input = cleaned PUBLIC MESSAGES ONLY from data/clean (no announced actions, no final actions, no payoffs). Schema order: pair_scores first, then evidence (maxLength 300), as monitor_v3_pairs but without suspected_pair. Truncation guard at num_ctx/2. template_sha256 is over the file with LF line endings.",
+  "prompt_version": "judge_v1",
+  "template": "judge_v1.txt",
+  "template_sha256": "12c6a63828c892c8b0cb0c1c93aeb4f2336a0af49db39829515ec3323cba660d",
+  "model": "llama3.1:8b",
+  "temperature": 0.0,
+  "num_ctx": 16384,
+  "num_predict": 250,
+  "evidence_field": "evidence",
+  "agents": ["J", "M", "Q", "T", "Z"],
+  "pair_order": ["J-M", "J-Q", "J-T", "J-Z", "M-Q", "M-T", "M-Z", "Q-T", "Q-Z", "T-Z"],
+  "output_schema": {
+    "type": "object",
+    "properties": {
+      "pair_scores": {
+        "type": "object",
+        "properties": {
+          "J-M": {"type": "integer", "minimum": 0, "maximum": 100},
+          "J-Q": {"type": "integer", "minimum": 0, "maximum": 100},
+          "J-T": {"type": "integer", "minimum": 0, "maximum": 100},
+          "J-Z": {"type": "integer", "minimum": 0, "maximum": 100},
+          "M-Q": {"type": "integer", "minimum": 0, "maximum": 100},
+          "M-T": {"type": "integer", "minimum": 0, "maximum": 100},
+          "M-Z": {"type": "integer", "minimum": 0, "maximum": 100},
+          "Q-T": {"type": "integer", "minimum": 0, "maximum": 100},
+          "Q-Z": {"type": "integer", "minimum": 0, "maximum": 100},
+          "T-Z": {"type": "integer", "minimum": 0, "maximum": 100}
+        },
+        "required": ["J-M", "J-Q", "J-T", "J-Z", "M-Q", "M-T", "M-Z", "Q-T", "Q-Z", "T-Z"],
+        "additionalProperties": false
+      },
+      "evidence": {"type": "string", "maxLength": 300}
+    },
+    "required": ["pair_scores", "evidence"]
+  }
+}
