@@ -2165,3 +2165,34 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 ### Open questions for the team
 - A writer for the replication quality file is still needed (report 12's scratch script as the template).
 - Machine C: a split-free Study 2.3 entry point (its own folder).
+
+---
+
+## 2026-10-25 — [machine: B] Task 19: RQ9 and Study 2.3 added to the write-up (no model calls)
+
+### What was implemented or executed
+- `writeup/results_22.md`:
+  - §a headline replaced (monitor-dependent: llama vs granite; V3 0.736 with both; capture 0.944 pooled; reliability
+    problems), plus a "Link to Study 2.3" paragraph (R2 0.872, R1 0.396, R6 − R2 −0.080 [−0.208, 0.045]);
+  - §b RQ9 row (granite AUROCs + CIs, τ-b −0.667 with the low-resolution note, "view ranking is monitor-dependent");
+  - §c new "RQ9 granite (R15C)" column with "(llama only)" labels and the llama-specific position-bias label;
+  - §e two stale "RQ9 pending" lines updated;
+  - new §g "Replication (in progress)" with all results TBD.
+- `README.md` headline replaced, plus a line on the replication in progress (97 lines).
+- New `notes/reports/19_writeup_update.md`.
+- All numbers grep-checked against reports 15C / 15 and results_23.md.
+
+### Errors and problems faced
+- `configs/prereg_replication_amendment1.md` (G1–G4) is not on machine B: it is an uncommitted draft on machine C.
+
+### How each problem was solved
+- G1–G4 are listed by name only, pointing to the draft (LF sha256 778cf66b…) and marked non-binding; no wording was
+  invented.
+
+### Decisions taken
+- "Structure beats same length" labelled "(llama only)": C-length was not scored by granite, but granite's V4 is at
+  chance (0.510).
+
+### Open questions for the team
+- Add an RQ9 qualifier to §d (position bias)?
+- Commit the granite amendment from machine C, so §g can quote G1–G4.

@@ -18,21 +18,34 @@
 
 ## a) Headline answer
 
-**What worked:**
-- In this pilot, a small open monitor ranked collusion games best when it read the **code-built structured report (V4)**: test AUROC 0.896 [0.771, 0.979] (R14 §4.2). The combined view (V3, 0.736 [0.535, 0.920]) and the oracle view (V5, 0.705 [0.517, 0.882]) were also above chance on test (R14 §4.2), but V3 was below chance on dev (0.319, R13 §5).
-- V4 named the true colluding pair in 7 of 12 collusion games, where chance is 1 in 10 (R14 §4.9).
-- **V4 beat a raw view cut to the same length** on test (+0.285 [0.017, 0.556], R14 §4.6) and over all 48 games (+0.237 [0.030, 0.443], R15 §4.2).
+**The answer depends on the monitor model.**
 
-**What did not work, or did not hold up:**
-- **Messages alone (V1) and actions alone (V2) were at or below chance** in every split and session (R13 §5, R14 §4.2, R15 §4.2, R16 §4.2).
-- **The pre-registered "combining messages and actions helps" result (RQ2)** held on test (+0.365 [0.094, 0.611], R14 §4.3) but **is fragile**. It disappears over all 48 games (+0.040 [−0.155, 0.238], R15 §4.2). And the comparison view V2 scored 0.559 instead of 0.372 when re-scored unchanged in a new session (R16 §4.4).
-- **V4 vs the full raw combined view (RQ5) was not significant** on test (+0.160 [−0.021, 0.351], R14 §4.6).
-- **Private plans (V5) did not help** (R14 §4.7).
+**With `llama3.1:8b`** (the frozen primary monitor):
+- Messages alone (V1, 0.490 [0.299, 0.691]) and actions alone (V2, 0.372 [0.170, 0.601]) failed.
+- The code-built structured report worked best: V4 0.896 [0.771, 0.979] (R14 §4.2).
 
-**Lookalikes and monitor problems:**
-- Same-incentive games fooled the message view in every check (R14 §4.4, R15 §4.2, R16 §4.6).
-- The monitor itself has three reliability problems: a constant-score failure, a position bias, and session-to-session variation (section d).
-- Randomising the pair order removed most of the position bias, but it **did not** rescue the raw views (R16 §4.7).
+**With `granite3.3:8b`** (RQ9, the same frozen prompt, only the model changed), the ranking reversed:
+- actions V2 0.767 [0.604, 0.917];
+- structured report V4 0.510 [0.292, 0.729];
+- Kendall τ −0.667 between the two rankings (R15C §4.2).
+
+**Only the combined raw view matched:** V3 0.736 with both models (R15C §4.2; R14 §4.2).
+
+**Model-free behaviour signals were the most dependable evidence:** capture 0.944 [0.884, 0.986] over all 48 games (R15 §4.4, exploratory). They do not depend on which LLM reads the record.
+
+**The LLM monitor's reliability problems were measured** (section d):
+- the single-score format returned a constant 80 on 96/96 dev calls (R13 §2);
+- a last-position bias in llama's pair scores (R15 §4.6, R16 §4.3), which granite does not show beyond its ties (R15C §4.5);
+- a session effect of +0.188 [+0.007, +0.389] on V2 when the frozen monitor was re-scored unchanged (R16 §4.4).
+
+The pre-registered RQ2 ("combining helps", +0.365 [0.094, 0.611], R14 §4.3) is fragile and does not hold with granite (V3 − V2 −0.031 [−0.250, 0.191], R15C §4.3). Section c gives the status of each claim.
+
+**Link to Study 2.3** (`writeup/results_23.md`, task 17C; the same 24 test games, frozen rules):
+- **The coalition-gain rule R2 ranks games well:** AUROC 0.872 [0.736, 0.986].
+- **The talk-only judge R1 is below chance:** 0.396 [0.205, 0.597].
+- **Combining evidence families did not help:** AUROC(R6) − AUROC(R2) = −0.080 [−0.208, 0.045], "no clear difference at this sample size".
+
+Both studies point the same way: behaviour evidence carries the signal, and LLM reading of the talk does not.
 
 ---
 
@@ -52,7 +65,7 @@
 | RQ6 | V5 − V3 (oracle gap) | −0.031 [−0.267, 0.236] | R14 §4.7 | No measurable gain from private plans |
 | RQ7 | Code signal (Dep) − best LLM view (V4) | −0.173 [−0.382, −0.009] (n = 21; Dep NA in 3) | R14 §4.8 | V4 beat Dep. But simpler action signals match V4 (exploratory, R15 §4.4), so this is **not** "LLM beats code" |
 | RQ8 | Top-1 pair accuracy (12 Type 1 test games; chance 0.1) | V1 1/12, V2 6/12, V3 2/12, **V4 7/12**, V5 5/12, Dep argmax 5/12. With random pair order: V1 4/12, V3 5/12, V4 8/12 | R14 §4.9; R16 §4.5 | V4 names the pair best. The V1 / V3 numbers are partly a pair-order artefact |
-| RQ9 | V1–V4 ranking with a second monitor model, and Kendall τ | — | design: R00 RQ table; model `granite3.3:8b` per R01 | **PENDING (machine C)**; not run on machine B |
+| RQ9 | V1–V4 ranking with a second monitor model (`granite3.3:8b`, frozen format, only the model changed), and Kendall τ | granite AUROC: V1 0.729 [0.549, 0.896]; V2 0.767 [0.604, 0.917]; V3 0.736 [0.573, 0.917]; V4 0.510 [0.292, 0.729]. Kendall τ-b −0.667 (low resolution: 4 views, 6 pairs, so 5 of 6 pairs ordered oppositely) | R15C §4.2 | **View ranking is monitor-dependent** (granite V2 > V3 > V1 > V4 vs llama V4 > V3 > V1 > V2) |
 | Follow-up 1 | Does pair-order position bias explain the raw-view results? | Last-pair-max drop (random vs fixed, same session): V1 +0.458 [0.292, 0.667], V3 +0.417 [0.167, 0.667]. AUROC change: V1 +0.017 [−0.229, +0.281], V3 +0.042 [−0.198, +0.285], V4 −0.076 [−0.240, +0.111] | R16 §4.3, §4.2, §4.7 | H1: V3 supported, V1 unclear. **H2: unclear** (no clear AUROC gain). H3: supported. The bias is real but **does not explain** the raw-view failure |
 
 ---
@@ -64,25 +77,27 @@
 - "Dev" is report 13; it was used for choices, so it is in-sample.
 - "Pooled" is report 15: all 48 games, including the dev selection data.
 - "Follow-up" is report 16: the same 24 test games re-scored in a new session, as a fixed-order arm and a random-order arm.
+- "RQ9 granite" is report 15C: the same 24 test games × V1–V4 scored once by `granite3.3:8b` with the frozen prompt (machine C). V5 and the controls were not scored.
 
 **Labels:**
 - **ROBUST:** the same direction and conclusion everywhere it was measured.
 - **FRAGILE:** the conclusion changes between splits or sessions.
 - **NOT SUPPORTED:** the claim fails its own test.
+- **"(llama only)":** the claim holds for llama3.1:8b but not with granite3.3:8b (RQ9).
 
-| Claim | Test (R14) | Dev (R13) | Pooled (R15) | Follow-up (R16) | Label |
-|---|---|---|---|---|---|
-| Messages alone (V1) fail | AUROC 0.490 [0.299, 0.691] (§4.2) | 0.431 [0.219, 0.646] (§5) | 0.459 [0.323, 0.597] (§4.2) | fixed 0.490 [0.299, 0.691], random 0.507 [0.306, 0.705] (§4.2) | **ROBUST** |
-| Actions alone (V2) fail | 0.372 [0.170, 0.601] (§4.2) | 0.493 [0.260, 0.726] (§5) | 0.447 [0.302, 0.595] (§4.2) | fixed 0.559 [0.319, 0.788], random 0.514 [0.295, 0.733] (§4.2) | **ROBUST** (never above chance; the size depends on the session, RQ0.4 FAIL) |
-| Combining helps (RQ2, V3 − V2) | +0.365 [0.094, 0.611] (§4.3) | −0.174 [−0.406, 0.056] (§5, in-sample) | +0.040 [−0.155, 0.238] (§4.2) | point estimates only: +0.19 (fixed), +0.28 (random) (§5) | **FRAGILE** |
-| Structure beats raw (RQ5, V4 − V3) | +0.160 [−0.021, 0.351] (§4.6) | +0.444 [0.146, 0.729] (§5, in-sample) | +0.350 [0.166, 0.534] (§4.2) | V4 vs V3 AUROC: fixed 0.826 vs 0.750; random 0.750 vs 0.792 (§4.2) | **FRAGILE** (positive on dev/pooled, not significant on test, reversed in the random arm) |
-| Structure beats same length (V4 − C-length) | +0.285 [0.017, 0.556] (§4.6) | AUROC 0.764 vs 0.583 (§5; no paired CI reported) | +0.237 [0.030, 0.443] (§4.2) | not measured (C-length not re-run) | **ROBUST** (test and pooled CIs above 0; not re-tested in the follow-up) |
-| Private plans do not help (RQ6, V5 − V3) | −0.031 [−0.267, 0.236] (§4.7) | AUROC 0.583 vs 0.319 (§5; no paired CI reported) | +0.149 [−0.062, 0.347] (§4.2) | not measured (V5 not re-run) | **CONSISTENT NULL (no detectable gain at n = 24)**: every CI includes 0. This is absence of evidence, not evidence of no effect |
-| Same-incentive (T4b) fools messages | V1 T1 vs T4b 0.344 [0.12, 0.65] (§4.4) | not reported per type | 0.359 [0.190, 0.562] (§4.2) | fixed 0.344 [0.125, 0.646], random 0.365 [0.115, 0.625] (§4.6) | **ROBUST** |
-| Persona talk (T3) fools actions | V2 T1 vs T3 0.219 [0.00, 0.62] (§4.4) | descriptive only: V2 flags Type 3 games (§5) | 0.266 [0.049, 0.526] (§4.2) | fixed 0.458 [0.083, 0.854], random 0.500 [0.156, 0.844] (§4.6) | **FRAGILE** (reversed in the original session, about chance in the follow-up session) |
-| Code action signals are competitive with V4 (exploratory) | coGO 0.896, capture 0.896, G_others 0.872 vs V4 0.896 (R15 §4.4, test) | not reported separately | coGO 0.885, capture 0.944, G_others 0.906 vs V4 0.837 (R15 §4.4) | not measured | **CONSISTENT (exploratory; pooled includes test)**: test and pooled agree; never pre-registered |
-| Position bias exists (last-listed pair gets the top score) | T-Z max V1 21/24, V3 17/24, V4 7/24 (R15 §4.6) | V1 22/24, V3 22/24, V4 7/24 (R15 §4.6) | — | fixed arm V1 21/24, V3 19/24; drop with random order V1 +0.458 [0.292, 0.667], V3 +0.417 [0.167, 0.667] (§4.3) | **ROBUST** (in V1, V3 and the controls; weak in V4) |
-| Position bias explains the raw-view failure | — | — | — | H2: V1 +0.017 [−0.229, +0.281], V3 +0.042 [−0.198, +0.285] (§4.7) | **NOT SUPPORTED** |
+| Claim | Test (R14) | Dev (R13) | Pooled (R15) | Follow-up (R16) | RQ9 granite (R15C) | Label |
+|---|---|---|---|---|---|---|
+| Messages alone (V1) fail | AUROC 0.490 [0.299, 0.691] (§4.2) | 0.431 [0.219, 0.646] (§5) | 0.459 [0.323, 0.597] (§4.2) | fixed 0.490 [0.299, 0.691], random 0.507 [0.306, 0.705] (§4.2) | **does not hold**: V1 0.729 [0.549, 0.896] (§4.2) | **ROBUST (llama only)** |
+| Actions alone (V2) fail | 0.372 [0.170, 0.601] (§4.2) | 0.493 [0.260, 0.726] (§5) | 0.447 [0.302, 0.595] (§4.2) | fixed 0.559 [0.319, 0.788], random 0.514 [0.295, 0.733] (§4.2) | **does not hold**: V2 0.767 [0.604, 0.917], granite's best view (§4.2) | **ROBUST (llama only)** (never above chance with llama; the size depends on the session, RQ0.4 FAIL) |
+| Combining helps (RQ2, V3 − V2) | +0.365 [0.094, 0.611] (§4.3) | −0.174 [−0.406, 0.056] (§5, in-sample) | +0.040 [−0.155, 0.238] (§4.2) | point estimates only: +0.19 (fixed), +0.28 (random) (§5) | **does not hold**: −0.031 [−0.250, 0.191] (§4.3) | **FRAGILE (llama only)** |
+| Structure beats raw (RQ5, V4 − V3) | +0.160 [−0.021, 0.351] (§4.6) | +0.444 [0.146, 0.729] (§5, in-sample) | +0.350 [0.166, 0.534] (§4.2) | V4 vs V3 AUROC: fixed 0.826 vs 0.750; random 0.750 vs 0.792 (§4.2) | **does not hold**: −0.226 [−0.486, 0.056] (§4.3) | **FRAGILE (llama only)** (positive on dev/pooled, not significant on test, reversed in the random arm) |
+| Structure beats same length (V4 − C-length) | +0.285 [0.017, 0.556] (§4.6) | AUROC 0.764 vs 0.583 (§5; no paired CI reported) | +0.237 [0.030, 0.443] (§4.2) | not measured (C-length not re-run) | not measured (C-length not scored); granite's V4 is at chance, 0.510 [0.292, 0.729] (§4.2) | **ROBUST (llama only)** (test and pooled CIs above 0; the structured report does not work with granite) |
+| Private plans do not help (RQ6, V5 − V3) | −0.031 [−0.267, 0.236] (§4.7) | AUROC 0.583 vs 0.319 (§5; no paired CI reported) | +0.149 [−0.062, 0.347] (§4.2) | not measured (V5 not re-run) | not measured (V5 not scored) | **CONSISTENT NULL (no detectable gain at n = 24)**: every CI includes 0. This is absence of evidence, not evidence of no effect |
+| Same-incentive (T4b) fools messages | V1 T1 vs T4b 0.344 [0.12, 0.65] (§4.4) | not reported per type | 0.359 [0.190, 0.562] (§4.2) | fixed 0.344 [0.125, 0.646], random 0.365 [0.115, 0.625] (§4.6) | **does not hold**: V1 T1 vs T4b 0.812 [0.604, 0.958] (§4.4) | **ROBUST (llama only)** |
+| Persona talk (T3) fools actions | V2 T1 vs T3 0.219 [0.00, 0.62] (§4.4) | descriptive only: V2 flags Type 3 games (§5) | 0.266 [0.049, 0.526] (§4.2) | fixed 0.458 [0.083, 0.854], random 0.500 [0.156, 0.844] (§4.6) | **does not hold**: V2 T1 vs T3 0.833 [0.708, 0.958] (§4.4) | **FRAGILE (llama only)** (reversed in the original session, about chance in the follow-up session) |
+| Code action signals are competitive with V4 (exploratory) | coGO 0.896, capture 0.896, G_others 0.872 vs V4 0.896 (R15 §4.4, test) | not reported separately | coGO 0.885, capture 0.944, G_others 0.906 vs V4 0.837 (R15 §4.4) | not measured | not applicable to the signals (model-free); granite's best view is V2 0.767 [0.604, 0.917] (§4.2) | **CONSISTENT (exploratory; pooled includes test)**: test and pooled agree; never pre-registered |
+| Position bias exists (last-listed pair gets the top score) | T-Z max V1 21/24, V3 17/24, V4 7/24 (R15 §4.6) | V1 22/24, V3 22/24, V4 7/24 (R15 §4.6) | — | fixed arm V1 21/24, V3 19/24; drop with random order V1 +0.458 [0.292, 0.667], V3 +0.417 [0.167, 0.667] (§4.3) | **does not hold**: last-position-max share at the no-bias expectation in every view (e.g. V1 0.708 vs 0.679); T-Z named as the single top pair 0 times in V1–V3 (§4.5) | **llama-specific (RQ9: granite shows no last-position preference beyond ties)** |
+| Position bias explains the raw-view failure | — | — | — | H2: V1 +0.017 [−0.229, +0.281], V3 +0.042 [−0.198, +0.285] (§4.7) | — | **NOT SUPPORTED** |
 
 ---
 
@@ -125,7 +140,7 @@
 - **Uptake rule:** rule v2 was developed on pilot 1 and confirmed on pilot 2 only; non-English text counts as U = 0 (R10 §B5).
 
 **Monitor:**
-- **One monitor model** (`llama3.1:8b`) **and one prompt format** (R14 §8). The second-model check (RQ9) is pending.
+- **One primary monitor model** (`llama3.1:8b`) **and one prompt format** (R14 §8). The second-model check (RQ9, granite3.3:8b) showed that the view ranking is monitor-dependent (R15C §4.2, §7). Granite ran on different hardware (Apple Metal vs NVIDIA), so model and hardware effects cannot be separated (R15C §8).
 - **Degenerate thresholds:** V1, V3 and C-mismatch had threshold 0 (flag everything), so their accuracy / TPR / FPR carry no information (R13 §5, R14 §8).
 - **Dev vs test instability:** V3 went from 0.319 to 0.736 (+0.417 [0.142, 0.684]), and the view rankings agree only weakly (Kendall τ 0.255) (R15 §4.1).
 - **Session nondeterminism** (R13 §10, R14 §8, R16 §4.4) and **position / recency bias** (R15 §4.6, R16 §4.7). Other fixed orders (the agent list, the agent order in views) were not varied (R16 §8).
@@ -138,7 +153,7 @@
 
 ### What we would do next
 
-1. **Run RQ9** (second monitor model, machine C) on the frozen views, and compare the V1–V4 ranking with Kendall τ.
+1. ~~Run RQ9~~ (done, R15C): since the ranking is monitor-dependent, **report any view result per monitor model** and test more than one monitor in future studies.
 2. **A larger test set** (more games per negative type), so that RQ2 and RQ5 can be settled.
 3. **Score several sessions per view** and average them, or report the between-session spread for every view, especially V2 and V4.
 4. **Pre-register a monitor format with randomised pair and agent order** as the default, plus an explicit "no pair" option to reduce ties.
@@ -186,3 +201,52 @@ Items 1–12 are from R10 §B4; items 13 onward were added later.
 | 20 | Follow-up 1 pre-registered, with a same-session control arm added before the commit | test the position-bias explanation | prereg follow-up 1; R16 | after test data, **before any follow-up call** |
 | 21 | Follow-up random arm also uses sample_idx 1 (same seed as the control arm) | the arms then differ only in pair order | DEVLOG task 16 part 1b; prereg §2 | before any follow-up call |
 | 22 | Documentation corrections: caption and excerpt section reference "report 15 §6" → §4.6 | typo | R16 §7; this task | no data involved |
+
+---
+
+## g) Replication (in progress)
+
+**Status:**
+- A pre-registered replication on **48 new games** is in progress: generation is running.
+- **Pre-registration:** `configs/prereg_replication.md` (commit 2bc3d3a, LF sha256 `d9d25b58…a1f9`), seed 20261027.
+- **Labels:** `data/replication/labels.csv` (24 / 8 / 8 / 8).
+- **Frozen inputs, nothing re-fitted:** the Study 2.2 monitor (89bdb79), the Study 2.3 judge and rules (404f356).
+
+Every result below is **TBD**.
+
+**Study 2.2 (machine B, frozen llama3.1:8b monitor; prereg §3):**
+
+| ID | Hypothesis | Test | Result |
+|---|---|---|---|
+| R1 | Messages alone fail | AUROC(V1) | TBD |
+| R2 | The structured report works | AUROC(V4) | TBD |
+| R3 | RQ2: combining helps | AUROC(V3) − AUROC(V2) | TBD |
+| R4 | RQ5: structure beats raw | AUROC(V4) − AUROC(V3) | TBD |
+| R5 | Structure beats same length | AUROC(V4) − AUROC(C-length) | TBD |
+| R6 | Same-incentive fools messages | AUROC(V1; Type 1 vs Type 4b) | TBD |
+| R7 | Persona talk fools actions | AUROC(V2; Type 1 vs Type 3) | TBD |
+| R8 | Oracle: private plans | AUROC(V5) − AUROC(V3) | TBD |
+| R9 | Shuffled control | AUROC(C-shuffled) | TBD |
+| R10 | Code action signal | (a) AUROC(capture); (b) AUROC(capture) − AUROC(V4) | TBD |
+
+**Study 2.3 (machine C, frozen judge_v1 + rules; prereg §4):**
+
+| ID | Hypothesis | Test | Result |
+|---|---|---|---|
+| E1 | Behaviour evidence works | AUROC(R2 gain score) | TBD |
+| E2 | Talk-only evidence is weak | AUROC(R1 judge score) | TBD |
+| E3 | Combining evidence helps | AUROC(R6) − AUROC(R2) | TBD |
+| E3b | Secondary: the leave-one-out combined rule | AUROC(R7) − AUROC(R2) | TBD |
+| E4 | Lookalikes (descriptive) | flag rates of R2 and R6 for Type 3 and Type 4b vs Type 2 | TBD |
+
+**Second replication monitor (granite3.3:8b), G1–G4:**
+- These hypotheses are defined in `configs/prereg_replication_amendment1.md`.
+- At the time of writing this is a **DRAFT** on machine C (report 19C; LF sha256 `778cf66b…7cbf7`). It is not committed, so it is not yet binding.
+- They are listed here by name only; their wording is in the amendment.
+
+| ID | Result |
+|---|---|
+| G1 | TBD |
+| G2 | TBD |
+| G3 | TBD |
+| G4 | TBD |

@@ -21,19 +21,23 @@ Full Study 2.2 results: [`writeup/results_22.md`](writeup/results_22.md). Work l
 
 ## Headline findings (pilot, n = 24 test games)
 
-All numbers are copied from `writeup/results_22.md`. CIs are 95% stratified bootstraps. These are pilot results from one monitor model.
+All numbers are copied from `writeup/results_22.md` and `writeup/results_23.md`. CIs are 95% stratified bootstraps.
 
-- **The structured report (V4) ranked games best:** AUROC 0.896 [0.771, 0.979]. The combined view (V3, 0.736 [0.535, 0.920]) and the oracle view (V5, 0.705 [0.517, 0.882]) were also above chance on test. V4 named the true colluding pair in 7/12 collusion games (chance 1/10).
-- **Messages alone (V1, 0.490) and actions alone (V2, 0.372) were at or below chance.** This was the same on dev, pooled and in the follow-up session.
-- **"Combining messages and actions helps"** (pre-registered RQ2) held on test: +0.365 [0.094, 0.611]. It is **fragile**: +0.040 [−0.155, 0.238] over all 48 games, and the comparison view V2 is session-sensitive.
-- **V4 beat a raw view of the same length:** +0.285 [0.017, 0.556]. **V4 vs the full raw combined view was not significant:** +0.160 [−0.021, 0.351].
-- **The agents' private plans did not help the monitor** (V5 − V3: −0.031 [−0.267, 0.236]).
-- **Same-incentive games fooled the message view** in every check.
-- **Monitor reliability problems:**
+- **Which view works depends on the monitor model.**
+  - With `llama3.1:8b`, messages alone (V1, 0.490) and actions alone (V2, 0.372) failed, and the code-built structured report worked best (V4, AUROC 0.896 [0.771, 0.979]).
+  - With `granite3.3:8b` (same frozen prompt), the ranking reversed: actions 0.767 [0.604, 0.917], structured report 0.510 [0.292, 0.729].
+- **Only the combined raw view (V3) matched:** 0.736 with both models.
+- **Model-free behaviour signals were the most dependable** (exploratory): capture 0.944 [0.884, 0.986] over all 48 games.
+- **Study 2.3:**
+  - the coalition-gain rule ranked games well (R2, AUROC 0.872 [0.736, 0.986]);
+  - the talk-only LLM judge was below chance (R1, 0.396 [0.205, 0.597]);
+  - combining evidence families did not help (R6 − R2: −0.080 [−0.208, 0.045], no clear difference).
+- **"Combining messages and actions helps"** (pre-registered RQ2) held on test with llama (+0.365 [0.094, 0.611]). It is fragile: it does not hold over all 48 games, and it does not hold with granite.
+- **Measured LLM-monitor reliability problems:**
   - the single-score format returned a constant 80 on 96/96 dev calls;
-  - a position bias favoured the last-listed pair;
-  - scores changed between Ollama sessions (mostly V2).
-  - A pre-registered follow-up showed the position bias is real, but it does not explain why the raw views failed.
+  - llama showed a last-position bias in its pair scores (granite did not, beyond ties);
+  - re-scoring the frozen monitor in a new session moved V2 by +0.188 [+0.007, +0.389].
+- **A pre-registered replication on 48 new games is in progress** (`configs/prereg_replication.md`).
 
 ## Reproducibility
 
