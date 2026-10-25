@@ -1950,3 +1950,117 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 
 ### Open questions for the team
 - Lead's OK for generation (A ≈ 412 min, B ≈ 388 min).
+
+---
+
+## 2026-10-25 — [machine: C] Task 15C (part 0): RQ9 preconditions + granite configuration — recorded BEFORE any model call
+
+### What was implemented or executed
+- Preconditions (read-only), all PASS:
+  - Ollama 0.40.3; llama3.1:8b `46e0c10c039e…` MATCH; granite3.3:8b
+    `fd429f23b90980ed1bef53b990894e7b0199331f6ae90c5650240a7d5b70f1f7` MATCH. `check_env` = NOT READY only because
+    qwen2.5:7b is missing (accepted by the task addendum).
+  - `configs/frozen/monitor_frozen.json` == HEAD blob, last commit `89bdb79eb73d821271ecb6c94b8f388c939091eb`;
+    LF sha256 **`ccc4bf07838be73eff576f84b29389db4ee0952e6a8317eaa51d70885f47f65f`** (expected value).
+  - `configs/monitor/manifest_v3_pairs_ctx16k.json` LF sha256 `81e88222…7311` == frozen `format_manifest_file_sha256`;
+    template `monitor_v3_pairs.txt` LF sha256 `fa6e62e7…3d87`.
+  - `data/views` V1–V4: 48/48 each; `labels.csv` sha256 `20849152…146e` == split; 24 test games.
+  - `ollama ps` empty; 13C/17C committed (`404f356`, `e65e46f`, `16841e6`); working tree clean.
+- `scratch/p15c_make_config.py` (new) → `configs/monitor/manifest_v3_pairs_ctx16k_granite.json` (LF sha256
+  `d6b38e3f2d1c951edf0aadfdc5023077597dcf34aa7efa735f9f1efbf3dfac40`). It first asserts the JSON writer reproduces the
+  frozen manifest byte for byte. `diff` shows only `_note`, `prompt_version`, `model` changed and `model_digest` added.
+- `study_2_2_views/monitor.py`: one additive PROMPTS entry `monitor_v3_pairs_ctx16k_granite`.
+- `tests/test_monitor.py`: +3 tests — existing 7 prompt names give byte-identical mock requests (sha256 of the V1–V5
+  requests recorded before the edit); manifest diff = {model, model_digest, prompt_version, _note}; granite request ==
+  frozen request except `model` (same template, schema, num_ctx 16384, num_predict 250, temperature 0, seed rule).
+  `tests/test_monitor.py`: 73 passed.
+
+### Errors and problems faced
+- None.
+
+### How each problem was solved
+- n/a.
+
+### Decisions taken
+- The frozen manifest has no digest field; the pinned granite digest is recorded as an added `model_digest` field
+  (the pin check itself still comes from `configs/pins.json` via CachedLLM).
+- The note replaces `_note` (one note field), with the exact sentence from the task.
+- Run id `rq9_granite`; the 3 measurement calls are sample 0 on V3 with the run's own requests, written into the same
+  `runs/rq9_granite/outputs/monitor.jsonl`, so they count toward the 96 (resume skips them).
+- Analysis (threshold-free) exactly as in the task: AUROC per view (stratified bootstrap B 2000, seed 20261023),
+  Kendall tau-b vs report 14's llama test AUROCs (V1 0.490, V2 0.372, V3 0.736, V4 0.896), paired V3−V2, V4−V3,
+  V3−V1, per-type AUROCs (resampling within the two types), mean score per type, top-1 pair accuracy and ties,
+  last-position-max share with the no-bias expectation, score diagnostics. Missing values (parse failure / truncation
+  / length cut) are counted per view, never retried, and left out of that view's AUROC.
+
+### Open questions for the team
+- None yet.
+
+---
+
+## 2026-10-25 — [machine: C] Task 15C (part 1): 3 measured calls; run started, then PAUSED over the 90-min pre-approval
+
+### What was implemented or executed
+- 3 measured calls (test, V3, sample 0, run `rq9_granite`): g_049148ae36 / g_0f33b05330 / g_1a50c4f11e — latency
+  54.9 / 51.3 / 59.1 s, prompt_eval 2,399 / 2,237 / 2,367, eval 121 / 116 / 138, 3/3 parse_ok, 0 truncation,
+  done_reason stop (no length cut), digest fd429f23b909. `ollama ps`: granite3.3:8b 7.8 GB, 100% GPU, context 16384.
+  They are in `runs/rq9_granite/outputs/monitor.jsonl` and count toward the 96 (same requests; resume skips them).
+- Estimate shown: 93 calls × 55 s ≈ 85 min (≤ 90, pre-approved). Run started 10:14:01 (`run_monitor.py --views
+  V1,V2,V3,V4 --games <24 test> --run-id rq9_granite --prompt monitor_v3_pairs_ctx16k_granite --yes`).
+- Live V1 latencies were 65–92 s (mean ≈ 74 s over 8 calls), projecting ≈ 100–115 min in total. **Paused at 10:24:00**
+  right after a line was written: 11/96 lines (3 V3 + 8 V1), all parse_ok, 0 truncation.
+
+### Errors and problems faced
+- The latency was ~1.35× the measurement. Free memory was very low during the run (`vm_stat` ≈ 4,000 free 16 KB pages
+  ≈ 64 MB, granite resident 7.8 GB on a machine reporting ~5 GB free before loading).
+- `pkill -f scripts/run_monitor.py` also matched the wrapping background shell (exit 144), so that session's
+  `runs/rq9_granite/manifest.json` was not written (the runner writes it at session end); the `ollama ps` logger loop
+  was stopped separately.
+
+### How each problem was solved
+- Run paused to ask the user for an OK (Rule H / task step 2: > 90 min needs the user's OK). No line was lost,
+  nothing re-scored; the in-flight request at the kill had produced no output. Resume with the same command skips the
+  11 done calls. The missing session record is noted here; the next session writes the manifest.
+
+### Decisions taken
+- Stop rather than run past the approved time; no setting changed.
+
+### Open questions for the team
+- User: OK to resume the remaining 85 calls (≈ 85–105 min)?
+
+---
+
+## 2026-10-25 — [machine: C] Task 15C (part 2): RQ9 run completed (96/96) + analysis, figure, report
+
+### What was implemented or executed
+- User OK to resume. Resumed session 10:30:06 → 11:49:38: 85 written, 11 skipped (already done), 0 transport errors,
+  0 truncation. Total 96/96 parse_ok, 0 length cuts, 0 missing scores. Mean latency V1 68.4 / V2 37.4 / V3 62.9 /
+  V4 45.8 s; `ollama ps` 41/41 snapshots 7.8 GB, 100% GPU, context 16384.
+- `scratch/p15c_analysis.py` → `runs/rq9_granite/results.json`, `tables.md`; `scratch/p15c_figure.py` →
+  `writeup/figures/fig8_rq9_granite.png`; caption appended to `writeup/figures/captions.md`;
+  `notes/reports/15C_rq9_granite.md`. `pytest -q`: 543 passed.
+
+### Errors and problems faced
+- `COLLUSION_LAB_MACHINE` (exported in `~/.zshrc`) was not set in the tool shell: both run sessions record
+  machine_id `m_5acffc7a`, cache in `cache/llm/m_5acffc7a/` (96 entries) instead of `cache/llm/C/`.
+- First draft of the report said 10 of 14 granite J-M namings are in J-M-focal games; recount from the line list = 9.
+
+### How each problem was solved
+- Machine id: not edited after the fact (results unaffected — digest pinned and checked); reported as a deviation for
+  the lead. Count corrected in the report before finishing.
+
+### Decisions taken
+- Results as obtained (threshold-free):
+  - AUROC granite / llama: V1 0.729 / 0.490, V2 0.767 / 0.372, V3 0.736 / 0.736, V4 0.510 / 0.896. Ranking granite
+    V2 > V3 > V1 > V4 vs llama V4 > V3 > V1 > V2; Kendall tau-b −0.667 (coarse with 4 views).
+  - Paired (granite): V3−V2 −0.031 [−0.250, 0.191]; V4−V3 −0.226 [−0.486, 0.056]; V3−V1 +0.007 [−0.136, 0.153].
+  - Top-1: 3 / 3 / 2 / 6 of 12. LPM granite 17 / 15 / 18 / 11 of 24 vs no-bias expectation 0.679 / 0.671 / 0.792 /
+    0.429 (ties: 33–75% of replies give all 10 pairs one score); granite names T-Z 0 times in V1–V3 (2 in V4) vs
+    llama 15 / 5 / 9 / 2 → the last-position pattern looks llama-specific (descriptive, no verdict).
+- Added descriptive named-pair counts (not asked for) because the ties-included LPM could not separate ties from a
+  position preference.
+
+### Open questions for the team
+- Lead: move/alias `cache/llm/m_5acffc7a/` to `C`, or leave it with this note? Set the machine id for tool shells
+  (e.g. in `.env` or the conda env vars) before the next run on C?
+- Write-up: report the Study 2.2 view ranking as monitor-dependent (RQ9)?

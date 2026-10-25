@@ -427,3 +427,61 @@ def test_emitted_key_order_handles_bad_content():
     assert emitted_key_order('{"pair_scores": {"T-Z": 1, "J-M": 2}}') == ["T-Z", "J-M"]
     assert emitted_key_order("not json") is None and emitted_key_order(None) is None
     assert emitted_key_order("[1, 2]") is None
+
+
+# --------------------------------------------------------------------------- task 15C: RQ9 granite config
+import hashlib  # noqa: E402
+import tempfile  # noqa: E402
+from pathlib import Path  # noqa: E402
+
+GRANITE = load_config(manifest=PROMPTS["monitor_v3_pairs_ctx16k_granite"])
+# sha256 of the 5 mock requests (V1-V5) per prompt name, recorded BEFORE the granite entry was added (task 15C)
+REQUEST_SHA_BEFORE_15C = {
+    "monitor_v1": "9f46d1d73e2bd08a1c0246beeed4e9e788ab4c5e53d428c3d7d5a80887564313",
+    "monitor_v1_ctx16k": "20d1c14ebee4926e5e4d5ca0adb684486bd7981b3147d67170787ffc916ac838",
+    "monitor_v2_anchored": "ca54889c8e0dfc27550ab6d9eab7486175312df9a19d6bf25fc3c4a16c8b3705",
+    "monitor_v2_pairs": "b6ad1378d02f554f3d13d159528cc149c883c3a5184bd83cace205d18816b743",
+    "monitor_v3_pairs": "ac755eb13ba76bdec4f27bf060cd4c2ddbdccc0b267c10dadfa7f35ded887e34",
+    "monitor_v3_pairs_ctx16k": "c69fb62a2e3002b76f1e0b8e1b81678e9eec558df3a973d8e526cc1356bffbc6",
+    "monitor_v3_pairs_ctx16k_rot": "c69fb62a2e3002b76f1e0b8e1b81678e9eec558df3a973d8e526cc1356bffbc6",
+}
+
+
+def _requests(cfg):
+    pins = load_pins()
+    calls = []
+    for v in ("V1", "V2", "V3", "V4", "V5"):
+        t = MockTransport(pins["ollama_version"], {cfg.model: pins["models"][cfg.model]["digest"]}, [ok_reply("{}")])
+        with tempfile.TemporaryDirectory() as d:
+            llm = CachedLLM(transport=t, pins=pins, models=[cfg.model], cache_dir=Path(d), machine_id="T",
+                            gpu="test", sleep=lambda s: None)
+            score_view("view text", v, llm, cfg, game_id="g_0000000000", sample_idx=0)
+        calls.append(t.calls[0])
+    return calls
+
+
+def test_existing_prompt_requests_byte_identical_after_granite_entry():
+    for name, sha in REQUEST_SHA_BEFORE_15C.items():
+        calls = _requests(load_config(manifest=PROMPTS[name]))
+        assert hashlib.sha256(json.dumps(calls, sort_keys=True, ensure_ascii=False).encode()).hexdigest() == sha, name
+
+
+def test_granite_manifest_differs_only_in_model_digest_version_note():
+    a = json.loads((CONFIGS / "monitor" / "manifest_v3_pairs_ctx16k.json").read_text(encoding="utf-8"))
+    b = json.loads((CONFIGS / "monitor" / "manifest_v3_pairs_ctx16k_granite.json").read_text(encoding="utf-8"))
+    diff = {k for k in set(a) | set(b) if a.get(k) != b.get(k)}
+    assert diff == {"model", "model_digest", "prompt_version", "_note"}
+    assert b["model"] == "granite3.3:8b" and b["model_digest"] == load_pins()["models"]["granite3.3:8b"]["digest"]
+    assert b["prompt_version"] == "monitor_v3_pairs_ctx16k_granite"
+    assert b["_note"] == "RQ9: identical to the frozen monitor_v3_pairs_ctx16k except the model"
+    assert b["template"] == "monitor_v3_pairs.txt" and b["template_sha256"].startswith("fa6e62e7")
+
+
+def test_granite_request_equals_frozen_except_model():
+    g, f = _requests(GRANITE), _requests(V3K)
+    for cg, cf in zip(g, f):
+        assert cg["model"] == "granite3.3:8b" and cf["model"] == "llama3.1:8b"
+        assert {k: v for k, v in cg.items() if k != "model"} == {k: v for k, v in cf.items() if k != "model"}
+    assert (GRANITE.num_ctx, GRANITE.num_predict, GRANITE.temperature, GRANITE.pair_order) == \
+        (16384, 250, 0.0, V3K.pair_order)
+    assert g[2]["options"]["seed"] == monitor_seed("g_0000000000", "V3", 0)

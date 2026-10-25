@@ -54,7 +54,9 @@ PROMPTS = {"monitor_v1": "manifest.json", "monitor_v2_anchored": "manifest_v2_an
            # task 13 lead decision (a): same templates, num_ctx 16384 for all monitor calls
            "monitor_v1_ctx16k": "manifest_v1_ctx16k.json", "monitor_v3_pairs_ctx16k": "manifest_v3_pairs_ctx16k.json",
            # task 16 Follow-up 1 (prereg 496fc28): same as v3_pairs_ctx16k, pair order permuted per call
-           "monitor_v3_pairs_ctx16k_rot": "manifest_v3_pairs_ctx16k_rot.json"}
+           "monitor_v3_pairs_ctx16k_rot": "manifest_v3_pairs_ctx16k_rot.json",
+           # task 15C RQ9: same as v3_pairs_ctx16k, model granite3.3:8b
+           "monitor_v3_pairs_ctx16k_granite": "manifest_v3_pairs_ctx16k_granite.json"}
 PAIR_EXAMPLE = "{pair_scores_example}"  # rot template only: filled per call with the pairs in the presented order
 
 

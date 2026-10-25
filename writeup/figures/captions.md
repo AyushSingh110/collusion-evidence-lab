@@ -45,3 +45,7 @@
 - **Left panel:** AUROC with 95% CIs (stratified bootstrap, B = 2000, seed 20261023).
 - **Right panel:** the share of replies in which the last-listed pair gets the top score; the black ticks show the share expected with no position bias (allowing for ties).
 - **Main result:** randomising the order cuts the last-position effect in V1 (21/24 → 10/24) and V3 (19/24 → 9/24) but changes no view's AUROC clearly (all random − fixed paired CIs include 0).
+
+**Figure 8 — `fig8_rq9_granite.png`. RQ9: the same frozen monitor prompt with a second model (granite3.3:8b)** *(task 15C, machine C; test set n = 24, one sample, one session).*
+- **Left:** test AUROC per view with 95% CIs (stratified bootstrap, B = 2000, seed 20261023): llama3.1:8b from the frozen test run (report 14, machine B, NVIDIA) vs granite3.3:8b (Apple M4). The ranking of the views does not carry over (Kendall tau-b −0.67, a coarse measure with 4 views): only V3 is the same (0.736 for both), and V4, best with llama, is at chance with granite.
+- **Right:** share of replies in which the last-listed pair (T-Z) has the top score, ties included; the black ticks show granite's no-bias expectation given its many ties (most granite replies give all pairs the same score). Granite sits at its expectation in every view and names T-Z as the single top pair only twice (V4), so the strong last-position pattern looks specific to llama, not to the prompt format.
