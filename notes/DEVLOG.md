@@ -2266,3 +2266,62 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 
 ### Open questions for the team
 - Audit issue 4 (granite amendment G1–G4 not verifiable on B) is still open until machine C commits the amendment.
+
+---
+
+## 2026-10-25 — [machine: C] Task 20C (part 0): both replication preregs verified — recorded BEFORE any G1–G4 code
+
+### What was implemented or executed
+- Read-only checks (no model calls; no replication data on this machine: `data/replication/` absent):
+  - `configs/prereg_replication.md`: committed ALONE in `2bc3d3aa19edb0aa43ccf5a6cb09e37f2dd2deeb`
+    (2026-10-25 09:55:12 +0530); == HEAD blob; LF sha256 `d9d25b583b1d6052778f8668d8a55d7680069ba1ce6e9f8b61a72c49e1f7a1f9`.
+  - `configs/prereg_replication_amendment1.md`: committed ALONE in **`306502e7011995bca72e5c83c64d4b99aa1931c7`**
+    (2026-10-25 20:34:15 +0530); == HEAD blob; LF sha256 **`778cf66b03bdea1f27a121aed59962ae5f95ea2e21c6f9fd3902b08f8bc7cbf7`**.
+  - Machine B confirmed to the lead, before that commit, that no replication view had been rendered and no replication
+    game content had been looked at; B renders only after the amendment commit.
+  - Frozen monitor file LF sha256 `ccc4bf07…f65f`; granite manifest LF sha256 `d6b38e3f…ac40`.
+- The first attempt at Task 20C (earlier today) stopped at this precondition because the amendment was not yet
+  committed; no code or file was written then.
+
+### Errors and problems faced
+- None.
+
+### How each problem was solved
+- n/a.
+
+### Decisions taken
+- G1–G4 implemented exactly as amendment 1 §3; primary = all 48 replication games, sensitivity = without the
+  quality-fail ids (`data/replication/quality_fail.json`).
+
+### Open questions for the team
+- None yet.
+
+---
+
+## 2026-10-25 — [machine: C] Task 20C (part 1): G1–G4 analysis code for the granite replication (no model calls)
+
+### What was implemented or executed
+- New, additive: `study_2_2_views/replication_granite.py` (G1/G2/G4 via machine B's `_rule`, `verdict_g3`,
+  `hypotheses`, `descriptive`, precondition checks), `scripts/analyse_replication_granite.py` (one-run CLI, `--plan`),
+  `tests/test_replication_granite.py` (44 tests). No existing module, frozen file or manifest changed.
+- `pytest -q tests/test_replication_granite.py`: 44 passed; `test_reproduces_15c_aurocs` ran on C and matches report
+  15C (granite AUROC + CI per view, last-position k, top-1). Full suite: 672 passed, 4 skipped (machine-B data tests).
+- `--plan` printed the later run order (judge ≈ 22 min and granite 192 calls ≈ 2.9 h, both need the lead's OK).
+
+### Errors and problems faced
+- One synthetic test failed first: `test_hypotheses_not_confirmed_and_below_chance` expected G1 "not confirmed" but
+  random "noise" scores happened to separate the classes (AUROC CI above 0.5).
+
+### How each problem was solved
+- That arm now uses a constant score (AUROC exactly 0.5, CI [0.5, 0.5]), which also tests the "bound exactly at 0.5"
+  case. No code change.
+
+### Decisions taken
+- Line provenance is checked by `prompt_sha256` against the system prompt built from the committed manifest (plus
+  prompt version, model, digest); the manifest file hashes are checked separately (lines carry no manifest hash).
+- G3 and G4 use the games where all their scores are present, one common set for both monitors in G3, so the paired
+  arms share resample indices. Missing lines/scores are counted, never fatal. No CI → "undetermined (no CI)".
+
+### Open questions for the team
+- Machine B: confirm the replication `monitor.jsonl` uses the standard `run_monitor.py` line format (incl.
+  `prompt_sha256`, `model`, `digest`); otherwise the analysis refuses by design.
