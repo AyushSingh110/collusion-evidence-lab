@@ -358,3 +358,72 @@ def test_v2_pairs_line_has_no_v3_extras(tmp_path):
     llm, _ = make_llm(tmp_path, [ok_reply(json.dumps(_pairs_json(M_T=85)))])
     line = score_view("x", "V2", llm, PAIRS, game_id="g_4444444444")
     assert "margin" not in line and "model_suspected_pair" not in line
+
+
+# --------------------------------------------------------------------------- task 16: Follow-up 1 pair order
+from study_2_2_views.monitor import (emitted_key_order, permuted_pair_order,  # noqa: E402
+                                     schema_in_order)
+
+V3K = load_config(manifest=PROMPTS["monitor_v3_pairs_ctx16k"])
+ROT = load_config(manifest=PROMPTS["monitor_v3_pairs_ctx16k_rot"])
+
+
+def test_frozen_ctx16k_files_unchanged():
+    assert text_file_sha256(CONFIGS / "monitor" / "monitor_v3_pairs.txt") == \
+        "fa6e62e75548b43cb976356c09eb36b2fb631cc3b89c0371c8de725f81123d87"
+    assert text_file_sha256(CONFIGS / "monitor" / "manifest_v3_pairs_ctx16k.json") == \
+        "81e88222707e7771740f470fb04ee2463a7cd5e9aae1ba805b684fb4bbc07311"
+
+
+def test_permutation_is_deterministic_and_complete():
+    a = permuted_pair_order(ORDER, "g_1111111111", "V1", "followup1")
+    assert a == permuted_pair_order(ORDER, "g_1111111111", "V1", "followup1")       # same seed -> same order
+    assert sorted(a) == sorted(ORDER) and len(set(a)) == 10                         # every pair exactly once
+    others = {tuple(permuted_pair_order(ORDER, g, v, "followup1")) for g in ("g_1", "g_2", "g_3") for v in ("V1", "V3")}
+    assert len(others) > 1                                                          # differs across cells
+
+
+def test_rot_config_differs_only_in_pair_order():
+    assert ROT.pair_order == V3K.pair_order and ROT.output_schema == V3K.output_schema
+    assert (ROT.model, ROT.num_ctx, ROT.num_predict, ROT.temperature) == (V3K.model, 16384, 250, 0.0)
+    for v in ("V1", "V2", "V3", "V4"):
+        assert system_prompt(ROT, v) == system_prompt(V3K, v)          # canonical order fills -> identical prompt
+    order = permuted_pair_order(ORDER, "g_1111111111", "V3", "followup1")
+    p = system_prompt(ROT, "V3", order)
+    assert p.index(f'"{order[0]}": <0-100>') < p.index(f'"{order[-1]}": <0-100>')
+    assert p.replace(", ".join(f'"{k}": <0-100>' for k in order), "X") == \
+        system_prompt(V3K, "V3").replace(", ".join(f'"{k}": <0-100>' for k in ORDER), "X")
+    s = schema_in_order(ROT.output_schema, order)
+    assert list(s["properties"]["pair_scores"]["properties"]) == order == s["properties"]["pair_scores"]["required"]
+    assert ROT.output_schema["properties"]["pair_scores"]["required"] == ORDER      # original not mutated
+    with pytest.raises(ValueError):
+        system_prompt(V3K, "V3", order)                                             # frozen template: no placeholder
+
+
+def test_default_order_unchanged_when_option_off(tmp_path):
+    reply = json.dumps(_v3_json(M_T=85))
+    llm, t = make_llm(tmp_path, [ok_reply(reply)])
+    line = score_view("x", "V1", llm, V3K, game_id="g_5555555555", sample_idx=1)
+    assert t.calls[0]["format"] == V3K.output_schema
+    assert t.calls[0]["messages"][0]["content"] == system_prompt(V3K, "V1")
+    assert "presented_pair_order" not in line and "emitted_pair_order" not in line
+
+
+def test_mapping_back_is_exact(tmp_path):
+    order = permuted_pair_order(ORDER, "g_6666666666", "V1", "followup1")
+    scores = {k: i * 7 for i, k in enumerate(ORDER)}                                # distinct values per pair
+    content = json.dumps({"pair_scores": {k: scores[k] for k in order}, "suspected_pair": [], "evidence": "e"})
+    llm, t = make_llm(tmp_path, [ok_reply(content)])
+    line = score_view("x", "V1", llm, ROT, game_id="g_6666666666", sample_idx=1, pair_order=order)
+    assert line["pair_scores"] == scores and list(line["pair_scores"]) == ORDER    # canonical names and order
+    assert line["score"] == 63 and line["suspected_pair"] == ["T", "Z"]
+    assert line["presented_pair_order"] == order and line["emitted_pair_order"] == order
+    assert list(t.calls[0]["format"]["properties"]["pair_scores"]["properties"]) == order
+    with pytest.raises(ValueError):
+        score_view("x", "V1", llm, ROT, game_id="g_6666666666", pair_order=order[:-1])
+
+
+def test_emitted_key_order_handles_bad_content():
+    assert emitted_key_order('{"pair_scores": {"T-Z": 1, "J-M": 2}}') == ["T-Z", "J-M"]
+    assert emitted_key_order("not json") is None and emitted_key_order(None) is None
+    assert emitted_key_order("[1, 2]") is None

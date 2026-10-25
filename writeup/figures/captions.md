@@ -30,9 +30,18 @@
 - Shows the share of the 12 collusion games per split in which the monitor's named pair (or the code signal's argmax pair) equals the true pair. The dashed line is chance, 1 in 10 pairs.
 - No CIs are drawn: with n = 12, one game is 8 points.
 - The Dep code signal was not computed on dev in report 13 ("n/a").
-- Report 15 §6 shows that several views favour the last-listed pair (T-Z), which can raise or lower these accuracies depending on how often T-Z is the true pair.
+- Report 15 §4.6 shows that several views favour the last-listed pair (T-Z), which can raise or lower these accuracies depending on how often T-Z is the true pair.
 
 **Figure 6 — `fig6_code_signals_vs_V4.png`. Simple code signals vs the LLM monitor on the structured report (V4)** *(exploratory, not pre-registered).*
 - Shows AUROC with 95% CIs of the game-level maximum (over the 10 pairs) of five code signals and of V4. Results are for test (n = 24) and for all 48 games pooled.
 - Dep is NA in 3 games, so its n is 21 on test and 45 pooled. Its honest baseline was fitted on the 4 dev Type 2 games only.
 - The action-based signals coGO, capture and G_others match V4 (all ≈ 0.87–0.94). The keyword and dependence signals (C_kw, Dep) are weaker. The pooled numbers include the dev games used for selection.
+
+**Figure 7 — `fig7_pair_order_followup.png`. Follow-up 1: randomising the order of the 10 pairs** *(pre-registered follow-up, commit 496fc28; reported separately in report 16; it does not change report 14).*
+- **Arms:** the 24 test games × V1–V4 were scored in three arms.
+  - Grey: fixed pair order, original test run (report 14).
+  - Dark: fixed pair order, re-scored in the follow-up session.
+  - Red: random pair order per call, the same session, interleaved with the dark arm.
+- **Left panel:** AUROC with 95% CIs (stratified bootstrap, B = 2000, seed 20261023).
+- **Right panel:** the share of replies in which the last-listed pair gets the top score; the black ticks show the share expected with no position bias (allowing for ties).
+- **Main result:** randomising the order cuts the last-position effect in V1 (21/24 → 10/24) and V3 (19/24 → 9/24) but changes no view's AUROC clearly (all random − fixed paired CIs include 0).

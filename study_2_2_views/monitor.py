@@ -9,8 +9,10 @@ Transport failures go to errors.jsonl, not monitor.jsonl, so a resumed run tries
 """
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
+import random
 import subprocess
 import sys
 from dataclasses import dataclass
@@ -50,7 +52,10 @@ class MonitorConfig:
 PROMPTS = {"monitor_v1": "manifest.json", "monitor_v2_anchored": "manifest_v2_anchored.json",
            "monitor_v2_pairs": "manifest_v2_pairs.json", "monitor_v3_pairs": "manifest_v3_pairs.json",
            # task 13 lead decision (a): same templates, num_ctx 16384 for all monitor calls
-           "monitor_v1_ctx16k": "manifest_v1_ctx16k.json", "monitor_v3_pairs_ctx16k": "manifest_v3_pairs_ctx16k.json"}
+           "monitor_v1_ctx16k": "manifest_v1_ctx16k.json", "monitor_v3_pairs_ctx16k": "manifest_v3_pairs_ctx16k.json",
+           # task 16 Follow-up 1 (prereg 496fc28): same as v3_pairs_ctx16k, pair order permuted per call
+           "monitor_v3_pairs_ctx16k_rot": "manifest_v3_pairs_ctx16k_rot.json"}
+PAIR_EXAMPLE = "{pair_scores_example}"  # rot template only: filled per call with the pairs in the presented order
 
 
 def load_config(directory: Path = MONITOR_DIR, manifest: str = "manifest.json") -> MonitorConfig:
@@ -72,11 +77,42 @@ def load_config(directory: Path = MONITOR_DIR, manifest: str = "manifest.json") 
         .get("maxLength"))
 
 
-def system_prompt(cfg: MonitorConfig, view: str) -> str:
+def system_prompt(cfg: MonitorConfig, view: str, pair_order: Optional[Sequence[str]] = None) -> str:
     if view not in cfg.view_prompt:
         raise ValueError(f"no prompt sentence for view {view!r}")
     sentence = cfg.what_you_see[cfg.view_prompt[view]]
-    return cfg.template.replace("{rules}", RULES_TEXT).replace("{what_you_see}", sentence).strip()
+    text = cfg.template.replace("{rules}", RULES_TEXT).replace("{what_you_see}", sentence)
+    if PAIR_EXAMPLE in text:
+        text = text.replace(PAIR_EXAMPLE, ", ".join(f'"{p}": <0-100>' for p in (pair_order or cfg.pair_order)))
+    elif pair_order is not None:
+        raise ValueError(f"template of {cfg.prompt_version} has no {PAIR_EXAMPLE}; a pair order cannot be applied")
+    return text.strip()
+
+
+def permuted_pair_order(pair_order: Sequence[str], game_id: str, view: str, salt: str) -> list[str]:
+    """Follow-up 1 rule: random.Random(int(sha256(game_id|view|salt), 16)).shuffle(canonical order)."""
+    order = list(pair_order)
+    random.Random(int(hashlib.sha256(f"{game_id}|{view}|{salt}".encode("utf-8")).hexdigest(), 16)).shuffle(order)
+    return order
+
+
+def schema_in_order(schema: dict, pair_order: Sequence[str]) -> dict:
+    """Copy of the output schema with pair_scores properties and required list in the given order (same constraints)."""
+    out = copy.deepcopy(schema)
+    ps = out["properties"]["pair_scores"]
+    ps["properties"] = {k: ps["properties"][k] for k in pair_order}
+    ps["required"] = list(pair_order)
+    return out
+
+
+def emitted_key_order(content: Optional[str]) -> Optional[list[str]]:
+    """Order in which the model wrote the pair_scores keys (None if the reply is not a JSON object with them)."""
+    try:
+        obj = json.loads(content or "", object_pairs_hook=lambda kv: kv)
+        ps = dict(obj).get("pair_scores")
+        return [k for k, _ in ps] if isinstance(ps, list) else None
+    except (json.JSONDecodeError, TypeError, ValueError):
+        return None
 
 
 def monitor_seed(game_id: str, view: str, sample_idx: int) -> int:
@@ -148,11 +184,19 @@ def _decode(parsed: dict, cfg: MonitorConfig) -> tuple[int, list[str]]:
     return parsed["score"], list(parsed["suspected_pair"])
 
 
-def score_view(text: str, view: str, llm, cfg: MonitorConfig, *, game_id: str, sample_idx: int = 0) -> dict:
-    """One monitor call. Returns an output line (without run_id)."""
-    sys_p = system_prompt(cfg, view)
+def score_view(text: str, view: str, llm, cfg: MonitorConfig, *, game_id: str, sample_idx: int = 0,
+               pair_order: Optional[Sequence[str]] = None) -> dict:
+    """One monitor call. Returns an output line (without run_id).
+
+    pair_order (Follow-up 1, pairs format only): present the pairs in this order in the prompt example line and the
+    schema; scores are still stored under the canonical order. None (default) = the unchanged frozen behaviour."""
+    if pair_order is not None and (cfg.format != "pairs" or sorted(pair_order) != sorted(cfg.pair_order)
+                                   or len(set(pair_order)) != len(cfg.pair_order)):
+        raise ValueError("pair_order must be a permutation of cfg.pair_order (pairs format only)")
+    sys_p = system_prompt(cfg, view, pair_order)
+    schema = cfg.output_schema if pair_order is None else schema_in_order(cfg.output_schema, pair_order)
     messages = [{"role": "system", "content": sys_p}, {"role": "user", "content": text}]
-    res = llm.complete(model=cfg.model, messages=messages, format_schema=cfg.output_schema, num_ctx=cfg.num_ctx,
+    res = llm.complete(model=cfg.model, messages=messages, format_schema=schema, num_ctx=cfg.num_ctx,
                        num_predict=cfg.num_predict, temperature=cfg.temperature,
                        seed=monitor_seed(game_id, view, sample_idx), sample_idx=sample_idx,
                        purpose=f"monitor:{cfg.prompt_version}:{view}")
@@ -184,6 +228,9 @@ def score_view(text: str, view: str, llm, cfg: MonitorConfig, *, game_id: str, s
         if cfg.pairs_extras:
             line["margin"] = pair_margin(res.parsed["pair_scores"], cfg.pair_order) if parse_ok else None
             line["model_suspected_pair"] = list(res.parsed.get("suspected_pair") or []) if parse_ok else None
+    if pair_order is not None:
+        line["presented_pair_order"] = list(pair_order)
+        line["emitted_pair_order"] = emitted_key_order(res.content)
     return line
 
 

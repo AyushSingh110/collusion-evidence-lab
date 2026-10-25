@@ -1496,3 +1496,112 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 
 ### Open questions for the team
 - STOP: waiting for the lead's "committed".
+
+---
+
+## 2026-10-25 — [machine: B] Task 16 (part 2a): prereg commit verified — recorded BEFORE any follow-up call
+
+### What was implemented or executed
+- Read-only check: `configs/prereg_followup1_pair_order.md` committed in
+  `496fc28279f357db95b57f527d851f61ad23710f` (2026-10-25 04:39:44 +0530); the working copy equals HEAD; LF sha256
+  `0d6aaa412b3944196ba344afa24a66092222a38a6c99af766c298777e24da46e` (= value recorded in part 1b).
+- No follow-up monitor call has been made at this point; `runs/followup1/` does not exist.
+
+### Errors and problems faced
+- None.
+
+### How each problem was solved
+- —
+
+### Decisions taken
+- None.
+
+### Open questions for the team
+- None.
+
+---
+
+## 2026-10-25 — [machine: B] Task 16 (part 2b): follow-up config + code + tests — recorded BEFORE the first follow-up call
+
+### What was implemented or executed
+- `scratch/p16_make_config.py` built:
+  - `configs/monitor/monitor_v3_pairs_rot.txt`: byte copy of the frozen template; only line 14's fixed pair list was
+    replaced by `{pair_scores_example}` (diff checked). LF sha256 `8590e6da30e711ff39ecf82bc74dc1678ff0df90332dfb8747e9bfdd355c1a86`.
+  - `configs/monitor/manifest_v3_pairs_ctx16k_rot.json`: file sha256 `e2aecc7ffdda1239031a6bb0b24df161d75b52d57a7f7c8cc051bff7ae5f9752`.
+- Frozen files unchanged: `monitor_v3_pairs.txt` fa6e62e7…7d81123d87; `manifest_v3_pairs_ctx16k.json`
+  81e88222707e7771740f470fb04ee2463a7cd5e9aae1ba805b684fb4bbc07311 (= frozen file's format_manifest_file_sha256).
+- `study_2_2_views/monitor.py` (additive only):
+  - PROMPTS entry `monitor_v3_pairs_ctx16k_rot`;
+  - `system_prompt(..., pair_order=None)` fills `{pair_scores_example}` only when the template has it, and raises if an
+    order is given for a template without it;
+  - new `permuted_pair_order`, `schema_in_order`, `emitted_key_order`;
+  - `score_view(..., pair_order=None)` adds `presented_pair_order` / `emitted_pair_order` only when the option is on.
+- Verified that the transport sends the payload with `json.dumps` and no key sorting, so the permuted schema order
+  reaches Ollama (the cache key hashes a sorted copy, but the prompt text differs per order anyway).
+- `tests/test_monitor.py`: +6 mock tests:
+  - frozen files pinned;
+  - permutation deterministic and complete;
+  - rot config differs only in pair order (canonical fill gives a prompt identical to frozen);
+  - default request unchanged when the option is off;
+  - mapping back exact;
+  - emitted-order parsing.
+  `pytest -q`: 490 passed, 0 failed.
+- Started Ollama 0.40.3 (D:\ollama_models); check_env READY (8.9 GB free RAM).
+- `scratch/p16_run.py`: interleaved two-arm runner (rot, then fixed per cell; cell order random.Random(20261023)
+  saved to runs/followup1/run_order.json; sample_idx 1; failures written as data, not re-run).
+
+### Errors and problems faced
+- While writing the new test, I first typed the frozen manifest hash from memory (wrong middle digits). Caught before
+  running the tests by recomputing it; the test now pins the real value.
+
+### How each problem was solved
+- Recomputed with core.config.text_file_sha256 and compared with the frozen file.
+
+### Decisions taken
+- The fixed arm's emitted key order is read back from the cache entry of the same call (its frozen line has no such
+  field).
+
+### Open questions for the team
+- None.
+
+---
+
+## 2026-10-25 — [machine: B] Task 16 (part 3): Follow-up 1 run + results
+
+### What was implemented or executed
+- `scratch/p16_run.py --limit 3` (timing: 33.5 s for the first call incl. model load, then ~21.5 s/call → est.
+  ~68 min, within the ≤ 90 min pre-approval), then the remaining 189 calls.
+  - Measurement 04:45:05–04:46:22 IST; run 04:46:45–05:50:07 IST.
+  - 192/192 calls; 0 transport errors, 0 parse failures, 0 truncations, 0 missing.
+  - Emitted key order = presented order in 96/96 per arm.
+  - `ollama ps`: 43%/57% CPU/GPU, ctx 16384 throughout.
+- `scratch/p16_analysis.py --selftest` (frozen run in all arms → all differences 0; reproduces report 14 AUROCs and
+  report 15 LPM counts), then the real analysis → `runs/followup1/analysis.json`, `tables.md`.
+  `scratch/p16_figure.py` → fig7. Caption appended to `writeup/figures/captions.md`.
+- **Results (primary = random − fixed, same session):**
+  - AUROC: V1 +0.017 [−0.229, +0.281]; V2 −0.045; V3 +0.042 [−0.198, +0.285]; V4 −0.076 [−0.240, +0.111].
+  - LPM drop: V1 +0.458 [0.292, 0.667] (random still 0.42 vs 0.22 chance); V3 +0.417 [0.167, 0.667]; V4 0.
+  - Verdicts: H1 V1 unclear, V3 supported; H2 V1 unclear, V3 unclear; H3 supported. Primary = secondary everywhere.
+  - Session effect (fixed − frozen): V2 AUROC +0.188 [0.007, 0.389], Spearman 0.653, MAD 10.8; V1 23/24 and V3 22/24
+    identical scores; V4 MAD 7.9.
+  - Top-1 pair with random order: V1 4/12 (vs 1/12), V3 5/12 (vs 2/12).
+- Stopped the Ollama server after the last call.
+
+### Errors and problems faced
+- Figure 7 legend covered the V3 points in the right panel (fixed by moving the legend and widening the y-range).
+- First smoke run of the analysis on 3 lines failed with "ValueError: need at least one array to concatenate" (too
+  few games per stratum; expected) → added `--selftest` to test the code on complete data instead.
+- While drafting report 16 I first wrote "V4 is best or joint-best in every arm"; that is false (random arm V3 0.792 >
+  V4 0.750). Corrected before finishing.
+
+### How each problem was solved
+- As above.
+
+### Decisions taken
+- Fixed two wordings in `writeup/figures/captions.md`: the Figure 5 caption's "report 15 §6" → §4.6, and Figure 7's
+  "random − fixed". The same typo in `writeup/excerpts_22.md` is NOT fixed (outside the task's allowed files).
+
+### Open questions for the team
+- Write-up wording for RQ2, given V2's session sensitivity (same-session V2 AUROC 0.559 vs 0.372 in report 14).
+- Report RQ8 V1/V3 with the order-artefact caveat?
+- Fix the "report 15 §6" typo in `writeup/excerpts_22.md` (case (c)) — needs your OK (outside this task's file list).
