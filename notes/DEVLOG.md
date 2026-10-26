@@ -2822,3 +2822,74 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 
 ### Open questions for the team
 - Check the banner and Mermaid diagram rendering on GitHub after pushing.
+
+---
+
+## 2026-10-26 — [machine: D] Task 29: figure placement in the paper (no new numbers)
+
+### What was implemented or executed
+- `writeup/paper.tex`: added `\usepackage{flafter}`. The user's compiled PDF showed Figure 2 (test AUROC per view, defined in §4.2) floating to the top of a page in the middle of the §4.1 gates paragraph.
+
+### Errors and problems faced
+- `[t]` floats may be placed at the top of the page where they are defined, i.e. above earlier text, so the §4.2 figure appeared inside §4.1.
+
+### How each problem was solved
+- `flafter` forbids a float from appearing before its position in the source; this applies to all figures. Not compiled here (no TeX on machine D); the user compiles.
+
+### Decisions taken
+- One global package instead of `[H]` on each figure: `[H]` can leave large blank gaps at page ends.
+
+### Open questions for the team
+- If a figure now drifts too far after its section, change that figure to `[!htb]`.
+
+---
+
+## 2026-10-26 — [machine: D] Task 30: team's humanized paper adopted; title block and authors
+
+### What was implemented or executed
+- `writeup/paper.tex` replaced by the team's humanized `main.tex` (785 lines; wording is the team's, not changed by Claude).
+- Title block: `\vspace*{-1.6cm}` so the block starts near the top of page 1; tighter spacing around the rules and the abstract heading.
+- Authors: Ayush Singh, Param Bapu, Atharva Anil Patil, Neerada M Dathan; one shared affiliation line "Pimpri Chinchwad University, Maharashtra, India".
+- One raw `→` (Follow-up 1 paragraph) replaced by `$\rightarrow$` (same output, safe under pdflatex).
+- `scratch/lint_tex.py`: braces 450/450, all 6 figures resolve; remaining flags are false positives (Verbatim code lines, the `\ci` macro).
+
+### Errors and problems faced
+- The previous `paper.tex` was not the humanized version the user believed was pasted; the humanized file was found in the IDE's temp folder.
+
+### How each problem was solved
+- Copied it into `writeup/paper.tex` (the old version stays in git history).
+
+### Decisions taken
+- No sentence edits, as the user asked. Not compiled here (no TeX on machine D).
+
+### Open questions for the team
+- The humanized text changed some sentences that now misstate sourced numbers (e.g. the Follow-up 1 paragraph: V1 should be 21/24 → 10/24, V3 19/24 → 9/24; "Granite continued to run."; the Author Contributions placeholders). Review before submission.
+- `writeup/paper.md` no longer mirrors `paper.tex`.
+- Figures 9 and 10 still have "Study 2.2" / "Study 2.3" in their plot titles.
+
+---
+
+## 2026-10-26 — [machine: D] Task 31: cut the paper body toward the 8-page limit (no new numbers)
+
+### What was implemented or executed
+- `scratch/restructure_paper.py` on `writeup/paper.tex`:
+  - Section 4 rebuilt: RQ0.1–0.4 gates condensed into one block; RQ2 / RQ5, Follow-up 1, RQ9 and replication paragraphs rewritten from garbled humanized text; Follow-up 1 and RQ9 merged into "Robustness: pair order and a second monitor".
+  - Moved to a new Appendix A "Additional Study 1 results": pilot-1 two-rater hand check, test AUROC bar chart, per-type score figure, Follow-up 1 figure, RQ9 figure, replication hypothesis table (R1–G4).
+  - All `\FloatBarrier` removed from the body; body floats now `[t]`.
+- Manual edits: float, caption and heading spacing reduced (`titlesec`; body font and margins unchanged); pre-registration and deviation bullets shortened; Study 2 sentence "fool the LLM Judge" corrected to "fool them" (it is the outcome signals that the shared incentive fools); failure-mode items 3 and 5 shortened; Limitations 10 → 6 bullets; Future Work list → one paragraph; "what the agents did was that they carried" fixed.
+- Checks: lint braces 464/464, no non-ASCII, all 6 figures resolve, every `\ref` has a label; number audit: only `12/24` (= source "12 of 24") and `0.27` (column width) unmatched.
+
+### Errors and problems faced
+- The humanized Follow-up 1 paragraph gave wrong numbers (V1 "19/24 → 9/24"); source (results_22.md §d.2) is 21/24 → 10/24 (V1), 17/24 → 9/24 (V3).
+
+### How each problem was solved
+- Rewritten from the source numbers.
+
+### Decisions taken
+- Kept in the body: pipeline, Table views, replication Figure (Study 1), rules Table, replication Figure (Study 2). Moved the rest to the appendix instead of deleting.
+- "With Apart Research" in the title block left as the user put it.
+- Not compiled (no TeX on machine D); page count unverified.
+
+### Open questions for the team
+- Confirm the main text ends by page 8 after compiling; if not, trim the abstract next.
+- Author Contributions still has [Author 1–3] placeholders.
