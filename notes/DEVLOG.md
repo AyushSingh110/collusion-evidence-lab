@@ -2893,3 +2893,94 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 ### Open questions for the team
 - Confirm the main text ends by page 8 after compiling; if not, trim the abstract next.
 - Author Contributions still has [Author 1–3] placeholders.
+
+---
+
+## 2026-10-26 — [machine: D] Task 32: Author Contributions for four authors
+
+### What was implemented or executed
+- `writeup/paper.tex`: the [Author 1–3] placeholders replaced by four named contributions (Param Bapu, Ayush Singh, Atharva Patil, Neerada Dathan, in title-block order), splitting the earlier three roles into four.
+
+### Errors and problems faced
+- None.
+
+### How each problem was solved
+- —
+
+### Decisions taken
+- Claude does not know who did which part; the role split is a draft in author order and must be confirmed by the team.
+
+### Open questions for the team
+- Confirm or swap the role assignments before submission.
+
+---
+
+## 2026-10-26 — [machine: D] Task 33: paper converted to IEEE conference format (IEEEtran)
+
+### What was implemented or executed
+- `writeup/paper.tex` rebuilt from the team's full version (791 lines, nothing cut) in `\documentclass[conference]{IEEEtran}`:
+  - IEEE title/author block (4 authors, shared affiliation "Pimpri Chinchwad University (PCU), Maharashtra, India", "With Apart Research" kept), `abstract`, new `IEEEkeywords`.
+  - All 7 figures and 3 tables as full-width `figure*` / `table*` placed right after the paragraph that cites them; `\FloatBarrier` removed; float-fraction settings so wide floats stay near their text; `flafter` kept.
+  - Packages incompatible with IEEEtran removed (geometry, caption, titlesec, enumitem, newtx); `cite` added.
+  - References reformatted to IEEE style (same authors, titles, IDs; no new information).
+  - Appendices in `\onecolumn` so the 39-row longtable breaks across pages.
+- Text fixes kept to garbled or wrong sentences only: Introduction paragraph 1 grammar; contribution 2 (broken sentence); "i.e go" ; RQ2 paragraph; Follow-up 1 (wrong numbers → 21/24 → 10/24 V1, 17/24 → 9/24 V3, per results_22.md §d.2); RQ9 ("Granite continued to run." removed, brackets closed); replication paragraph; Study 2 "fool the LLM Judge" → "fool them"; Discussion "was that they carried"; straight quotes → LaTeX quotes. Author Contributions placeholders → four named roles (Task 32 text).
+- Checks: lint braces 418/418, no non-ASCII, 6/6 images resolve, all `\ref` and `\cite` resolve; number audit: only arXiv IDs, a column width and 12/24 (= "12 of 24") unmatched.
+
+### Errors and problems faced
+- `longtable` does not work in two-column mode.
+
+### How each problem was solved
+- `\onecolumn` before `\appendices`.
+
+### Decisions taken
+- Full-width floats for every figure and table (all are too wide for one IEEE column). Not compiled (no TeX on machine D).
+
+### Open questions for the team
+- Compile and check float placement; Figures 6 and 7 still show "Study 2.2 / 2.3" inside the images; the role split in Author Contributions needs confirmation.
+
+---
+
+## 2026-10-26 — [machine: D] Task 34: author roles swapped, page numbers, compact floats (no text change)
+
+### What was implemented or executed
+- `scratch/ieee_compact.py` on `writeup/paper.tex`:
+  - Author Contributions: Ayush Singh and Param Bapu roles swapped, on the user's correction (Ayush: project lead, research design, pre-registrations; Param: harness integration, data pipeline, generation runs, caching).
+  - Page numbers: `\thispagestyle{plain}` + `\pagestyle{plain}` after `\maketitle`.
+  - To aim for ≤ 8 pages up to the Conclusion without cutting text: Figs. (test AUROC) and (Study 2 replication) moved to one-column `figure` at `\columnwidth`; other full-width figures narrowed (pipeline 0.85, per-type 0.85, follow-up 0.75, RQ9 0.7, Study 1 replication 0.75 of text width); replication table in `\footnotesize`.
+- Checks: lint braces balanced, no non-ASCII; 8 full-width floats remain.
+
+### Errors and problems faced
+- First script version written through a bash heredoc lost its backslashes (`\r` read as carriage return); assertion stopped it before any write.
+
+### How each problem was solved
+- Script rewritten with the file tool and raw strings; ran cleanly.
+
+### Decisions taken
+- No sentence cut. Page count not verified (no TeX on machine D); prose up to the Conclusion is ~5.3k words, estimated at ~8 pages with the compacted floats.
+
+### Open questions for the team
+- Compile and confirm the Conclusion ends on page 8; if not, the next lever is the font size of the two large tables or moving Fig. (per-type scores) to the appendix.
+
+---
+
+## 2026-10-26 — [machine: D] Task 35: team wording restored; appendix kept in two columns
+
+### What was implemented or executed
+- `scratch/restore_wording.py` on `writeup/paper.tex`:
+  - Restored the team's humanized wording in the paragraphs Claude rewrote in Task 33 (Introduction paragraph 1, contribution 2, payoff sentence, RQ2/RQ5, Follow-up 1, RQ9, replication, Study 2 opening, Discussion). Word diff against the team's pre-Task-33 file showed no section, figure, table or number had been removed; only wording differed.
+  - Kept only these corrections: Follow-up 1 V1 count "19 out of 24 (now 9 out of 24)" → "21 out of 24, now 10 out of 24" (results_22.md §d.2); "fool the LLM Judge" → "fool them" (it is the outcome signals that the shared incentive fools); typo fixes "An the auditor" → "The auditor" and a doubled "the The".
+  - Layout: removed `\onecolumn` (it forced a new page after the half-empty references page); appendices now continue in two columns right after the references. Deviation table moved from `longtable` (one-column only) to `supertabular` at column width (`\scriptsize`), header "When"; pre-registration table as a full-width `table*` (Table "Pre-registration chain"); Verbatim at `\scriptsize`.
+- Checks: braces 441/441, no non-ASCII, every `\ref` resolves.
+
+### Errors and problems faced
+- None at run time.
+
+### How each problem was solved
+- —
+
+### Decisions taken
+- Team wording has priority over grammar; only factually wrong statements were corrected. Not compiled (no TeX on machine D).
+
+### Open questions for the team
+- The restored paragraphs keep some broken sentences (e.g. RQ2 "means that the pooled value was It increased by"; replication "…over a same-length raw view Regarding…"; RQ9 "Granite continued to run."). Decide whether to keep them.

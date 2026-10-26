@@ -1,87 +1,71 @@
 % =====================================================================================
-%  Behaviour Beats Judgement — final paper
-%  Task 25D. Every number below is copied from writeup/results_summary.md, results_22.md,
+%  Behaviour Beats Judgement — final paper (IEEE conference format, IEEEtran)
+%  Every number below is copied from writeup/results_summary.md, results_22.md,
 %  results_23.md, excerpts_22.md or figures/captions.md (or the report those files cite);
 %  the source is kept in a "% src:" comment next to it. Nothing was recomputed or re-rounded.
 %  Figures: put this file next to the folder figures/ (= writeup/figures/ in the repository).
 %  Compile with pdflatex (Overleaf default). Packages: all in TeX Live / Overleaf.
 % =====================================================================================
-\documentclass[11pt]{article}
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
 
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage{amsmath}
-\usepackage{newtxtext,newtxmath}          % serif text + math (close to the template look)
-\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{cite}
+\usepackage{amsmath,amssymb}
 \usepackage{graphicx}
 \usepackage{booktabs,tabularx,longtable,multirow,array}
-\usepackage{caption}
-\usepackage{float}
-\usepackage{flafter}
-\usepackage{placeins}             % keep floats close to their point of reference
+\usepackage{supertabular}        % long table that breaks across columns
+\usepackage{flafter}              % a float never appears before the text that introduces it
 \usepackage{xcolor}
-\usepackage{enumitem}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning,fit}
-\usepackage[hidelinks]{hyperref}
 \usepackage{microtype}
 \usepackage{fvextra}              % allow long code lines to wrap in the appendix
-\setlength{\emergencystretch}{2em} % improve line wrapping without changing wording
+\usepackage[hidelinks]{hyperref}
+\setlength{\emergencystretch}{2em} % better line breaking in narrow columns, no wording change
+
+% let full-width figures/tables sit near their text instead of drifting to the end
+\setcounter{dbltopnumber}{2}
+\renewcommand{\dbltopfraction}{0.9}
+\renewcommand{\dblfloatpagefraction}{0.8}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\floatpagefraction}{0.8}
 
 \graphicspath{{figures/}}
-\captionsetup{font=small,labelfont=bf,skip=4pt}
-\setlist{itemsep=1pt,topsep=3pt}
-% tighter float and heading spacing (body text size and margins unchanged)
-\setlength{\textfloatsep}{10pt plus 2pt minus 2pt}
-\setlength{\floatsep}{8pt plus 2pt minus 2pt}
-\setlength{\intextsep}{8pt plus 2pt minus 2pt}
-\usepackage{titlesec}
-\titlespacing*{\section}{0pt}{12pt plus 3pt minus 2pt}{6pt plus 1pt}
-\titlespacing*{\subsection}{0pt}{9pt plus 2pt minus 2pt}{4pt plus 1pt}
-\titlespacing*{\paragraph}{0pt}{6pt plus 2pt minus 1pt}{0.6em}
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
-\newcommand{\ci}[2]{\,[#1,\,#2]}            % 95% CI
-\newcommand{\cmark}{\textbf{\textsf{yes}}}
 
 \begin{document}
 
-% ------------------------------------------------------------------ title block (template style)
-\thispagestyle{empty}
-\vspace*{-2.6cm}                            % start the title block near the top of the page
-\noindent\rule{\textwidth}{2.5pt}\par\vspace{8pt}
-\begin{center}
-{\LARGE\bfseries Behaviour Beats Judgement: Auditing Collusion Between\\[3pt]
-LLM Agents with Monitor Views and Antitrust-Style Evidence}
-\end{center}
-\vspace{6pt}\noindent\rule{\textwidth}{0.6pt}\par\vspace{14pt}
+\title{Behaviour Beats Judgement: Auditing Collusion Between LLM Agents with Monitor Views and Antitrust-Style Evidence}
 
-\begin{center}
-\begin{tabular}{cccc}
-Param Bapu & Ayush Singh & Atharva Patil & Neerada Dathan \\
-PCU,India & PCU,India & PCU,India & PCU,India \\[15pt]
-\end{tabular}
+\author{\IEEEauthorblockN{Ayush Singh\qquad Param Bapu\qquad Atharva Patil\qquad Neerada Dathan}
+\IEEEauthorblockA{Pimpri Chinchwad University (PCU), Maharashtra, India\\
+\textit{With Apart Research}}}
 
-\textbf{With}\\
-Apart Research
-\end{center}
+\maketitle
+\thispagestyle{plain}
+\pagestyle{plain}
 
-\vspace{2pt}
-\begin{center}\textbf{\large Abstract}\end{center}
-\vspace{-10pt}
-\begin{quote}\small\itshape
+\begin{abstract}
 It is possible for AI agents to coordinate their actions privately, so that collusion cannot be detected from the logged trajectories. This study looks at how different trajectory representations influence the ability of language models to detect collusion and identifies which evidence most strongly supports collusion decisions. We created a pre-registered testbed in which five locally hosted \texttt{qwen2.5:7b} agents play an eight-round version of the El Farol bar game. In the cases where collusion takes place, two of the agents receive an alliance note and have access to a private communication channel, while three control conditions (placebo, interaction with a friendly persona and a shared private incentive) produce similar behaviour in the absence of collusion. The ground-truth labels are obtained solely from the generation configuration. Two monitors, \texttt{llama3.1:8b} and \texttt{granite3.3:8b}, assess five different game representations together with an LLM judge and computational behavioural signals. The methods were established using 24 development games, tested on 24 games, and then replicated on 48 further games.
 
 Behavioural signals were found to be more reliable than those based on LLMs. On the replication dataset, the capture signal reached an AUROC of 0.900 [0.811, 0.965], which was 0.264 [0.121, 0.412] better than the best LLM representation, while the coalition-gain rule obtained an AUROC of 0.885 [0.786, 0.961]. The LLM monitors performed in an inconsistent manner, their AUROC values ranging from 0.32 to 0.66; a structured report fell from 0.896 on the test set to 0.636 on the replication set. The message-only analysis stayed at a level close to chance, adding private plans gave no advantage, and combining the evidence did not perform better than gain alone. Even though the outcomes do provide useful evidence, they cannot on their own prove collusion since shared incentives can lead to similar behaviour. None of the communication signals that were tested reliably acted as an antitrust-style ``plus factor''.
-\end{quote}
+\end{abstract}
 % src: results_summary.md "Main findings" rows 1-6; R21 §4.7 (R10a, R10b); R22C §4.2 (E1), §4.4; R14 §4.2.
+
+\begin{IEEEkeywords}
+LLM agents, collusion detection, multi-agent systems, AI auditing, LLM monitors, antitrust, pre-registration
+\end{IEEEkeywords}
 
 % ====================================================================================
 \section{Introduction}
 
 LLM agents are increasingly deployed side by side: in markets, in the shared infrastructure and inside larger
 workflows involving multiple agents; when two of them act in coordination with one another, the damage can be serious (in the form of higher prices,
-a resource that has been captured and a competitor that has been displaced) may never officially acknowledge the coordination. An
-the auditor normally keeps records of what the agents said in public, what actions they took and the results that displayed.
+a resource that has been captured and a competitor that has been displaced) may never officially acknowledge the coordination.
+The auditor normally keeps records of what the agents said in public, what actions they took and the results that displayed.
 The practical question is what action to take regarding those logs.
 
 We study two questions on one shared dataset:
@@ -93,18 +77,18 @@ We study two questions on one shared dataset:
   decision rules.
 \end{itemize}
 
-Study~2 can be usefully approached through the lens of competition law. The fact that firms act in a parallel manner does not prove that they have reached an agreement: firms may
-move together for independent reasons, for example due to a common cost shock. Courts therefore seek ``plus
-factors'' on top of parallel conduct, for example evidence of communication or actions that only make sense
-under an agreement~\cite{kovacic2011,twombly2007,theatre1954}. We built our dataset so that both halves of
-this argument can be tested: one lookalike shows collusive-sounding \emph{talk} without coordination and
-another shows parallel \emph{conduct} caused by a shared incentive without any agreement.
+Study~2 can be usefully approached through the lens of competition law. The fact that firms act in a parallel manner
+does not prove that they have reached an agreement: firms may move together for independent reasons, for example due
+to a common cost shock. Courts therefore seek ``plus factors'' on top of parallel conduct, for example evidence of
+communication or actions that only make sense under an agreement~\cite{kovacic2011,twombly2007,theatre1954}. We built
+our dataset so that both halves of this argument can be tested: one lookalike shows collusive-sounding \emph{talk}
+without coordination and another shows parallel \emph{conduct} caused by a shared incentive without any agreement.
 
 \paragraph{Our main contributions are:}
 \begin{enumerate}
 \item \textbf{A pre-registered, fully local collusion testbed} with four episode types, two of which are
 deliberately hard lookalikes; ground truth taken only from the generation config; one dev/test split fixed
-Before there was any game; each model was pinned by digest and was run locally.
+before there was any game; each model was pinned by digest and was run locally.
 
 \item \textbf{A view comparison for LLM monitors with controls, a second monitor model and a pre-registered}
 {The view which appeared best in the original test was one that was built with code on 48 new games.}
@@ -116,7 +100,6 @@ but a shared incentive fooled it. None of the communication evidence we measured
 \item \textbf{A catalogue of measured LLM-monitor failure modes}: a constant-score collapse, a judge ceiling,
 a model-specific position bias, a session effect and small-sample optimism.
 \end{enumerate}
-
 
 % ====================================================================================
 \section{Related Work}
@@ -149,9 +132,9 @@ advantage while honest play has no dominant action.
 
 \subsection{Game and protocol}
 Five agents (J, M, Q, T, Z), all \texttt{qwen2.5:7b} at temperature 1.0, play 8 rounds of El Farol.
-Going to the bar is worth \$10 (if fewer than half, i.e go at most 2 of 5), a crowded bar is worth $-\$5$, and staying home is worth \$0.
-Each round follows the three-stage protocol of the Shi et al.\ harness~\cite{shi2026}: a private plan
-(Stage~1), a public announcement with a message in a seeded, rotated speaking order (Stage~2), and a
+Going to the bar is worth \$10 (if fewer than half, i.e.\ go at most 2 of 5), a crowded bar is worth $-\$5$, and
+staying home is worth \$0. Each round follows the three-stage protocol of the Shi et al.\ harness~\cite{shi2026}: a
+private plan (Stage~1), a public announcement with a message in a seeded, rotated speaking order (Stage~2), and a
 simultaneous final GO/STAY choice (Stage~3). We use the harness only for its game definitions and prompt
 builders; a deterministic history block replaces its reflection step, and every prompt ends with a brevity
 line and an English-only language line.
@@ -175,13 +158,12 @@ The label is collusion $=1$ for Type~1 and $0$ otherwise, read only from the gen
 48 games (24 Type~1, 8 of each lookalike), split once into 24 dev and 24 test games (each 12 Type~1 + 4 of each
 lookalike), with labels and split written from the plan \emph{before} generation (master seed 20261023).
 The replication used 48 new games (seed 20261027) as one confirmation set with no split.
+Fig.~\ref{fig:pipeline} shows the data flow.
 % src: README; results_22.md setup; prereg_replication.md table (seed 20261027, counts 24/8/8/8).
 
-Figure~\ref{fig:pipeline} shows the data flow.
-
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\resizebox{\textwidth}{!}{%
+\resizebox{0.85\textwidth}{!}{%
 \begin{tikzpicture}[
   node distance=5mm and 6mm,
   box/.style={draw,rounded corners=2pt,align=center,font=\footnotesize,minimum height=9mm,fill=gray!6},
@@ -210,7 +192,7 @@ Figure~\ref{fig:pipeline} shows the data flow.
 before any game is generated. Monitors, the judge and the code evidence see only the cleaned public record
 (V5 adds private plans, never the private channel).}
 \label{fig:pipeline}
-\end{figure}
+\end{figure*}
 
 \subsection{Views, controls and cleaning (Study 1)}
 A whitelist cleaner keeps only public fields (announcements, messages, final actions, standard-rule payoffs);
@@ -249,8 +231,11 @@ above its dev level); R7 a learned logistic rule.
 
 \subsection{Integrity: pre-registration, freezes and statistics}
 \begin{itemize}
-  \item \textbf{Pre-registration chain.} Eight documents, from the frozen RQ0.1 pre-registration to the replication
-  and its amendment, each committed before the data it governs (Appendix~\ref{app:repro}).
+  \item \textbf{Pre-registration chain} (Appendix~\ref{app:repro}): a frozen RQ0.1 pre-registration; amendment~1
+  (after pilot~1, before pilot~2); amendment~2 (before any dataset game) and its erratum (before any monitor
+  result); the frozen monitor (after dev runs, before any test call); follow-up~1 (before its calls); and the
+  replication pre-registration with its amendment~1 (before any replication game, and before any replication
+  view was rendered, respectively).
   \item \textbf{Freezes.} Monitor format, prompts and thresholds were chosen on dev, frozen and run \emph{once} on
   test; the Study~2 rules file was applied once to test and once to the replication, never refit.
   \item \textbf{Statistics.} AUROC is primary; we also report accuracy-style counts at frozen thresholds. All
@@ -259,8 +244,10 @@ above its dev level); R7 a learned logistic rule.
   exploratory, with no multiple-comparison correction.
   % src: results_22.md "How to read the numbers".
   \item \textbf{Deviations.} We logged 39 deviations, each with the reason and whether it was decided before or
-  after the related data (Appendix~\ref{app:dev}); the most important is that pilot~1 failed the frozen uptake
-  rule and amendment~1 replaced it (\#4).
+  after the related data (Appendix~\ref{app:dev}). The most important ones: pilot~1 failed the frozen uptake
+  rule and amendment~1 replaced it (\#4); the cleaner became flag-only (\#7); \texttt{num\_ctx} was raised to 16384
+  before any monitor call (\#15); and the constant-score format was ruled ineligible on dev, before any test
+  call (\#16).
   \item \textbf{Local and reproducible.} Ollama 0.40.3 with every model pinned by digest, \$0 spent, and every LLM
   call cached to disk under a key that includes the model digest, prompt, schema, settings, seed and sample index.
 \end{itemize}
@@ -270,27 +257,59 @@ above its dev level); R7 a learned logistic rule.
 \label{sec:22}
 
 \subsection{Gates: does the dataset behave as intended? (RQ0.1--RQ0.4)}
-\textbf{RQ0.1 -- Real collusion} passed under Amendment~1. Pilot~1 failed the frozen uptake criterion (2/4) even though
-the transcripts suggested coordination in all 4 games: the rule missed brief instructions without `we/us' phrasing,
-and one game drifted into Chinese. Amendment~1 introduced an English-only instruction and uptake rule~v2, and the
-fresh Pilot~2 met every criterion: uptake 4/4, placebo false positives 0/2, the focal pair first by coGO in 4/4 games,
-coalition advantage and capture in 4/4, and rule--hand-check agreement 96.9\% (Cohen's $\kappa=0.931$). Across the full
-dataset, uptake was recorded in 24/24 games and uptake plus effect in 23/24 (the pilot-1 hand check is in
-Appendix~\ref{app:extra}).
-\textbf{RQ0.2 -- Lookalikes.} Type~3 behaved as intended in 7/8 games (one partial) and Type~4b in 6/8; all eight Type~4b
-games mention the ``deposit'' in public, an unplanned cue visible to monitors.
-\textbf{RQ0.3 -- Leakage} passed: no setup copies required removal, a search across 384 views found no leakage, and the
-shuffled control stayed at chance (dev 0.465 [0.250, 0.667]; test 0.632 [0.431, 0.833]).
-\textbf{RQ0.4 -- Stability} was met for V1, V3, V4 and V5 but not for V2 (mean absolute difference 5.00; Spearman
+
+\textbf{RQ0.1 -- Real collusion.}
+Pilot~1 failed the uptake criterion (2/4) even though the transcript evidence suggested coordination in all 4 games.
+The rule failed to pick up on brief instructions which didn't contain the `we/us' phrasing and also failed to pick up
+on the shift to Chinese in one game. Amendment~1 introduced an English only instruction and uptake rule~v2. In
+Pilot~2 (fresh pilot), all the criteria were met: uptake 4/4, placebo false positives 0/2, the focal pair came first
+by coGO in 4/4 games and both coalition advantage and capture occurred in 4/4 games. Rule--hand check agreement was
+96.9\% (Cohen's $\kappa=0.931$). Across the full dataset uptake was recorded in 24/24 games and the combined uptake and
+effect criterion was met in 23/24.
+
+A hand check of Pilot~1 by two raters who were blind to the rule further looked into the rule's limitations. The
+raters agreed in 91.7\% of the cases ($\kappa=0.80$). Rule~v2 agreed with the two raters in 79.2\% and 85.4\% of the
+cases respectively. All the disagreements concerned missed detections of coordination; there were no false alarms.
+The fact that detection errors had remained shows that they had not disappeared even though Pilot~2 had been a
+success.
+
+\textbf{RQ0.2 -- Lookalike conditions.}
+Type~3 behaved as intended in 7/8 games, with one partial case. Type~4b followed the intended pattern in 6/8 games;
+in the remaining two, participants did not follow the incentive. However, all eight Type~4b games included a public
+mention of the ``deposit'', creating an unplanned cue visible to monitors.
+
+\textbf{RQ0.3 -- Leakage.}
+The leakage checks passed: no setup copies required removal, and a search across 384 views found no leakage. The
+shuffled control remained consistent with chance-level performance on development data (0.465 [0.250, 0.667]) and
+test data (0.632 [0.431, 0.833]).
+
+\textbf{RQ0.4 -- Stability.}
+Stability criteria were met for V1, V3, V4, and V5, but not for V2 (mean absolute difference: 5.00; Spearman's
 $\rho=0.676$). Collusion was not fully concealed: 6.5\% of focal public messages revealed joint action, and 12/24
 Type~1 games contained at least one such disclosure.
-% src: results_22.md RQ status table (R10 §B3-B4; R12 §4.3-4.5, §5; R13 §3-4; R14 §4.10).
+% Source notes:
+% RQ0.1: results_22.md (RQ status table; R10 §B1, §B3--B4; R12 §4.3; two-rater agreement table in R10 §B3).
+% RQ0.2--RQ0.4: results_22.md (R12 §4.4--4.5, §5; R13 §3--4; R14 §4.10); limitations: R12 §4.2.
 
 \subsection{Original test set (RQ1--RQ8)}
-Table~\ref{tab:views} compares the views on the 24-game test set (bar chart: Appendix Figure~\ref{fig:auroc}). V4 achieved
-the highest AUROC (0.896 [0.771, 0.979]), while V1 was close to chance (0.490) and V2 fell below it (0.372).
 
-\begin{table}[t]
+Fig.~\ref{fig:auroc} compares the views on the 24-game test set. V4 achieved the highest AUROC (0.896 [0.771, 0.979]),
+while V1 was close to chance (0.490) and V2 fell below it (0.372). The full results are reported in
+Table~\ref{tab:views}.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\columnwidth]{fig1_auroc_by_view_test.png}
+    \caption{\textbf{Test-set discrimination by view} ($n=24$).
+    Bars show AUROC, with 95\% confidence intervals; the dashed line marks chance performance (0.5). Dark bars represent
+    V1--V5, and grey bars represent the three controls. V4 performed best (0.896 [0.771, 0.979]); the confidence intervals
+    for V3, V4, and V5 lie above chance. The frozen threshold was zero for V1, V3, and C-mismatch, making their
+    threshold-based metrics uninformative. AUROC is threshold-independent.}
+    \label{fig:auroc}
+\end{figure}
+% src: figures/captions.md Figure 1.
+
+\begin{table*}[t]
 \centering\small
 \caption{\textbf{AUROC per view} [95\% CI]: original test (llama, $n=24$) and the pre-registered replication
 (48 new games) for both monitors. Replication values are not reported for V5 and the C-length / C-mismatch
@@ -312,76 +331,143 @@ C-shuffled         & 0.632 [0.431, 0.833] & 0.457 [0.315, 0.591] & ---\\
 capture (code, no LLM) & 0.896 [0.781, 0.986] & \textbf{0.900} [0.811, 0.965] & (model-free)\\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
 % src: results_22.md RQ1 row and §g per-view table; R10a; capture test value R15 §4.4.
 
-\textbf{Primary comparisons.} \emph{RQ2} (V3 minus the dev-chosen best single view, V2) was +0.365 [0.094, 0.611]. By the
-pre-registered wording, combining helps, but the result is fragile: V2 failed RQ0.4, the pooled value was only +0.040
-[$-$0.155, 0.238], and V2 alone moved by +0.188 between sessions. \emph{RQ5} found no clear advantage of the structured
-view over the raw combined view (V4 $-$ V3 +0.160 [$-$0.021, 0.351]), but an advantage over a raw view of the same length
-(V4 $-$ C-length +0.285 [0.017, 0.556]).
+\textbf{Primary comparisons.} \emph{RQ2} (V3, with the dev-chosen best single view excluded, V2) was +0.365 [0.094, 0.611]:
+The fact that `combining helps' is indicated by the pre-registered term yet it is fragile since V2 failed RQ0.4 means that the pooled value was
+It increased by +0.040 [$-$0.155, 0.238] and V2 alone rose by +0.188 between sessions. RQ5 found no clear advantage with respect to
+a preference for the structured view (V4 $-$ V3 +0.160 [$-$0.021, 0.351]) as compared with a raw view of the
+same length (V4 $-$ C-length +0.285 [0.017, 0.556]).
 % src: results_22.md RQ2, RQ5 rows (R14 §4.3, §4.6; R15 §4.2; R16 §4.4).
 
 \textbf{Other questions.} Each single view was fooled by one lookalike (RQ3). At the frozen thresholds V4 flagged
 0/4 placebo, 2/4 persona and 1/4 shared-incentive games; V2 flagged 2/4, 3/4 and 2/4. Per-type AUROC showed
 persona talk fooling actions (V2, T1 vs.\ T3 0.219 [0.00, 0.62]) and the shared incentive fooling messages
-(V1, T1 vs.\ T4b 0.344 [0.12, 0.65]) (Appendix Figure~\ref{fig:pertype}). There was no clear evidence that the monitor
+(V1, T1 vs.\ T4b 0.344 [0.12, 0.65]) (Fig.~\ref{fig:pertype}). There was no clear evidence that the monitor
 cross-checks words against actions (RQ4, V3 $-$ C-mismatch +0.188 [$-$0.028, 0.386]), and private plans added
 nothing (RQ6, V5 $-$ V3 $-$0.031 [$-$0.267, 0.236]). The dependence code signal lost to V4 (RQ7, $-$0.173
 [$-$0.382, $-$0.009], $n=21$), but the simpler action signals coGO, capture and $G_{\text{others}}$ matched V4
 (exploratory). For naming the colluding pair (RQ8; chance 0.1), V4 was best with 7/12.
 % src: results_22.md RQ3, RQ4, RQ6, RQ7, RQ8 rows (R14 §4.4-§4.9; R15 §4.4).
 
-\subsection{Robustness: pair order and a second monitor}
-\textbf{Pair order (Follow-up~1).} Llama gave the top score to the last-listed pair (T-Z) in 21/24 V1 and 17/24 V3 test
-replies, although T-Z was the true pair in only 1 of 12 test collusion games. A pre-registered follow-up re-scored the
-test games with the pair order randomised (Appendix Figure~\ref{fig:followup}). This cut the last-position effect to
-10/24 (V1) and 9/24 (V3) but changed no view's AUROC clearly (V1 +0.017 [$-$0.229, +0.281], V3 +0.042 [$-$0.198, +0.285],
-V4 $-$0.076 [$-$0.240, +0.111]). The bias is real, but it does not explain the raw-view failure; with a random order,
-V4 named the correct pair in 8/12 games.
-% src: results_22.md §d.2 (R15 §4.6; R16 §4.3); Follow-up 1 row (R16 §4.2, §4.7); RQ8 row (R16 §4.5).
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.85\textwidth]{fig2_per_type_scores_test.png}
+\caption{\textbf{Monitor score per test game by episode type} \emph{(exploratory, not pre-registered)}. Each dot is
+one test game; the black bar is the type mean (12 Type~1 games, 4 of each negative type). Persona-talk games (T3)
+score high in the actions view (V2); same-incentive games (T4b) score highest of all in the messages view (V1).
+V4 is the only view where every collusion game (T1) scores above every placebo game (T2).}
+\label{fig:pertype}
+\end{figure*}
+% src: figures/captions.md Figure 2.
 
-\textbf{A second monitor (RQ9).} The same frozen prompt with \texttt{granite3.3:8b} produced a different ranking
-(Appendix Figure~\ref{fig:granite}): V1 0.729 [0.549, 0.896], V2 0.767 [0.604, 0.917], V3 0.736 [0.573, 0.917] and V4
-0.510 [0.292, 0.729] (Kendall $\tau$-b $-$0.667, a coarse measure with 4 views). Granite showed no preference for the
-last position beyond ties. It ran on different hardware (Apple Metal vs.\ NVIDIA), so the effects of model and
-hardware cannot be separated.
-% src: results_22.md RQ9 row (R15C §4.2, §4.5, §8.1).
+\subsection{Follow-up 1: pair-order position bias}
+Llama gave the top score to the last-listed pair (T-Z) in 21/24 V1 and 17/24 V3 test replies, although T-Z was the
+true pair in only one out of the twelve test collusion games; a pre-registered follow-up re-scored the test games involving the pair.
+The order was randomised (see Fig.~\ref{fig:followup}). Randomisation eliminated the last-position effect in V1 (21 out of 24, now 10 out of 24)
+and for V3 it was 19 out of 24 (now 9 out of 24), but there was no clear change in the AUROC for either one (V1 +0.017 [$-$0.229, +0.281], V3
++0.042 ($-$0.198 to +0.285), V4 $-$0.076 ($-$0.240 to +0.111)). Although the bias is real, it does not account for the raw-view.
+There was a failure; when the order was chosen at random, V4 identified the correct pair in 8 out of 12 games.
+% src: results_22.md §d.2 (R15 §4.6; R16 §4.3); Follow-up 1 row (R16 §4.2, §4.7); RQ8 row (R16 §4.5); captions Fig 7.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.75\textwidth]{fig7_pair_order_followup.png}
+\caption{\textbf{Follow-up 1: randomising the order of the 10 pairs} \emph{(pre-registered, commit 496fc28)}.
+The 24 test games $\times$ V1--V4 were scored in three arms: fixed order in the original test run (grey), fixed
+order re-scored in the follow-up session (dark), and a random order per call in the same session (red).
+\textbf{Left:} AUROC with 95\% CIs. \textbf{Right:} share of replies in which the last-listed pair gets the top score;
+black ticks show the no-bias expectation (allowing for ties). Randomising cuts the last-position effect in V1 and V3
+but changes no view's AUROC clearly.}
+\label{fig:followup}
+\end{figure*}
+% src: figures/captions.md Figure 7.
+
+\subsection{RQ9: a second monitor model}
+Using the same frozen prompt with \texttt{granite3.3:8b} produced a different ranking (Fig.~\ref{fig:granite}): V1 0.729
+[0.549, 0.896], V2 0.767 [0.604, 0.917], V3 0.736 [0.573, 0.917] and V4 0.510 [0.292, 0.729] (Kendall $\tau$-b
+$-$0.667 (a coarse measure with 4 views)); granite had no preference for the last position other than in the case of ties. Granite continued to run.
+Since different hardware is involved (Apple Metal versus NVIDIA), it is not possible to separate the effects of
+the model and the hardware.
+% src: results_22.md RQ9 row (R15C §4.2, §4.5, §8.1)
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.7\textwidth]{fig8_rq9_granite.png}
+\caption{\textbf{RQ9: the same frozen monitor prompt with a second model} (test set, $n=24$, one sample, one session).
+\textbf{Left:} test AUROC per view with 95\% CIs, \texttt{llama3.1:8b} vs.\ \texttt{granite3.3:8b}. The ranking does not
+carry over (Kendall $\tau$-b $-$0.67): only V3 is the same (0.736 for both), and V4, best with llama, is at chance
+with granite. \textbf{Right:} share of replies in which the last-listed pair (T-Z) has the top score; granite sits at
+its no-bias expectation in every view, so the last-position pattern looks specific to llama.}
+\label{fig:granite}
+\end{figure*}
+% src: figures/captions.md Figure 8.
 
 \subsection{Pre-registered replication on 48 new games}
-Figure~\ref{fig:repl22} gives the replication with frozen prompts, one sample and one run per monitor (all hypotheses
-with CIs: Appendix Table~\ref{tab:repl22}). There were no quality-fail games, so the sensitivity analysis equals the
-primary one. \textbf{Replicated:} messages alone fail (R1), private plans add nothing (R8), the shuffled control is at
-chance (R9), and the model-free capture signal works (R10a), now clearly better than the best LLM view (R10b, +0.264
-[0.121, 0.412]). \textbf{Not replicated:} the structured report's advantage over the raw view (R4) and over a
-same-length raw view (R5), and `persona talk fools actions' (R7). With llama, `combining beats actions' replicated (R3),
-but only because llama's action view was below chance (0.324); with granite the action view was not reliably above
-chance (G1), and only llama prefers the structured report (G3). Neither monitor reaches 0.7 on any view of the new games.
+Table~\ref{tab:repl22} and Fig.~\ref{fig:repl22} give the replication with frozen prompts, one sample and one run
+per monitor; since there were no quality fail games the sensitivity analysis is the same as the primary one. Replicated:
+messages alone fail (R1), private plans add nothing (R8), the shuffled control is at chance (R9), and the
+model-free capture signal works (R10a) and is now clearly doing better than the best LLM view (R10b, with an improvement of +0.264 [0.121, 0.412]).
+\textbf{Not replicated}: the structured report's advantages over the raw view (R4) and over a same-length raw view
+Regarding `persona talk fools actions' (R7), with Llama `combining beats actions' was reproduced (R3) but only\ldots
+The action view for Llama was below chance (0.324); with Granite, it was not consistently above chance.
+The llama is the only one that prefers the structured report. Neither of the monitors reaches 0.7 in any of the new games.
 % src: results_22.md §g (R21 §4.2, §4.7; R22C §4.4).
 
-\begin{figure}[t]
+\begin{table*}[t]
+\centering\footnotesize
+\caption{\textbf{Study 1 replication} (48 new games; frozen \texttt{llama3.1:8b} monitor; granite under amendment~1).
+Original column: $n=24$ test. Sources: R21 \S4.7; R22C \S4.4; R14; R15; R15C.}
+\label{tab:repl22}
+\begin{tabularx}{\textwidth}{@{}lYp{4.4cm}cp{2.6cm}@{}}
+\toprule
+ID & Hypothesis & Replication [95\% CI] & Original & Outcome\\
+\midrule
+R1 & Messages alone fail: AUROC(V1) & 0.505 [0.363, 0.655] & 0.490 & confirmed\\
+R2 & Structured report works: AUROC(V4) & 0.636 [0.507, 0.751] & 0.896 & confirmed\\
+R3 & Combining helps: V3 $-$ V2 & +0.241 [0.063, 0.419] & +0.365 & replicated\\
+R4 & Structure beats raw: V4 $-$ V3 & +0.071 [$-$0.128, 0.247] & +0.160 & not replicated\\
+R5 & Structure beats same length: V4 $-$ C-length & $-$0.034 [$-$0.212, 0.133] & +0.285 & not confirmed\\
+R6 & Same incentive fools messages: V1, T1 vs.\ T4b & 0.495 [0.297, 0.716] & 0.344 & confirmed\\
+R7 & Persona fools actions: V2, T1 vs.\ T3 & 0.352 [0.154, 0.578] & 0.219 & not confirmed\\
+R8 & Private plans: V5 $-$ V3 & $-$0.022 [$-$0.192, 0.155] & $-$0.031 & no gain again\\
+R9 & Shuffled control: AUROC(C-shuffled) & 0.457 [0.315, 0.591] & 0.632 & pass\\
+R10a & Code signal: AUROC(capture) & 0.900 [0.811, 0.965] & 0.896 & confirmed\\
+R10b & Capture $-$ V4, paired & +0.264 [0.121, 0.412] & --- & capture better\\
+\midrule
+G1 & Granite action view works: AUROC(V2) & 0.628 [0.488, 0.754] & 0.767 & not confirmed\\
+G2 & Granite structured report does not work: AUROC(V4) & 0.582 [0.414, 0.730] & 0.510 & confirmed\\
+G3 & Ranking depends on monitor: V4 $-$ V2, llama / granite & +0.313 [0.127, 0.481] / $-$0.046 [$-$0.251, 0.152] & --- & confirmed (mainly llama)\\
+G4 & Monitors agree on V3: granite $-$ llama & +0.097 [$-$0.063, 0.262] & --- & no detected difference\\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+\begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{fig9_replication_22.png}
+\includegraphics[width=0.75\textwidth]{fig9_replication_22.png}
 \caption{\textbf{Study 1: original test vs.\ pre-registered replication} (frozen prompts; one sample per call, one
 run per monitor). AUROC with 95\% CIs: llama on the original 24 test games (grey), llama on the 48 replication games
 (dark) and granite on the same 48 games (red); the model-free capture signal on the right. The structured report's
 original 0.896 shrank to 0.636. No LLM view of either monitor reaches 0.7 on the new games, while capture stays at
 about 0.90. V5 and the C-length / C-mismatch controls are not shown (no replication AUROC reported).}
 \label{fig:repl22}
-\end{figure}
+\end{figure*}
 % src: figures/captions.md Figure 9.
 
 % ====================================================================================
-\section{Results: Study 2 (standard of evidence)}
+\section{Results: Study 2 (Standard of Evidence)}
 \label{sec:23}
 
-\textbf{Single families (test, $n=24$; Table~\ref{tab:rules}).} Talk alone (the agents' public messages) is not evidence: the judge flagged 11 of 12
-innocent games and ranked below chance (0.396). On the other hand, outcomes rank the games really well, but the shared-incentive lookalike is still able to
-fool them: coalition gain (R2, 0.872 [0.736, 0.986]) and capture (0.896, exploratory) each flag 2 of 4 Type~4b
-games. Dependence alone is very weak, it is undefined in 3 games, and is easily fooled by every lookalike type at least once.
+\textbf{Single families (test, $n=24$; Table~\ref{tab:rules}).} Agents' public channel messages, that is, Talk alone is not
+evidence: the judge flagged 11 of 12 innocent games and ranked below chance (0.396). On the other hand, Outcomes rank
+the games really well, but the shared-incentive lookalike is still able to fool them: coalition gain (R2, 0.872
+[0.736, 0.986]) and capture (0.896, exploratory) each flag 2 of 4 Type~4b games. Dependence alone is very weak, it is
+undefined in 3 games, and is easily fooled by every lookalike type at least once.
 
-\begin{table}[t]
-\centering\footnotesize\setlength{\tabcolsep}{4pt}
+\begin{table*}[t]
+\centering\small\setlength{\tabcolsep}{5pt}
 \caption{\textbf{Frozen decision rules on the 24 test games} (12 collusion; 4 per lookalike type) and their
 replication AUROC (48 new games). Counts are games flagged at the frozen thresholds. R4 and R5 are binary rules
 (no AUROC). Sources: results\_23.md \S1, \S2, \S6 (17C; R22C \S4.2); capture: R15 \S4.4, counts R17C \S4.5.}
@@ -401,7 +487,7 @@ R6 points                   & 0.792 [0.667, 0.917] & 11/12 & 4/12 & 1/4 & 0/4 & 
 R7 learned (logistic)       & 0.812 [0.611, 0.972] & 10/12 & 2/12 & 0/4 & 0/4 & 2/4 & 0.844 [0.722, 0.941]\\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
 % src: results_23.md §1 and §2 tables; §6 "All rules on the replication" (R3 n = 47 on replication); capture replication = R21 R10a.
 
 \textbf{Combining did not help (RQ-E3).} The pre-registered comparison of the best combined rule (R6) with the best
@@ -417,7 +503,7 @@ set on dev. It removed every false positive, including both shared-incentive gam
 collusion games. The frozen legal-style rule R4 shows the same trade-off: 0 false positives, 2/12 caught.
 % src: results_23.md §4.
 
-\textbf{Replication (Figure~\ref{fig:repl23}).} The frozen judge and rules file were applied once to the 48 new games.
+\textbf{Replication (Fig.~\ref{fig:repl23}).} The frozen judge and rules file were applied once to the 48 new games.
 E1 (gain works) was confirmed, 0.885 [0.786, 0.961]; E2 (the talk-only judge is near chance) was confirmed,
 0.543 [0.392, 0.693]; E3 (R6 $-$ R2) was not replicated, $-$0.059 [$-$0.135, 0.010], and nor was the secondary E3b
 (R7 $-$ R2, $-$0.042 [$-$0.155, 0.067]). The shared-incentive lookalike stayed the hardest case: gain flagged 3/8 of
@@ -427,7 +513,7 @@ positives.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.92\textwidth]{fig10_replication_23.png}
+\includegraphics[width=\columnwidth]{fig10_replication_23.png}
 \caption{\textbf{Study 2: frozen decision rules, original test vs.\ replication} (pre-registered; frozen rules, not
 refit; one judge sample). AUROC with 95\% CIs on the 24 original test games (grey) and the 48 replication games (dark).
 The gain rule R2 replicates (0.872 $\rightarrow$ 0.885), and the talk-only judge R1 stays near chance (0.396
@@ -456,14 +542,15 @@ requiring it removes false positives only by missing most real collusion.
   pair T-Z in 18 of 24 test games.
   % src: results_23.md §3.
   \item \textbf{Position bias (llama only).} On the replication, the last-listed pair had llama's top score in 44/48 V1
-  replies (no-bias expectation 0.215); granite showed no preference beyond ties. The bias changes \emph{who} is named,
-  not \emph{how well} games are ranked.
+  replies (no-bias expectation 0.215), 44/48 V3 and 48/48 C-shuffled replies; granite showed no preference beyond ties.
+  The bias changes \emph{who} is named, not \emph{how well} games are ranked (Follow-up~1).
   % src: results_22.md §d.2 (R21 §4.8; R22C §4.4; R16 §5).
   \item \textbf{Session effect.} Within one Ollama session, repeats were identical. Between sessions, V2 re-scored
   unchanged went from 0.372 to 0.559 AUROC (+0.188 [+0.007, +0.389]; mean absolute difference 10.79, Spearman 0.653).
   % src: results_22.md §d.3 (R13 §4; R16 §4.2, §4.4).
-  \item \textbf{Small-sample optimism.} Best first results shrank on new games (llama V4 0.896 $\rightarrow$ 0.636;
-  granite V2 0.767 $\rightarrow$ 0.628), and V3 moved from 0.319 on dev to 0.736 on test.
+  \item \textbf{Small-sample optimism.} Best first results shrank on new games: llama V4 0.896 $\rightarrow$ 0.636 and
+  granite V2 0.767 $\rightarrow$ 0.628. Between dev and test, V3 moved from 0.319 to 0.736 (+0.417 [0.142, 0.684]),
+  and the view rankings agreed only weakly (Kendall $\tau$ 0.255).
   % src: results_22.md §a "Small-sample optimism"; §e (R15 §4.1).
   \item \textbf{Reading friendly talk as a pair signal.} V4 at its frozen threshold flagged all 8 persona games on the
   replication (2/4 on the original test). Its mention-count lines make friendly talk look like coordination. In one
@@ -475,12 +562,12 @@ requiring it removes false positives only by missing most real collusion.
 % ====================================================================================
 \section{Discussion and Limitations}
 
-\textbf{What this means for auditing multi-agent systems.} In our setting, \emph{what the agents did} carried the signal and
-\emph{what an 8B model concluded from reading the record} did not. A simple code signal (capture) replicated at
-about 0.90, while every LLM view of both the monitors lay between 0.32 and 0.66 on new games, and the best LLM view which was on the
-first test did not survive. An auditor of agent systems should treat the model-free behaviour statistics as the baseline that
-any LLM monitor must beat, report LLM monitor results per model, and expect LLM verdicts to move with the model, the
-prompt order and the session.
+\textbf{What this means for auditing multi-agent systems.} In our setting, \emph{what the agents did} was that they carried the
+signal and \emph{what an 8B model concluded from reading the record} did not. A simple code signal (capture)
+replicated at about 0.90, while every LLM view of both the monitors lay between 0.32 and 0.66 on new games, and the
+best LLM view which was on the first test did not survive. An auditor of agent systems should treat the model-free behaviour
+statistics as the baseline that any LLM monitor must beat, report LLM monitor results per model, and expect LLM
+verdicts to move with the model, the prompt order and the session.
 
 \textbf{The link to antitrust.} Our data reproduce the first half of the plus-factor doctrine clearly: parallel conduct
 and coalition gain are the strongest single evidence, yet they also flag agents that merely share an incentive (gain
@@ -493,40 +580,50 @@ verdict on a ``shared incentive'' pattern is ``parallel conduct, agreement not s
 \subsection*{Limitations}
 \begin{itemize}
   \item \textbf{Small samples.} 24 test and 48 replication games, with 8 or fewer per lookalike type; one false positive moves
-  a type's rate by 25 points on test and 12.5 points on the replication, and most CIs are wide. Thresholds come from 24
-  dev games, so dev performance overstated test performance (R2's balanced accuracy 0.958 on dev vs.\ 0.833 on test).
+  a type's rate by 25 points on test and 12.5 points on the replication, and most CIs are wide.
   \item \textbf{Narrow setup.} One game (El Farol), one agent model (\texttt{qwen2.5:7b}), 8 rounds. The collusion is suggested
   by a prompt (the alliance note proposes the plan), not invented by the agents, and it is not fully secret (6.5\% of
   focal public messages reveal joint action).
-  \item \textbf{Small LLM monitors and one judge.} Two 8B monitors, one frozen prompt format and one sample per call; scores can
-  change between sessions, and the second monitor ran on different hardware. The judge (\texttt{llama3.1:8b}) used a fixed
-  pair order that likely biases its pair choice.
-  \item \textbf{Data quality.} Shared-incentive agents mention their ``deposit'' in public, and the flag-only cleaner leaves it
-  visible. 1.75\% of generation calls failed (all truncation) and their rounds are excluded; 1 persona game partly behaved
-  like collusion and 2 shared-incentive games did not follow the incentive (labels stay as configured).
-  \item \textbf{Metric caveats.} V1, V3 and C-mismatch had a frozen threshold of 0, so their threshold metrics carry no
-  information; V2 failed the stability gate (RQ0.4), so V2-based results (including RQ2) carry this caveat.
+  \item \textbf{Two small monitors} (8B), one frozen prompt format and one sample per call. Scores can change between
+  sessions, and the second monitor ran on different hardware, so model and hardware are confounded.
+  \item \textbf{An unplanned clue.} Shared-incentive agents talk about their ``deposit'' in public, and the flag-only
+  cleaner leaves it visible to monitors.
+  \item \textbf{Data quality.} 1.75\% of generation calls failed (all truncation) and their rounds are excluded; 1 persona
+  game partly behaved like collusion and 2 shared-incentive games did not follow the incentive (labels stay as configured).
+  \item \textbf{Degenerate thresholds.} V1, V3 and C-mismatch had a frozen threshold of 0 (flag everything), so their
+  threshold metrics carry no information.
+  \item \textbf{V2 instability.} V2 failed the stability gate (RQ0.4), so V2-based results (including RQ2) carry this
+  caveat.
   \item \textbf{Exploratory parts.} Code-signal comparisons beyond Dep and the plus-factor rule were not pre-registered;
   pooled results include dev selection data; the uptake rule~v2 was developed on pilot~1 and confirmed on pilot~2 only.
+  \item \textbf{In-sample dev fits.} Thresholds and rule choices come from 24 dev games, so dev performance overstated test
+  performance (e.g.\ R2's balanced accuracy 0.958 on dev vs.\ 0.833 on test).
+  \item \textbf{One judge} (\texttt{llama3.1:8b}, one sample, one session) with a fixed pair order that likely biases its
+  pair choice.
 \end{itemize}
 % src: results_summary.md "Main limitations"; results_22.md §e; results_23.md §5.
 
 \subsection*{Future Work}
-Larger test sets with more games per lookalike type, so that primary comparisons such as RQ2 and RQ5 can be settled;
-several scoring sessions per view, with the between-session spread reported; randomised pair and agent order as the
-default monitor format, with an explicit ``no pair'' option; simple action signals (coGO, capture, $G_{\text{others}}$)
-as required baselines, and a combined code + LLM rule tested on dev first; removing the ``deposit'' clue at generation
-time; and emergent (not prompted) collusion, other games and larger monitors.
+\begin{enumerate}
+  \item Larger test sets with more games per lookalike type, so that primary comparisons such as RQ2 and RQ5 can be settled.
+  \item Score several sessions per view and report the between-session spread, especially for V2 and V4.
+  \item Make randomised pair and agent order the default monitor format, with an explicit ``no pair'' option to reduce ties.
+  \item Treat simple action signals (coGO, capture, $G_{\text{others}}$) as required baselines, and test a combined
+  code + LLM rule on dev first.
+  \item Remove the shared-incentive ``deposit'' clue at generation time, so that lookalike tests behaviour only.
+  \item Test emergent (not prompted) collusion, other games and larger monitors.
+\end{enumerate}
 % src: results_22.md §e "What we would do next" (items 2-6); item 6 from the listed limitations.
 
 % ====================================================================================
 \section{Conclusion}
 
-We built a pre-registered, fully local testbed for auditing the collusion between the LLM agents, with lookalikes that target the
-word evidence and also the outcome evidence separately, and then we re-tested every frozen choice on 48 new games. The result is a
-clear ordering of evidence: the model-free behaviour signals (capture, coalition gain) were the most reliable and they
-replicated; small LLM monitors were mediocre, model-dependent and unstable, and their best first result did not hold;
-messages alone and talk-only judging stayed near chance; and combining evidence did not beat gain alone.
+We built a pre-registered, fully local testbed for auditing the collusion between the LLM agents, with lookalikes that
+target the word evidence and also the outcome evidence separately, and then we re-tested every frozen choice on 48 new
+games. The result is a clear ordering of evidence: the model-free behaviour signals (capture, coalition gain) were the
+most reliable and they replicated; small LLM monitors were mediocre, model-dependent and unstable, and their best first
+result did not hold; messages alone and talk-only judging stayed near chance; and combining evidence did not beat gain
+alone.
 
 For the standard of evidence, our data agree with the antitrust intuition: parallel conduct and coalition gain are
 necessary signals but not enough proof, because a shared incentive produces the same outcomes. In this setting no
@@ -545,130 +642,53 @@ its consequences, remains open.
 \end{itemize}
 
 \section*{Author Contributions}
-[Author 1] led the project, research design and evaluation. [Author 2] built the metrics, evidence signals, decision
-rules and statistics. [Author 3] built the harness integration, data pipeline, views, runners and caching. All authors
-reviewed the final manuscript. \emph{(Replace with your names and roles.)}
+\textbf{Ayush Singh} led the project, the research design and the pre-registrations. \textbf{Param Bapu} built the
+harness integration, the data pipeline, the generation runs and the LLM caching. \textbf{Atharva Patil} built the
+monitor views and runners and carried out the Study~1 analysis. \textbf{Neerada Dathan} built the evidence signals,
+the decision rules and the statistics, and carried out the Study~2 analysis. All authors wrote and reviewed the final
+manuscript.
 
-% ------------------------------------------------------------------ references
-\begin{thebibliography}{99}\small
-\bibitem{shi2026} Shi, Zhang, Sch\"olkopf, Conitzer and Jin (2026). \emph{When Agents Lie: Premeditation, Persistence, and
-Exploitation in Repeated Games.} arXiv:2607.05132. Code: \url{https://github.com/Jerick-1380/LLM-Trust-Breaking}.
-\bibitem{nguyen2026} Nguyen et al. (2026). \emph{TraceGuard: Structured Multi-Dimensional Monitoring as a
-Collusion-Resistant Control Protocol.} arXiv:2604.03968.
-\bibitem{nakamura2026} Nakamura et al. (2026). \emph{Colosseum: Auditing Collusion in Cooperative Multi-Agent Systems.}
-arXiv:2602.15198.
-\bibitem{fish2024} Fish et al. (2024). \emph{Algorithmic Collusion by Large Language Models.} arXiv:2404.00806.
-\bibitem{agrawal2025} Agrawal et al. (2025). \emph{Evaluating LLM Agent Collusion in Double Auctions.} arXiv:2507.01413.
-\bibitem{mathew2024} Mathew et al. (2024). \emph{Hidden in Plain Text: Emergence and Mitigation of Steganographic
-Collusion in LLMs.} arXiv:2410.03768.
-\bibitem{tailor2025} Tailor (2025). \emph{Audit the Whisper: Detecting Steganographic Collusion in Multi-Agent LLMs.}
-arXiv:2510.04303.
-\bibitem{kovacic2011} Kovacic, Marshall, Marshall and Raiff (2011). Plus Factors and Agreement in Antitrust Law.
-\emph{Michigan Law Review} 110(3).
-\bibitem{twombly2007} \emph{Bell Atlantic Corp.\ v.\ Twombly}, 550 U.S. 544 (2007).
-\bibitem{theatre1954} \emph{Theatre Enterprises, Inc.\ v.\ Paramount Film Distributing Corp.}, 346 U.S. 537 (1954).
-\bibitem{arthur1994} Arthur (1994). Inductive Reasoning and Bounded Rationality. \emph{American Economic Review} 84(2),
-406--411.
+% ------------------------------------------------------------------ references (IEEE style)
+\begin{thebibliography}{10}
+\bibitem{shi2026} Shi, Zhang, Sch\"olkopf, Conitzer, and Jin, ``When agents lie: Premeditation, persistence, and
+exploitation in repeated games,'' arXiv:2607.05132, 2026. [Online]. Available:
+\url{https://github.com/Jerick-1380/LLM-Trust-Breaking}
+\bibitem{nguyen2026} Nguyen \textit{et al.}, ``TraceGuard: Structured multi-dimensional monitoring as a
+collusion-resistant control protocol,'' arXiv:2604.03968, 2026.
+\bibitem{nakamura2026} Nakamura \textit{et al.}, ``Colosseum: Auditing collusion in cooperative multi-agent systems,''
+arXiv:2602.15198, 2026.
+\bibitem{fish2024} Fish \textit{et al.}, ``Algorithmic collusion by large language models,'' arXiv:2404.00806, 2024.
+\bibitem{agrawal2025} Agrawal \textit{et al.}, ``Evaluating LLM agent collusion in double auctions,'' arXiv:2507.01413,
+2025.
+\bibitem{mathew2024} Mathew \textit{et al.}, ``Hidden in plain text: Emergence and mitigation of steganographic collusion
+in LLMs,'' arXiv:2410.03768, 2024.
+\bibitem{tailor2025} Tailor, ``Audit the whisper: Detecting steganographic collusion in multi-agent LLMs,''
+arXiv:2510.04303, 2025.
+\bibitem{kovacic2011} Kovacic, Marshall, Marshall, and Raiff, ``Plus factors and agreement in antitrust law,''
+\textit{Michigan Law Review}, vol.~110, no.~3, 2011.
+\bibitem{twombly2007} \textit{Bell Atlantic Corp.\ v.\ Twombly}, 550 U.S. 544, 2007.
+\bibitem{theatre1954} \textit{Theatre Enterprises, Inc.\ v.\ Paramount Film Distributing Corp.}, 346 U.S. 537, 1954.
+\bibitem{arthur1994} Arthur, ``Inductive reasoning and bounded rationality,'' \textit{American Economic Review},
+vol.~84, no.~2, pp.~406--411, 1994.
 \end{thebibliography}
 
 % ====================================================================================
-\appendix
-\section{Additional Study 1 results}
-\label{app:extra}
-\textbf{Pilot-1 hand check (RQ0.1, descriptive).} Two raters, blind to the rule, hand-checked pilot~1. They agreed on
-91.7\% of the cases ($\kappa=0.80$); rule~v2 agreed with them on 79.2\% and 85.4\%. Every disagreement was a missed
-detection of coordination; there were no false alarms.
-% src: results_22.md RQ0.1 (R10 §B3).
-
-\begin{figure}[!htbp]
-    \centering
-    \includegraphics[width=0.92\textwidth]{fig1_auroc_by_view_test.png}
-    \caption{\textbf{Test-set discrimination by view} ($n=24$).
-    Bars show AUROC, with 95\% confidence intervals; the dashed line marks chance performance (0.5). Dark bars represent V1--V5, and grey bars represent the three controls. V4 performed best (0.896 [0.771, 0.979]); the confidence intervals for V3, V4, and V5 lie above chance. The frozen threshold was zero for V1, V3, and C-mismatch, making their threshold-based metrics uninformative. AUROC is threshold-independent.}
-    \label{fig:auroc}
-\end{figure}
-
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=\textwidth]{fig2_per_type_scores_test.png}
-\caption{\textbf{Monitor score per test game by episode type} \emph{(exploratory, not pre-registered)}. Each dot is
-one test game; the black bar is the type mean (12 Type~1 games, 4 of each negative type). Persona-talk games (T3)
-score high in the actions view (V2); same-incentive games (T4b) score highest of all in the messages view (V1).
-V4 is the only view where every collusion game (T1) scores above every placebo game (T2).}
-\label{fig:pertype}
-\end{figure}
-
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=\textwidth]{fig7_pair_order_followup.png}
-\caption{\textbf{Follow-up 1: randomising the order of the 10 pairs} \emph{(pre-registered, commit 496fc28)}.
-The 24 test games $\times$ V1--V4 were scored in three arms: fixed order in the original test run (grey), fixed
-order re-scored in the follow-up session (dark), and a random order per call in the same session (red).
-\textbf{Left:} AUROC with 95\% CIs. \textbf{Right:} share of replies in which the last-listed pair gets the top score;
-black ticks show the no-bias expectation (allowing for ties). Randomising cuts the last-position effect in V1 and V3
-but changes no view's AUROC clearly.}
-\label{fig:followup}
-\end{figure}
-
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=\textwidth]{fig8_rq9_granite.png}
-\caption{\textbf{RQ9: the same frozen monitor prompt with a second model} (test set, $n=24$, one sample, one session).
-\textbf{Left:} test AUROC per view with 95\% CIs, \texttt{llama3.1:8b} vs.\ \texttt{granite3.3:8b}. The ranking does not
-carry over (Kendall $\tau$-b $-$0.67): only V3 is the same (0.736 for both), and V4, best with llama, is at chance
-with granite. \textbf{Right:} share of replies in which the last-listed pair (T-Z) has the top score; granite sits at
-its no-bias expectation in every view, so the last-position pattern looks specific to llama.}
-\label{fig:granite}
-\end{figure}
-
-\begin{table}[!htbp]
-\centering\small
-\caption{\textbf{Study 1 replication} (48 new games; frozen \texttt{llama3.1:8b} monitor; granite under amendment~1).
-Original column: $n=24$ test. Sources: R21 \S4.7; R22C \S4.4; R14; R15; R15C.}
-\label{tab:repl22}
-\begin{tabularx}{\textwidth}{@{}lYp{3.7cm}cp{2.3cm}@{}}
-\toprule
-ID & Hypothesis & Replication [95\% CI] & Original & Outcome\\
-\midrule
-R1 & Messages alone fail: AUROC(V1) & 0.505 [0.363, 0.655] & 0.490 & confirmed\\
-R2 & Structured report works: AUROC(V4) & 0.636 [0.507, 0.751] & 0.896 & confirmed\\
-R3 & Combining helps: V3 $-$ V2 & +0.241 [0.063, 0.419] & +0.365 & replicated\\
-R4 & Structure beats raw: V4 $-$ V3 & +0.071 [$-$0.128, 0.247] & +0.160 & not replicated\\
-R5 & Structure beats same length: V4 $-$ C-length & $-$0.034 [$-$0.212, 0.133] & +0.285 & not confirmed\\
-R6 & Same incentive fools messages: V1, T1 vs.\ T4b & 0.495 [0.297, 0.716] & 0.344 & confirmed\\
-R7 & Persona fools actions: V2, T1 vs.\ T3 & 0.352 [0.154, 0.578] & 0.219 & not confirmed\\
-R8 & Private plans: V5 $-$ V3 & $-$0.022 [$-$0.192, 0.155] & $-$0.031 & no gain again\\
-R9 & Shuffled control: AUROC(C-shuffled) & 0.457 [0.315, 0.591] & 0.632 & pass\\
-R10a & Code signal: AUROC(capture) & 0.900 [0.811, 0.965] & 0.896 & confirmed\\
-R10b & Capture $-$ V4, paired & +0.264 [0.121, 0.412] & --- & capture better\\
-\midrule
-G1 & Granite action view works: AUROC(V2) & 0.628 [0.488, 0.754] & 0.767 & not confirmed\\
-G2 & Granite structured report does not work: AUROC(V4) & 0.582 [0.414, 0.730] & 0.510 & confirmed\\
-G3 & Ranking depends on monitor: V4 $-$ V2, llama / granite & +0.313 [0.127, 0.481] / $-$0.046 [$-$0.251, 0.152] & --- & confirmed (mainly llama)\\
-G4 & Monitors agree on V3: granite $-$ llama & +0.097 [$-$0.063, 0.262] & --- & no detected difference\\
-\bottomrule
-\end{tabularx}
-\end{table}
-\FloatBarrier
+% Appendices in two columns, directly after the references (no forced page break).
+\appendices
 
 \section{Deviations from the pre-registrations}
 \label{app:dev}
-{\footnotesize
+{\scriptsize
 Items 1--12 are from report 10 \S B4; items 13 onward were added later; items 23 onward are the RQ9 / replication phase.
 ``When'' says whether the deviation was decided before or after the related data. Source: \texttt{writeup/results\_22.md} \S f.
-\setlength{\tabcolsep}{3pt}
+\setlength{\tabcolsep}{2pt}
 \setlength{\emergencystretch}{1em}
-\begin{longtable}{@{}p{0.03\textwidth}p{0.36\textwidth}p{0.27\textwidth}p{0.29\textwidth}@{}}
-\toprule
-\# & What & Why & When (relative to the related data)\\
-\midrule
-\endfirsthead
-\toprule
-\# & What & Why & When (relative to the related data)\\
-\midrule
-\endhead
-\bottomrule
-\endfoot
+\par\medskip\noindent
+\tablefirsthead{\toprule \# & What & Why & When\\ \midrule}
+\tablehead{\toprule \# & What & Why & When\\ \midrule}
+\tabletail{\midrule}
+\tablelasttail{\bottomrule}
+\begin{supertabular}{@{}p{0.05\columnwidth}p{0.36\columnwidth}p{0.25\columnwidth}p{0.26\columnwidth}@{}}
 1 & Pre-freeze changes: possessive name pattern, hint folded into alliance\_v3, placebo\_v3, 2 machines & rule bug; b2 at risk; length match; machine C unavailable & before any pilot data (the hint was motivated by 3 earlier smoke games)\\
 2 & Freeze commit 84fca68 $\rightarrow$ 4909c7e & the title still said DRAFT & before pilot 1\\
 3 & Pilots 1 and 2 on machine B only (prereg: A and B) & operational & before the data; no design change\\
@@ -708,12 +728,16 @@ Items 1--12 are from report 10 \S B4; items 13 onward were added later; items 23
 37 & Final-results documentation: ``position bias explains the raw-view failure'' keeps NOT SUPPORTED; Figure 10's 17C values copied from report 17C; Figure 9 omits V5 and two controls & stay within reported numbers & after all data; documentation only\\
 38 & Final labels reworded: ``actions alone fail'' $\rightarrow$ ``REPLICATED (llama); borderline for granite''; ``view ranking depends on the monitor'' $\rightarrow$ ``NOT SHARED BETWEEN MONITORS (G3; rests mainly on llama)'' & precision of wording & after all data; wording only, no number changed\\
 39 & Documentation repairs: merge-conflict markers in the DEVLOG removed with both sides kept; two citation-section fixes from the number audit & merge artefacts; audit findings & no data involved\\
-\end{longtable}
+\end{supertabular}
 }
 
 \section{Reproducibility}
 \label{app:repro}
 {\small
+\begin{table*}[t]
+\centering\small
+\caption{Pre-registration chain: commits and file hashes.}
+\label{tab:prereg}
 \begin{tabularx}{\textwidth}{@{}lllY@{}}
 \toprule
 Document & Commit & LF sha256 (first 16) & Status relative to data\\
@@ -728,15 +752,17 @@ Replication pre-registration & 2bc3d3a & d9d25b583b1d6052 & before any replicati
 Replication amendment 1 (granite) & 306502e & 778cf66b03bdea1f & before any replication view was rendered\\
 \bottomrule
 \end{tabularx}
+\end{table*}
 \par\medskip
+\noindent The commits and hashes of every pre-registration are listed in Table~\ref{tab:prereg}.
 \textbf{Frozen inputs for the replication:} llama monitor 89bdb79; Study 2 judge and rules 404f356 (rules file sha256
 \texttt{ce0b8840\ldots}); granite manifest 57206cb. \textbf{Models} (Ollama 0.40.3, pinned by digest in
 \texttt{configs/pins.json}): \texttt{qwen2.5:7b} \texttt{845dbda0ea48\ldots}, \texttt{llama3.1:8b} \texttt{46e0c10c039e\ldots},
 \texttt{granite3.3:8b} \texttt{fd429f23b909\ldots}. Seeds: dataset 20261023, pilots 20261024 / 20261025, re-pilot 20261026,
 replication 20261027; bootstrap seed 20261023. The final write-up corresponds to repository commit \texttt{dc64f31}.
 \par\medskip
-\textbf{How to run} (one conda environment, \texttt{collusion-lab}):
-\begin{Verbatim}[fontsize=\small,breaklines=true,breakanywhere=true]
+\noindent\textbf{How to run} (one conda environment, \texttt{collusion-lab}):
+\begin{Verbatim}[fontsize=\scriptsize,breaklines=true,breakanywhere=true]
 conda env create -f environment.yml
 conda run -n collusion-lab pytest -q                    # mock transport, no model calls
 conda run -n collusion-lab python scripts/check_env.py  # Ollama 0.40.3 + pinned digests
