@@ -2702,3 +2702,45 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 
 ### Open questions for the team
 - None.
+
+---
+
+## 2026-10-26 — [machine: D] Task 25D: final paper (no model calls, no new numbers)
+
+### What was implemented or executed
+- Read: CLAUDE.md, `writeup/results_summary.md`, `results_22.md`, `results_23.md`, `excerpts_22.md`,
+  `figures/captions.md`, `draft.md` (pilot section), README, `configs/prereg_rq01_amendment2.md`,
+  `configs/prereg_replication.md`, report 10 (§B1–B4).
+- Wrote `writeup/paper.tex` (Apart template structure; 6 figures + a TikZ pipeline diagram; 3 tables; a 39-row
+  deviation longtable; reproducibility appendix) and `writeup/paper.md` (the same content in Markdown).
+  Every number carries its source citation in a comment.
+- Checks:
+  - `scratch/lint_tex.py`: braces 437/437, all environments closed, refs/cites/figures resolve, no non-ASCII;
+  - `scratch/audit_paper_numbers.py` on both files: 0 result numbers missing from the sources
+    (2 false positives: a column width and a section number).
+- `notes/reports/25D_paper.md`.
+
+### Errors and problems faced
+1. A typo in the first .tex draft, `0.611}` instead of `0.611]` (would have broken compilation). Found in review.
+2. `\text{}` used in math without amsmath; two tables likely too wide.
+3. `conda run -n collusion-lab python -c "<multi-line>"` → `AssertionError: Support for scripts where arguments
+   contain newlines not implemented` (the known conda limitation; my mistake).
+4. No LaTeX compiler on machine D, so the .tex could not be compiled.
+
+### How each problem was solved
+1. Fixed. 2. Added `amsmath`; wrapping p-columns for Table 2 and footnotesize for Table 3.
+3. Moved the checks into script files (`scratch/lint_tex.py`, `scratch/audit_paper_numbers.py`).
+4. Unsolved here: structural lint only. The lead compiles on Overleaf.
+
+### Decisions taken
+- The paper follows the template's section order, with Study 2.2, Study 2.3 and the LLM-monitor failure modes as
+  separate sections (the template says its structure is guidance).
+- The two-rater pilot-1 numbers were taken from report 10 §B3 (cited by `results_22.md`; not in the write-up files).
+  Flagged in report 25D for the lead.
+- "A two-line code signal" was reworded to "a simple code signal" (the write-up never says "two-line").
+- One interpretive antitrust sentence ("communication evidence is usually private") was added to the Discussion, as the task asked.
+
+### Open questions for the team
+- Keep or delete the report-10 two-rater sentence?
+- Compile on Overleaf and check the wide tables; fill in authors; edit the LLM usage statement.
+- The template recommends about 4 pages; the paper is about 6–8 pages, as the task asked.
