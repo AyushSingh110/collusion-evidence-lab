@@ -2984,3 +2984,22 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 
 ### Open questions for the team
 - The restored paragraphs keep some broken sentences (e.g. RQ2 "means that the pooled value was It increased by"; replication "…over a same-length raw view Regarding…"; RQ9 "Granite continued to run."). Decide whether to keep them.
+
+---
+
+## 2026-10-26 — [machine: D] Task 36: conversational project summary
+
+### What was implemented or executed
+- Wrote a medium-length, conversational project summary (delivered in chat; no repository file changed except this log and report 36). Numbers used: capture 0.900, LLM views 0.32–0.66, structured report 0.896 → 0.636, all from writeup/results_summary.md.
+
+### Errors and problems faced
+- None.
+
+### How each problem was solved
+- —
+
+### Decisions taken
+- Written fresh rather than paraphrased from the paper, so it does not repeat the paper's sentences.
+
+### Open questions for the team
+- None.
