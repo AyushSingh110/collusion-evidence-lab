@@ -3003,3 +3003,31 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 
 ### Open questions for the team
 - None.
+
+---
+
+## 2026-10-26 — [machine: D] Task 37: leak audit of the tracked files (read-only git)
+
+### What was implemented or executed
+- Read-only audit with `git ls-files`, `git grep`, `git log --all --name-only`:
+  - API-key / token patterns (OpenAI, OpenRouter, HF, GitHub, AWS, `api_key=`): none in tracked files.
+  - `.env`, `.pem`, `.key`, `secret*`: never committed, in the whole history. Only `external/_hackathon_root/compute.env.example` (empty values).
+  - `data/`, `runs/`, `cache/`, `outputs/`, `study_*/results/`, `*.jsonl`: never committed.
+  - Emails, IP addresses: none (only 127.0.0.1 in an Ollama log).
+  - Local Windows user paths: `scratch/results/serve_p4.log` (Ollama server log, 16×) and one line each in DEVLOG and reports 03, 05, 07, 09a, 10.
+- `.gitignore`: added `*.log`, `external/_hackathon_root/`, `external/util/` (unused hackathon compute tooling; our code only names the harness repo in strings).
+- Claude ran no git write command (Rule A); the untrack commands were given to the user.
+
+### Errors and problems faced
+- None.
+
+### How each problem was solved
+- —
+
+### Decisions taken
+- No history rewrite needed: nothing secret was ever committed.
+- Old DEVLOG/report lines with local paths left unchanged (Rule C, append-only); they reveal only Windows account names.
+
+### Open questions for the team
+- `external/llm-trust-breaking` has no LICENSE file in our copy; check the upstream licence before keeping it in a public repo.
+- This change narrows Rule E ("external/ is committed"); update CLAUDE.md if the lead agrees.

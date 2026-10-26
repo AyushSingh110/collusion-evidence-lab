@@ -6,6 +6,12 @@ cache/
 study_*/results/
 outputs/
 
+# ---- Not needed in the public repo (2026-10-26) ----
+# local server logs (contain local machine paths), unused hackathon compute tooling
+*.log
+external/_hackathon_root/
+external/util/
+
 # ---- Secrets ----
 .env
 .env.*
