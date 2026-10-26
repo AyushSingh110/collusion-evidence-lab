@@ -2542,3 +2542,70 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 
 ### Open questions for the team
 - Machine B: ETA for `runs/replication_llama/outputs/monitor.jsonl` (+ manifest)?
+
+---
+
+## 2026-10-26 — [machine: C] Task 22C (part 3): llama file received; V1–V4 subset checked — recorded BEFORE the G1–G4 run
+
+### What was implemented or executed
+- Machine B's files copied from the lead's transfer (Downloads, 10:44) to `runs/replication_llama/manifest.json` and
+  `runs/replication_llama/outputs/monitor.jsonl` (`cmp`: byte-identical to the transferred files).
+- Provenance check (no score read): manifest run `replication_llama`, `monitor_v3_pairs_ctx16k`, llama3.1:8b, digest
+  `46e0c10c…`, num_ctx 16384, temperature 0, template `fa6e62e7…3d87`, sessions machine B (3 + 381). Lines: 384 =
+  48 games × 8 views, sample 0 only, one prompt version and digest, `prompt_sha256` + `model` on every line, game ids ==
+  `data/replication/labels.csv`.
+- B's file has all 8 views; `analyse_replication_granite.py` refuses views other than V1–V4 (task 20C, by design).
+  Amendment 1 §2 specifies "the V1–V4 subset of its 384 calls". `scratch/p22c_subset_llama.py` (new) selects by the
+  "view" field ONLY and writes the raw line bytes unchanged → `runs/replication_llama/outputs/monitor_V1-V4.jsonl`.
+- Checks on the written subset, ALL PASS:
+  - 192 lines; exactly the 48 labelled games × {V1, V2, V3, V4}; no duplicate (game, view);
+  - every subset line byte-identical to its line in B's original;
+  - sha256 B's original `25e5010e838669f8043c7147700a932c692458fc3d5de9ae6dfe19025cc9ab7a`;
+  - sha256 subset `f85503d9115adc2b8ff7c175499095466b69291ac1875c37a60da67ca9cb9935`.
+
+### Errors and problems faced
+- None.
+
+### How each problem was solved
+- n/a.
+
+### Decisions taken
+- The analysis code is not changed after the data exist; the input is restricted to V1–V4 as amendment 1 states, by a
+  re-derivable script (lead's instruction). Next: ONE run of `analyse_replication_granite.py`.
+
+### Open questions for the team
+- None.
+
+---
+
+## 2026-10-26 — [machine: C] Task 22C (part 4): the ONE G1–G4 run (amendment 1) + report addendum
+
+### What was implemented or executed
+- ONE run: `analyse_replication_granite.py --labels data/replication/labels.csv --quality
+  data/replication/quality_fail.json --llama runs/replication_llama/outputs/monitor_V1-V4.jsonl --granite
+  runs/rq9_granite_replication/outputs/monitor.jsonl` → `runs/replication_granite/results.json`
+  (log `runs/rq9_granite_replication/g1g4_log.txt`). All refusal checks passed; 0 missing scores in either monitor;
+  G3/G4 on all 48 games; sensitivity identical (0 quality-fail games).
+- Results (primary):
+  - G1 AUROC_granite(V2) 0.628 [0.488, 0.754] → **not confirmed**.
+  - G2 AUROC_granite(V4) 0.582 [0.414, 0.730] → **confirmed**.
+  - G3 D_llama +0.313 [0.127, 0.481], D_granite −0.046 [−0.251, 0.152] → **confirmed** (opposite signs; llama CI
+    excludes 0; rests mainly on llama).
+  - G4 granite(V3) − llama(V3) +0.097 [−0.063, 0.262] → **confirmed** (no detected difference, not equivalence).
+  - Descriptive: llama last-position max V1 44/48 (no-bias exp. 0.215; names T-Z 37×), V3 44/48 (29×); granite at or
+    below its tie-driven expectation, names T-Z 0–3×. Granite: all-pairs-equal 33–83% of replies.
+- Report 22C: §4.4 addendum, acceptance row 4 PASSED, deviations / limitations / next / files updated. A wrong hash
+  ending in the first addendum draft (`…a7ab`) was corrected to `…ab7a` before finishing.
+
+### Errors and problems faced
+- None in the run.
+
+### How each problem was solved
+- n/a.
+
+### Decisions taken
+- Verdicts as obtained; nothing re-run. G3 reported with the caveat that its confirmation rests mainly on llama's
+  difference.
+
+### Open questions for the team
+- Lead: combined replication write-up (Study 2.2 R1–R10, Study 2.3 E1–E4, amendment 1 G1–G4).
