@@ -18,7 +18,7 @@
 
   <!-- left: title -->
   <g font-family="Segoe UI, Helvetica Neue, Helvetica, Arial, sans-serif">
-    <text x="64" y="92" fill="#8fa3ff" font-size="18" font-weight="600" letter-spacing="3">AI COLLUSION RESEARCH SPRINT · TRACK 2</text>
+    <text x="64" y="92" fill="#8fa3ff" font-size="18" font-weight="600" letter-spacing="3">AUDITING MULTI-AGENT LLM SYSTEMS</text>
     <text x="62" y="158" fill="#ffffff" font-size="58" font-weight="800">Collusion Evidence Lab</text>
     <text x="64" y="202" fill="#c9d2f0" font-size="24">Can an auditor tell when two LLM agents secretly team up?</text>
     <g font-size="15" font-weight="600">

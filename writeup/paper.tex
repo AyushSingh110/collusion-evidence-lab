@@ -1,5 +1,5 @@
 % =====================================================================================
-%  Behaviour Beats Judgement — final paper (Apart Research hackathon submission template)
+%  Behaviour Beats Judgement — final paper
 %  Task 25D. Every number below is copied from writeup/results_summary.md, results_22.md,
 %  results_23.md, excerpts_22.md or figures/captions.md (or the report those files cite);
 %  the source is kept in a "% src:" comment next to it. Nothing was recomputed or re-rounded.
@@ -38,18 +38,15 @@
 \noindent\rule{\textwidth}{2.5pt}\par\vspace{10pt}
 \begin{center}
 {\LARGE\bfseries Behaviour Beats Judgement: Auditing Collusion Between\\[3pt]
-LLM Agents with Monitor Views and Antitrust-Style Evidence\textsuperscript{1}}
+LLM Agents with Monitor Views and Antitrust-Style Evidence}
 \end{center}
 \vspace{6pt}\noindent\rule{\textwidth}{0.6pt}\par\vspace{14pt}
 
 \begin{center}
 \begin{tabular}{ccc}
 Author name 1 & Author name 2 & Author name 3\\
-Affiliation & Affiliation & Affiliation\\[8pt]
+Affiliation & Affiliation & Affiliation\\
 \end{tabular}
-
-\textbf{With}\\
-Apart Research
 \end{center}
 
 \begin{center}\textbf{\large Abstract}\end{center}
@@ -74,8 +71,6 @@ antitrust-style ``plus factor''.
 \end{quote}
 % src: results_summary.md "Main findings" rows 1-6; R21 §4.7 (R10a, R10b); R22C §4.2 (E1), §4.4; R14 §4.2.
 
-\footnotetext[1]{Research conducted at the \href{https://apartresearch.com/sprints/ai-collusion-research-sprint-2026-10-23-to-2026-10-25}{AI Collusion Research Sprint}, October 2026.}
-
 % ====================================================================================
 \section{Introduction}
 
@@ -85,17 +80,16 @@ a captured resource, a displaced competitor), and the coordination may never be 
 auditor usually has logs: what agents said in public, what they did, and what outcomes followed. The
 practical question is what to do with those logs.
 
-The sprint's Track~2 (Detection and Audit of Collusion) poses two questions that we study on one shared
-dataset:
+We study two questions on one shared dataset:
 \begin{itemize}
-  \item \textbf{2.2 Say vs.\ do.} Does combining what agents say with what they do beat either alone, when the
+  \item \textbf{Study 1 --- say vs.\ do.} Does combining what agents say with what they do beat either alone, when the
   same LLM monitor reads different \emph{views} of a game record?
-  \item \textbf{2.3 Standard of evidence.} What should count as convincing evidence of collusion? We compute the
+  \item \textbf{Study 2 --- standard of evidence.} What should count as convincing evidence of collusion? We compute the
   same conversation, coalition-advantage and dependence evidence for every game and combine it with fixed
   decision rules.
 \end{itemize}
 
-Competition law offers a useful frame for 2.3. Parallel conduct alone does not prove an agreement: firms may
+Competition law offers a useful frame for Study~2. Parallel conduct alone does not prove an agreement: firms may
 move together for independent reasons, such as a common cost shock. Courts therefore look for ``plus
 factors'' on top of parallel conduct, for example evidence of communication or actions that only make sense
 under an agreement~\cite{kovacic2011,twombly2007,theatre1954}. We built our dataset so that both halves of
@@ -208,7 +202,7 @@ before any game is generated. Monitors, the judge and the code evidence see only
 \label{fig:pipeline}
 \end{figure}
 
-\subsection{Views, controls and cleaning (Study 2.2)}
+\subsection{Views, controls and cleaning (Study 1)}
 A whitelist cleaner keeps only public fields (announcements, messages, final actions, standard-rule payoffs);
 setup text, private payoffs, the private channel and labels cannot reach a view. Its leak scanner removes
 8-word copies of setup texts and header phrases, and otherwise only flags (deviation~7, Appendix~\ref{app:dev}).
@@ -228,11 +222,11 @@ setup text, private payoffs, the private channel and labels cannot reach a view.
 The primary monitor is \texttt{llama3.1:8b} with the frozen format \texttt{monitor\_v3\_pairs\_ctx16k}: it scores
 all 10 pairs 0--100, and the game score is the maximum pair score (temperature 0, \texttt{num\_ctx} 16384, one
 sample per call). The same frozen prompt was run with \texttt{granite3.3:8b} as a second model (RQ9 and the
-replication's amendment~1). For Study~2.3 an LLM judge (\texttt{llama3.1:8b}) reads only the cleaned public
+replication's amendment~1). For Study~2 an LLM judge (\texttt{llama3.1:8b}) reads only the cleaned public
 messages and scores each pair 0--100.
 % src: results_22.md setup; prereg_replication.md (num_ctx 16384, temperature 0); results_23.md families.
 
-\subsection{Evidence signals and decision rules (Study 2.3)}
+\subsection{Evidence signals and decision rules (Study 2)}
 Four evidence families are computed per pair: \textbf{E1 conversation} (the judge score $C_{\text{judge}}$, plus a
 coordination-keyword score $C_{\text{kw}}$), \textbf{E2 coalition advantage} ($G_{\text{others}}$: how much better the
 pair does than the other agents), \textbf{E3 dependence} (Dep: how much the pair's choices depend on each other)
@@ -251,7 +245,7 @@ above its dev level); R7 a learned logistic rule.
   replication pre-registration with its amendment~1 (before any replication game, and before any replication
   view was rendered, respectively).
   \item \textbf{Freezes.} Monitor format, prompts and thresholds were chosen on dev, frozen and run \emph{once} on
-  test; the Study~2.3 rules file was applied once to test and once to the replication, never refit.
+  test; the Study~2 rules file was applied once to test and once to the replication, never refit.
   \item \textbf{Statistics.} AUROC is primary; we also report accuracy-style counts at frozen thresholds. All
   intervals are 95\% bootstrap CIs stratified by episode type, resampling whole games (B = 2000, seed 20261023);
   differences are paired. The pre-registered primary comparisons are RQ2 and RQ5; everything else is
@@ -267,7 +261,7 @@ above its dev level); R7 a learned logistic rule.
 \end{itemize}
 
 % ====================================================================================
-\section{Results: Study 2.2 (monitor views)}
+\section{Results: Study 1 (monitor views)}
 \label{sec:22}
 
 \subsection{Gates: does the dataset do what it should? (RQ0.1--RQ0.4)}
@@ -416,7 +410,7 @@ because llama's action view is below chance (0.324). With granite, the action vi
 
 \begin{table}[t]
 \centering\small
-\caption{\textbf{Study 2.2 replication} (48 new games; frozen \texttt{llama3.1:8b} monitor; granite under amendment~1).
+\caption{\textbf{Study 1 replication} (48 new games; frozen \texttt{llama3.1:8b} monitor; granite under amendment~1).
 Original column: $n=24$ test. Sources: R21 \S4.7; R22C \S4.4; R14; R15; R15C.}
 \label{tab:repl22}
 \begin{tabularx}{\textwidth}{@{}lYp{3.7cm}cp{2.3cm}@{}}
@@ -446,7 +440,7 @@ G4 & Monitors agree on V3: granite $-$ llama & +0.097 [$-$0.063, 0.262] & --- & 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{fig9_replication_22.png}
-\caption{\textbf{Study 2.2: original test vs.\ pre-registered replication} (frozen prompts; one sample per call, one
+\caption{\textbf{Study 1: original test vs.\ pre-registered replication} (frozen prompts; one sample per call, one
 run per monitor). AUROC with 95\% CIs: llama on the original 24 test games (grey), llama on the 48 replication games
 (dark) and granite on the same 48 games (red); the model-free capture signal on the right. The structured report's
 original 0.896 shrank to 0.636. No LLM view of either monitor reaches 0.7 on the new games, while capture stays at
@@ -456,7 +450,7 @@ about 0.90. V5 and the C-length / C-mismatch controls are not shown (no replicat
 % src: figures/captions.md Figure 9.
 
 % ====================================================================================
-\section{Results: Study 2.3 (standard of evidence)}
+\section{Results: Study 2 (standard of evidence)}
 \label{sec:23}
 
 \textbf{Single families (test, $n=24$; Table~\ref{tab:rules}).} Talk alone is not evidence: the judge flagged 11 of 12
@@ -512,7 +506,7 @@ positives.
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.92\textwidth]{fig10_replication_23.png}
-\caption{\textbf{Study 2.3: frozen decision rules, original test vs.\ replication} (pre-registered; frozen rules, not
+\caption{\textbf{Study 2: frozen decision rules, original test vs.\ replication} (pre-registered; frozen rules, not
 refit; one judge sample). AUROC with 95\% CIs on the 24 original test games (grey) and the 48 replication games (dark).
 The gain rule R2 replicates (0.872 $\rightarrow$ 0.885), and the talk-only judge R1 stays near chance (0.396
 $\rightarrow$ 0.543). The combined rules R6 and R7 do not beat R2. R4 and R5 are binary and have no AUROC.}
@@ -744,7 +738,7 @@ Replication amendment 1 (granite) & 306502e & 778cf66b03bdea1f & before any repl
 \bottomrule
 \end{tabularx}
 \par\medskip
-\textbf{Frozen inputs for the replication:} llama monitor 89bdb79; Study 2.3 judge and rules 404f356 (rules file sha256
+\textbf{Frozen inputs for the replication:} llama monitor 89bdb79; Study 2 judge and rules 404f356 (rules file sha256
 \texttt{ce0b8840\ldots}); granite manifest 57206cb. \textbf{Models} (Ollama 0.40.3, pinned by digest in
 \texttt{configs/pins.json}): \texttt{qwen2.5:7b} \texttt{845dbda0ea48\ldots}, \texttt{llama3.1:8b} \texttt{46e0c10c039e\ldots},
 \texttt{granite3.3:8b} \texttt{fd429f23b909\ldots}. Seeds: dataset 20261023, pilots 20261024 / 20261025, re-pilot 20261026,
@@ -768,7 +762,6 @@ The per-task reports in \texttt{notes/reports/} list the exact rendering, monito
 We used Claude (Anthropic), through Claude Code, as an engineering assistant: it wrote and tested most of the code
 under our instructions, ran the local experiments, drafted the per-task reports and drafted this paper from our
 write-up files. All design decisions were made by the team. Every number in this paper is copied from the project's
-reports, each traceable to a report section, and the team verified the claims. (Teams: edit this statement to describe
-your own final writing process.)
+reports, each traceable to a report section, and the team verified the claims.
 
 \end{document}

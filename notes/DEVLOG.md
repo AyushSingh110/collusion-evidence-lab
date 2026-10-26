@@ -2769,3 +2769,56 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 
 ### Open questions for the team
 - Add a LICENSE? Fill in the BibTeX author names? Check the banner rendering on GitHub after pushing.
+
+---
+
+## 2026-10-26 — [machine: D] Task 27: remove sprint / track references from the paper (no new numbers)
+
+### What was implemented or executed
+- `writeup/paper.tex` and `writeup/paper.md`:
+  - new abstract opening (no sprint or track wording);
+  - removed the "With Apart Research" line, the title footnote (sprint link) and the "(Teams: edit…)" note;
+  - the introduction now says "We study two questions…";
+  - "Study 2.2" → "Study 1" and "Study 2.3" → "Study 2" throughout (10 mentions per file; `scratch/rename_studies.py`).
+- `scratch/clean_md_sprint.py` mirrors the edits in the Markdown version.
+- Re-lint of the .tex: braces 432/432, no non-ASCII, all figures resolve. `grep` for sprint/track/apart/hackathon finds nothing.
+
+### Errors and problems faced
+- None.
+
+### How each problem was solved
+- —
+
+### Decisions taken
+- The study names now read "Study 1 / Study 2" in the paper only. The internal file names (`results_22.md`, `results_23.md`) and the source comments are unchanged, so every citation still traces back.
+
+### Open questions for the team
+- If the submission platform requires the template's sprint footnote, re-add it there, not in the paper body.
+
+---
+
+## 2026-10-26 — [machine: D] Task 28: professional README (decorative icons removed, no new numbers)
+
+### What was implemented or executed
+- `README.md` rewritten in a plain, professional style:
+  - no emoji in headings, contents list, tables, Mermaid nodes or footer;
+  - findings status column now uses text labels ("Replicated", "Consistent null", "Not shared between monitors", ...);
+  - plain anchors in the contents list;
+  - "Study 2.2 / 2.3" → "Study 1 / Study 2" to match the paper (file links unchanged);
+  - removed the sprint badge, the "agents/monitors/API cost/replication" badges (now 7 badges);
+  - the sprint is mentioned once, in Acknowledgements; the BibTeX no longer names the sprint/track.
+- Kept: banner, shields.io badges, GitHub `[!IMPORTANT]` / `[!NOTE]` boxes, collapsible sections, all figures.
+- `assets/banner.svg`: top label "AI COLLUSION RESEARCH SPRINT · TRACK 2" → "AUDITING MULTI-AGENT LLM SYSTEMS".
+- Checks: `scratch/audit_paper_numbers.py` on a copy of the README → 0 numbers not found in sources; scan for emoji-range characters → none.
+
+### Errors and problems faced
+- None. (markdownlint MD033 inline-HTML warnings in the editor are expected for a README with a banner and badges.)
+
+### How each problem was solved
+- —
+
+### Decisions taken
+- Kept the Apart acknowledgement in the README (credit for the questions and starter code) while removing sprint branding from the banner, badges and citation, consistent with Task 27.
+
+### Open questions for the team
+- Check the banner and Mermaid diagram rendering on GitHub after pushing.

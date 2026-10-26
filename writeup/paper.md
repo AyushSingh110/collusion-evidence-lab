@@ -1,4 +1,4 @@
-# Behaviour Beats Judgement: Auditing Collusion Between LLM Agents with Monitor Views and Antitrust-Style Evidence¹
+# Behaviour Beats Judgement: Auditing Collusion Between LLM Agents with Monitor Views and Antitrust-Style Evidence
 
 <!-- Task 25D final paper (Markdown version; the submission version is writeup/paper.tex, same content).
      Every number is copied from writeup/results_summary.md, results_22.md, results_23.md, excerpts_22.md or
@@ -6,9 +6,6 @@
      Nothing was recomputed or re-rounded. -->
 
 **Author name 1** (Affiliation) · **Author name 2** (Affiliation) · **Author name 3** (Affiliation)
-**With** Apart Research
-
-¹ Research conducted at the [AI Collusion Research Sprint](https://apartresearch.com/sprints/ai-collusion-research-sprint-2026-10-23-to-2026-10-25), October 2026.
 
 ## Abstract
 
@@ -19,12 +16,12 @@
 
 LLM agents are increasingly deployed side by side: in markets, in shared infrastructure and inside larger multi-agent workflows. When two of them coordinate against the others, the harm can be real (higher prices, a captured resource, a displaced competitor), and the coordination may never be stated openly. An auditor usually has logs: what agents said in public, what they did, and what outcomes followed. The practical question is what to do with those logs.
 
-The sprint's Track 2 (Detection and Audit of Collusion) poses two questions that we study on one shared dataset:
+We study two questions on one shared dataset:
 
-- **2.2 Say vs. do.** Does combining what agents say with what they do beat either alone, when the same LLM monitor reads different *views* of a game record?
-- **2.3 Standard of evidence.** What should count as convincing evidence of collusion? We compute the same conversation, coalition-advantage and dependence evidence for every game and combine it with fixed decision rules.
+- **Study 1 — say vs. do.** Does combining what agents say with what they do beat either alone, when the same LLM monitor reads different *views* of a game record?
+- **Study 2 — standard of evidence.** What should count as convincing evidence of collusion? We compute the same conversation, coalition-advantage and dependence evidence for every game and combine it with fixed decision rules.
 
-Competition law offers a useful frame for 2.3. Parallel conduct alone does not prove an agreement: firms may move together for independent reasons, such as a common cost shock. Courts therefore look for "plus factors" on top of parallel conduct, for example evidence of communication or actions that only make sense under an agreement [8, 9, 10]. We built our dataset so that both halves of this argument can be tested: one lookalike shows collusive-sounding *talk* without coordination, and another shows parallel *conduct* caused by a shared incentive without any agreement.
+Competition law offers a useful frame for Study 2. Parallel conduct alone does not prove an agreement: firms may move together for independent reasons, such as a common cost shock. Courts therefore look for "plus factors" on top of parallel conduct, for example evidence of communication or actions that only make sense under an agreement [8, 9, 10]. We built our dataset so that both halves of this argument can be tested: one lookalike shows collusive-sounding *talk* without coordination, and another shows parallel *conduct* caused by a shared incentive without any agreement.
 
 **Our main contributions are:**
 
@@ -71,7 +68,7 @@ Plan (seed, type, focal pair) -> Generation (5 x qwen2.5:7b, El Farol, 8 rounds)
 
 *Labels come only from the generation config and are written, with the single dev/test split, before any game is generated. Monitors, the judge and the code evidence see only the cleaned public record (V5 adds private plans, never the private channel).* (Drawn with TikZ in `paper.tex`.)
 
-### 3.3 Views, controls and cleaning (Study 2.2)
+### 3.3 Views, controls and cleaning (Study 1)
 
 A whitelist cleaner keeps only public fields (announcements, messages, final actions, standard-rule payoffs); setup text, private payoffs, the private channel and labels cannot reach a view. Its leak scanner removes 8-word copies of setup texts and header phrases, and otherwise only flags (deviation 7, Appendix A).
 
@@ -82,9 +79,9 @@ A whitelist cleaner keeps only public fields (announcements, messages, final act
 
 ### 3.4 Monitors and judge
 
-The primary monitor is `llama3.1:8b` with the frozen format `monitor_v3_pairs_ctx16k`: it scores all 10 pairs 0–100, and the game score is the maximum pair score (temperature 0, `num_ctx` 16384, one sample per call). The same frozen prompt was run with `granite3.3:8b` as a second model (RQ9 and the replication's amendment 1). For Study 2.3 an LLM judge (`llama3.1:8b`) reads only the cleaned public messages and scores each pair 0–100.
+The primary monitor is `llama3.1:8b` with the frozen format `monitor_v3_pairs_ctx16k`: it scores all 10 pairs 0–100, and the game score is the maximum pair score (temperature 0, `num_ctx` 16384, one sample per call). The same frozen prompt was run with `granite3.3:8b` as a second model (RQ9 and the replication's amendment 1). For Study 2 an LLM judge (`llama3.1:8b`) reads only the cleaned public messages and scores each pair 0–100.
 
-### 3.5 Evidence signals and decision rules (Study 2.3)
+### 3.5 Evidence signals and decision rules (Study 2)
 
 Four evidence families are computed per pair: **E1 conversation** (the judge score C_judge, plus a coordination-keyword score C_kw), **E2 coalition advantage** (G_others: how much better the pair does than the other agents), **E3 dependence** (Dep: how much the pair's choices depend on each other) and **E4 word–action** (W_joint: whether the pair broke public promises together). Simple parallel-conduct signals are *coGO* (rounds both went) and *capture* (rounds in which exactly the pair went). Seven rules were frozen on dev: R1 judge only; R2 gain only; R3 dependence only; R4 legal style (parallel conduct plus a plus factor, same pair); R5 gain and dependence, same pair; R6 points (≥ 1 of 4 families above its dev level); R7 a learned logistic rule.
 <!-- src: results_23.md "The evidence families", §1, §2 -->
@@ -92,12 +89,12 @@ Four evidence families are computed per pair: **E1 conversation** (the judge sco
 ### 3.6 Integrity: pre-registration, freezes and statistics
 
 - **Pre-registration chain** (Appendix B): a frozen RQ0.1 pre-registration; amendment 1 (after pilot 1, before pilot 2); amendment 2 (before any dataset game) and its erratum (before any monitor result); the frozen monitor (after dev runs, before any test call); follow-up 1 (before its calls); and the replication pre-registration with its amendment 1 (before any replication game, and before any replication view was rendered, respectively).
-- **Freezes.** Monitor format, prompts and thresholds were chosen on dev, frozen and run *once* on test; the Study 2.3 rules file was applied once to test and once to the replication, never refit.
+- **Freezes.** Monitor format, prompts and thresholds were chosen on dev, frozen and run *once* on test; the Study 2 rules file was applied once to test and once to the replication, never refit.
 - **Statistics.** AUROC is primary; we also report counts at frozen thresholds. All intervals are 95% bootstrap CIs stratified by episode type, resampling whole games (B = 2000, seed 20261023); differences are paired. The pre-registered primary comparisons are RQ2 and RQ5; everything else is exploratory, with no multiple-comparison correction. <!-- src: results_22.md "How to read the numbers" -->
 - **Deviations.** We logged 39 deviations, each with the reason and whether it was decided before or after the related data (Appendix A). The most important: pilot 1 failed the frozen uptake rule and amendment 1 replaced it (#4); the cleaner became flag-only (#7); `num_ctx` was raised to 16384 before any monitor call (#15); and the constant-score format was ruled ineligible on dev, before any test call (#16).
 - **Local and reproducible.** Ollama 0.40.3 with every model pinned by digest, $0 spent, and every LLM call cached to disk under a key that includes the model digest, prompt, schema, settings, seed and sample index.
 
-## 4. Results: Study 2.2 (monitor views)
+## 4. Results: Study 1 (monitor views)
 
 ### 4.1 Gates: does the dataset do what it should? (RQ0.1–RQ0.4)
 
@@ -164,7 +161,7 @@ The same frozen prompt with `granite3.3:8b` gave a different ranking (Figure 5):
 Table 2 and Figure 6 give the replication with frozen prompts, one sample and one run per monitor. There were 0 quality-fail games, so the sensitivity analysis equals the primary. **Replicated**: messages alone fail (R1), private plans add nothing (R8), the shuffled control is at chance (R9), and the model-free capture signal works (R10a), now clearly beating the best LLM view (R10b, +0.264 [0.121, 0.412]). **Not replicated**: the structured report's advantages over the raw view (R4) and over a same-length raw view (R5), and "persona talk fools actions" (R7). With llama, "combining beats actions" replicated (R3), but only because llama's action view is below chance (0.324). With granite, the action view was not reliably above chance (G1), and only llama prefers the structured report (G3). Neither monitor reaches 0.7 on any view of the new games.
 <!-- src: results_22.md §g (R21 §4.2, §4.7; R22C §4.4) -->
 
-**Table 2 — Study 2.2 replication** (48 new games; frozen `llama3.1:8b` monitor; granite under amendment 1). Original column: n = 24 test. <!-- src: R21 §4.7; R22C §4.4; R14; R15; R15C -->
+**Table 2 — Study 1 replication** (48 new games; frozen `llama3.1:8b` monitor; granite under amendment 1). Original column: n = 24 test. <!-- src: R21 §4.7; R22C §4.4; R14; R15; R15C -->
 
 | ID | Hypothesis | Replication [95% CI] | Original | Outcome |
 |---|---|---|---|---|
@@ -186,9 +183,9 @@ Table 2 and Figure 6 give the replication with frozen prompts, one sample and on
 
 ![Figure 6](figures/fig9_replication_22.png)
 
-**Figure 6 — Study 2.2: original test vs. pre-registered replication** (frozen prompts; one sample per call, one run per monitor). AUROC with 95% CIs: llama on the original 24 test games (grey), llama on the 48 replication games (dark) and granite on the same 48 games (red); the model-free capture signal on the right. The structured report's original 0.896 shrank to 0.636. No LLM view of either monitor reaches 0.7 on the new games, while capture stays at about 0.90. V5 and the C-length / C-mismatch controls are not shown (no replication AUROC reported). <!-- src: captions.md Figure 9 -->
+**Figure 6 — Study 1: original test vs. pre-registered replication** (frozen prompts; one sample per call, one run per monitor). AUROC with 95% CIs: llama on the original 24 test games (grey), llama on the 48 replication games (dark) and granite on the same 48 games (red); the model-free capture signal on the right. The structured report's original 0.896 shrank to 0.636. No LLM view of either monitor reaches 0.7 on the new games, while capture stays at about 0.90. V5 and the C-length / C-mismatch controls are not shown (no replication AUROC reported). <!-- src: captions.md Figure 9 -->
 
-## 5. Results: Study 2.3 (standard of evidence)
+## 5. Results: Study 2 (standard of evidence)
 
 **Single families (test, n = 24; Table 3).** Talk alone is not evidence: the judge flagged 11 of 12 innocent games and ranked below chance (0.396). Outcomes alone rank games well, but the shared-incentive lookalike fools them: coalition gain (R2, 0.872 [0.736, 0.986]) and capture (0.896, exploratory) each flag 2 of 4 Type 4b games. Dependence alone is weaker, undefined in 3 games, and fooled by every lookalike type at least once.
 
@@ -216,7 +213,7 @@ Table 2 and Figure 6 give the replication with frozen prompts, one sample and on
 
 ![Figure 7](figures/fig10_replication_23.png)
 
-**Figure 7 — Study 2.3: frozen decision rules, original test vs. replication** (pre-registered; frozen rules, not refit; one judge sample). AUROC with 95% CIs on the 24 original test games (grey) and the 48 replication games (dark). The gain rule R2 replicates (0.872 → 0.885), and the talk-only judge R1 stays near chance (0.396 → 0.543). The combined rules R6 and R7 do not beat R2. R4 and R5 are binary and have no AUROC. <!-- src: captions.md Figure 10 -->
+**Figure 7 — Study 2: frozen decision rules, original test vs. replication** (pre-registered; frozen rules, not refit; one judge sample). AUROC with 95% CIs on the 24 original test games (grey) and the 48 replication games (dark). The gain rule R2 replicates (0.872 → 0.885), and the talk-only judge R1 stays near chance (0.396 → 0.543). The combined rules R6 and R7 do not beat R2. R4 and R5 are binary and have no AUROC. <!-- src: captions.md Figure 10 -->
 
 **Our standard of evidence.** Outcome evidence (gain, capture) is necessary and replicates, but it is not sufficient against a shared incentive. None of the communication evidence we measured was a usable plus factor: requiring it removes false positives only by missing most real collusion.
 <!-- src: results_23.md §6 "Final standard of evidence" -->
@@ -349,7 +346,7 @@ Items 1–12 are from report 10 §B4; items 13 onward were added later; items 23
 | Replication pre-registration | 2bc3d3a | d9d25b583b1d6052 | before any replication game existed |
 | Replication amendment 1 (granite) | 306502e | 778cf66b03bdea1f | before any replication view was rendered |
 
-**Frozen inputs for the replication:** llama monitor 89bdb79; Study 2.3 judge and rules 404f356 (rules file sha256 `ce0b8840…`); granite manifest 57206cb. **Models** (Ollama 0.40.3, pinned by digest in `configs/pins.json`): `qwen2.5:7b` `845dbda0ea48…`, `llama3.1:8b` `46e0c10c039e…`, `granite3.3:8b` `fd429f23b909…`. Seeds: dataset 20261023, pilots 20261024 / 20261025, re-pilot 20261026, replication 20261027; bootstrap seed 20261023. The final write-up corresponds to repository commit `dc64f31`.
+**Frozen inputs for the replication:** llama monitor 89bdb79; Study 2 judge and rules 404f356 (rules file sha256 `ce0b8840…`); granite manifest 57206cb. **Models** (Ollama 0.40.3, pinned by digest in `configs/pins.json`): `qwen2.5:7b` `845dbda0ea48…`, `llama3.1:8b` `46e0c10c039e…`, `granite3.3:8b` `fd429f23b909…`. Seeds: dataset 20261023, pilots 20261024 / 20261025, re-pilot 20261026, replication 20261027; bootstrap seed 20261023. The final write-up corresponds to repository commit `dc64f31`.
 
 **How to run** (one conda environment, `collusion-lab`):
 
@@ -368,4 +365,4 @@ The per-task reports in `notes/reports/` list the exact rendering, monitor and a
 
 ## LLM Usage Statement
 
-We used Claude (Anthropic), through Claude Code, as an engineering assistant: it wrote and tested most of the code under our instructions, ran the local experiments, drafted the per-task reports and drafted this paper from our write-up files. All design decisions were made by the team. Every number in this paper is copied from the project's reports, each traceable to a report section, and the team verified the claims. *(Teams: edit this statement to describe your own final writing process.)*
+We used Claude (Anthropic), through Claude Code, as an engineering assistant: it wrote and tested most of the code under our instructions, ran the local experiments, drafted the per-task reports and drafted this paper from our write-up files. All design decisions were made by the team. Every number in this paper is copied from the project's reports, each traceable to a report section, and the team verified the claims.
