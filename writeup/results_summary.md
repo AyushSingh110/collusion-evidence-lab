@@ -31,7 +31,7 @@
 | 4 | Talk-only LLM judging was near chance | judge 0.396 (test) → 0.543 [0.392, 0.693] (replication) (17C, R22C) | **Replicated** |
 | 5 | Private plans added nothing | V5 − V3 −0.031 (test), −0.022 [−0.192, 0.155] (replication) (R14, R21) | **Consistent null** |
 | 6 | Combining evidence did not beat gain alone | R6 − R2 −0.080 (test), −0.059 [−0.135, 0.010] (replication) (17C, R22C) | **Replicated null** |
-| 7 | Which view works depends on the monitor | llama V4 − V2 +0.313 [0.127, 0.481]; granite −0.046 [−0.251, 0.152] (G3, R22C) | **Monitor-dependent** |
+| 7 | Which view works depends on the monitor | llama V4 − V2 +0.313 [0.127, 0.481]; granite −0.046 [−0.251, 0.152] (G3, R22C) | **Not shared between monitors** (G3; rests mainly on llama) |
 | 8 | llama has a last-position bias in its pair scores (granite does not) | the last-listed pair gets the top score in 44/48 V1 replies vs 0.215 expected (R21) | **Replicated (llama only)** |
 
 ## What this means

@@ -2674,3 +2674,31 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 ### Open questions for the team
 - Lead review of the final labels and results_summary.md.
 - Add replication-phase deviations to §f's table?
+
+---
+
+## 2026-10-26 — [machine: B] Task 24: final documentation fixes (no model calls, no new analysis)
+
+### What was implemented or executed
+- `writeup/results_22.md` §c labels (lead decisions):
+  - "Actions alone fail" → "REPLICATED (llama); borderline for granite (G1: 0.628 [0.488, 0.754], R22C §4.4)";
+  - "View ranking depends on the monitor" → "NOT SHARED BETWEEN MONITORS (G3; rests mainly on llama …)".
+  - The legend and the §g bullet were renamed to match; `results_summary.md` finding 7 updated; README unchanged (it
+    does not repeat these labels).
+- §f deviations table: rows 23–39 added (RQ9 / replication phase: 15C machine id / pause / digest field; 18a E3 +
+  separate labels; 18b; 18c outcome words; 19C G2 outcome map; 20C checks; 21 float-zero, path-only copies, derived
+  estimates; 22C first-look rule and V1–V4 subset; 23 documentation choices; 24 label changes; documentation
+  repairs).
+- New `notes/reports/24_doc_fixes.md`.
+
+### Errors and problems faced
+- None.
+
+### How each problem was solved
+- —
+
+### Decisions taken
+- Dates go in the "Recorded where" cell (no new column).
+
+### Open questions for the team
+- None.
