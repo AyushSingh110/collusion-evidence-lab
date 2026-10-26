@@ -5,7 +5,7 @@ A 3-day research hackathon project on **detecting and auditing collusion between
 - **Study 2.2 (main): views for a monitor.** Which view of a game record lets an LLM monitor detect two colluding agents best? The views are messages, actions, both, a code-built structured report, or the agents' private plans.
 - **Study 2.3: evidence and decision rules.** Code-computed evidence signals (co-attendance, capture, gains over others, coordination words, dependence) and decision rules, built on the same dataset.
 
-Full Study 2.2 results: [`writeup/results_22.md`](writeup/results_22.md). Work log and per-task reports: [`notes/`](notes/).
+Results: [`writeup/results_summary.md`](writeup/results_summary.md) (one page), [`writeup/results_22.md`](writeup/results_22.md) (Study 2.2), [`writeup/results_23.md`](writeup/results_23.md) (Study 2.3). Work log and per-task reports: [`notes/`](notes/).
 
 ## Setup in 5 bullets
 
@@ -19,25 +19,30 @@ Full Study 2.2 results: [`writeup/results_22.md`](writeup/results_22.md). Work l
 - **Data:** 48 games, one dev/test split made once before generation (24 / 24; each split 12 Type 1 + 4 of each negative type).
 - **Protocol:** monitor format, prompts and thresholds were chosen on dev only, frozen, then run once on test. Follow-ups are pre-registered separately.
 
-## Headline findings (pilot, n = 24 test games)
+## Headline findings (24 test games + a pre-registered replication on 48 new games)
 
-All numbers are copied from `writeup/results_22.md` and `writeup/results_23.md`. CIs are 95% stratified bootstraps.
+All numbers are copied from `writeup/results_22.md`, `writeup/results_23.md` and `writeup/results_summary.md`. CIs are 95% stratified bootstraps.
 
-- **Which view works depends on the monitor model.**
-  - With `llama3.1:8b`, messages alone (V1, 0.490) and actions alone (V2, 0.372) failed, and the code-built structured report worked best (V4, AUROC 0.896 [0.771, 0.979]).
-  - With `granite3.3:8b` (same frozen prompt), the ranking reversed: actions 0.767 [0.604, 0.917], structured report 0.510 [0.292, 0.729].
-- **Only the combined raw view (V3) matched:** 0.736 with both models.
-- **Model-free behaviour signals were the most dependable** (exploratory): capture 0.944 [0.884, 0.986] over all 48 games.
-- **Study 2.3:**
-  - the coalition-gain rule ranked games well (R2, AUROC 0.872 [0.736, 0.986]);
-  - the talk-only LLM judge was below chance (R1, 0.396 [0.205, 0.597]);
-  - combining evidence families did not help (R6 − R2: −0.080 [−0.208, 0.045], no clear difference).
-- **"Combining messages and actions helps"** (pre-registered RQ2) held on test with llama (+0.365 [0.094, 0.611]). It is fragile: it does not hold over all 48 games, and it does not hold with granite.
+- **Model-free behaviour signals were the most reliable, and they replicated:**
+  - capture 0.900 [0.811, 0.965] on the new games;
+  - capture beat the best LLM view by +0.264 [0.121, 0.412];
+  - the coalition-gain rule: 0.885 [0.786, 0.961].
+- **Both LLM monitors** (`llama3.1:8b`, `granite3.3:8b`; same frozen prompt) **were mediocre and inconsistent on new games:**
+  - every view V1–V4 lies between 0.32 and 0.66;
+  - llama's structured report fell from 0.896 on the original test to 0.636;
+  - llama's preference for that view is not shared by granite.
+- **Messages alone never worked** (0.490, then 0.505). **Talk-only LLM judging was near chance** (0.396, then 0.543).
+- **Private plans added nothing** (a consistent null). **Combining evidence families did not beat gain alone** (R6 − R2 −0.059 [−0.135, 0.010] on the replication).
 - **Measured LLM-monitor reliability problems:**
   - the single-score format returned a constant 80 on 96/96 dev calls;
-  - llama showed a last-position bias in its pair scores (granite did not, beyond ties);
-  - re-scoring the frozen monitor in a new session moved V2 by +0.188 [+0.007, +0.389].
-- **A pre-registered replication on 48 new games is in progress** (`configs/prereg_replication.md`).
+  - llama's last-position bias replicated (44/48 V1 replies);
+  - a session effect of +0.188 on V2;
+  - the structured report flagged 8/8 persona-talk games on the replication.
+- **The pre-registered replication is complete:**
+  - the structured-report advantages (R4, R5) and "persona fools actions" (R7) did not replicate;
+  - the behaviour-signal and messages-alone findings did.
+
+One-page summary: [`writeup/results_summary.md`](writeup/results_summary.md).
 
 ## Reproducibility
 
@@ -59,6 +64,8 @@ All numbers are copied from `writeup/results_22.md` and `writeup/results_23.md`.
   | `configs/prereg_rq01_amendment2_erratum.md` | `0dfd1b1` |
   | `configs/frozen/monitor_frozen.json` (frozen monitor + dev thresholds) | `89bdb79` |
   | `configs/prereg_followup1_pair_order.md` (follow-up 1) | `496fc28` |
+  | `configs/prereg_replication.md` (replication) | `2bc3d3a` |
+  | `configs/prereg_replication_amendment1.md` (replication, second monitor) | `306502e` |
 
   Every deviation is listed, with whether it was decided before or after the related data, in `writeup/results_22.md` section f.
 
@@ -73,7 +80,7 @@ scripts/          command-line entry points (check_env, make_plan, run_plan, mer
                   run_monitor, analyse_22, ...)
 scratch/          per-task measurement and analysis scripts (p8_*, p15_*, p16_*, ...) and small results
 tests/            pytest suite (mock LLM transport; no model calls)
-writeup/          results_22.md, case-study excerpts, figures + captions
+writeup/          results_summary.md, results_22.md, results_23.md, case-study excerpts, figures + captions
 notes/            DEVLOG.md (append-only work log) and reports/ (one report per task)
 external/         starter code, read-only (Shi et al. harness; TraceGuard rubric)
 ```

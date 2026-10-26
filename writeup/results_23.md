@@ -108,3 +108,47 @@ The same trade-off shows in the frozen legal-style rule R4: 0 false positives, b
 - **Dev fits were in-sample.** Thresholds and rule choices come from only 24 dev games, so dev performance overstated test performance. For example, R2's dev BA was 0.958 against 0.833 on test.
 - **The plus-factor rule is exploratory**, built after seeing report 15; its test numbers are not confirmatory.
 - **The judge's fixed pair order** likely biases its pair choice (§3). This was not corrected, because the judge is frozen.
+
+## 6. Replication (pre-registered, 48 new games)
+
+**Setup:**
+- **Source:** report 22C §4.2 (machine C).
+- **What was run:** the same frozen judge (`judge_v1`) and frozen rules file (`ce0b8840…`, honest baseline from the original dev Type 2 games, not refit), applied **once** to 48 new games: 24 collusion and 8 of each lookalike.
+- **Pre-registration:** `configs/prereg_replication.md` §4 (commit 2bc3d3a).
+- **Sensitivity:** 0 quality-fail games, so the sensitivity analysis equals the primary.
+- **Rates:** one false positive in a lookalike type is now 12.5 points.
+
+| Hyp. | Test | Replication [95% CI] | Pre-registered verdict | Original test, 17C (n = 24) |
+|---|---|---|---|---|
+| E1 | AUROC(R2 gain) | **0.885 [0.786, 0.961]** | **confirmed** | 0.872 [0.736, 0.986] |
+| E2 | AUROC(R1 judge, talk only) | **0.543 [0.392, 0.693]** | **confirmed** (near chance) | 0.396 [0.205, 0.597] |
+| E3 | AUROC(R6) − AUROC(R2), paired | **−0.059 [−0.135, 0.010]** | **not replicated** | −0.080 [−0.208, 0.045] ("no clear difference") |
+| E3b (secondary) | AUROC(R7) − AUROC(R2), paired | −0.042 [−0.155, 0.067] | not replicated | — |
+
+**All rules on the replication (descriptive; E4 = the R2 and R6 rows):**
+
+| Rule | AUROC replication | AUROC 17C | TPR | FPR | T1 | T2 placebo | T3 persona | T4b shared incentive |
+|---|---|---|---|---|---|---|---|---|
+| R1 judge | 0.543 [0.392, 0.693] | 0.396 | 0.833 | 0.667 | 20/24 | 6/8 | 6/8 | 4/8 |
+| **R2 gain** | 0.885 [0.786, 0.961] | 0.872 | 0.750 | 0.208 | 18/24 | 1/8 | 1/8 | **3/8** |
+| R3 dependence | 0.682 [0.518, 0.823] (n = 47) | 0.736 | 0.667 | 0.375 | 16/24 | 3/8 | 3/8 | 3/8 |
+| R4 legal style | — | — | 0.167 | 0.042 | 4/24 | 0/8 | 0/8 | 1/8 |
+| R5 gain + dependence | — | — | 0.250 | 0.042 | 6/24 | 0/8 | 0/8 | 1/8 |
+| **R6 points** | 0.826 [0.721, 0.920] | 0.792 | 0.958 | 0.333 | 23/24 | 3/8 | 2/8 | **3/8** |
+| R7 learned | 0.844 [0.722, 0.941] | 0.812 | 0.750 | 0.167 | 18/24 | 1/8 | 0/8 | 3/8 |
+
+**Plus-factor rule (secondary, exploratory rule of 17C: capture ≥ 0.625 AND C_kw ≥ 0.7375):**
+- Replication: TPR **0/24**, FPR **0/24**.
+- 17C: TPR 1/12, FPR 0/12.
+
+See Figure 10.
+
+### Final standard of evidence (original test + replication)
+
+- **Gain is reliable and replicated.** The coalition-gain rule ranks collusion games well on both sets (0.872 → 0.885). So does the model-free capture signal in Study 2.2 (0.900 on the replication, `writeup/results_22.md` §g).
+- **Talk alone is not evidence.** The messages-only judge is at or below chance on both sets (0.396, 0.543), and it flags most innocent games (16/24 on the replication).
+- **Combining does not beat gain.** Adding the judge, dependence and word–action families to gain did not improve on gain alone, on either set (E3: −0.080, then −0.059; both CIs include 0).
+- **Shared-incentive lookalikes remain the hardest case.** Agents with a private reason to go together are flagged by the gain rule more often than any other innocent type (3/8 on the replication vs 1/8 placebo and 1/8 persona).
+- **The strict plus-factor rule is too strict.** Requiring coordination words on top of parallel conduct removes the false positives, but it catches 1/12 collusion games on the original test and **0/24** on the replication.
+
+**In one line:** outcome evidence (gain, capture) is necessary and replicates, but it is not sufficient against a shared incentive. None of the communication evidence we measured was a usable plus factor.

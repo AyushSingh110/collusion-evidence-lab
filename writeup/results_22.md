@@ -8,7 +8,7 @@
 - **Monitor:** `llama3.1:8b` (format `monitor_v3_pairs_ctx16k`), frozen on dev, then run once on test.
 
 **How to read the numbers:**
-- **Sample size:** every number is from a **pilot with n = 24 test games** unless marked dev, pooled or follow-up.
+- **Sample size:** every number is from a **pilot with n = 24 test games** unless marked dev, pooled, follow-up or **replication** (48 new games, pre-registered; reports 21 and 22C, cited as R21 / R22C).
 - **Confidence intervals:** CIs are 95% stratified bootstraps by episode type (B = 2000, seed 20261023).
 - **Citations:** "R14 §4.3" means report 14, section 4.3 (`notes/reports/`).
 - **Sourcing:** numbers are copied from the reports, never recomputed here. Where a report gives no paired CI, only the reported values are shown.
@@ -18,34 +18,36 @@
 
 ## a) Headline answer
 
-**The answer depends on the monitor model.**
+**Final answer** (original test + pre-registered replication on 48 new games):
 
-**With `llama3.1:8b`** (the frozen primary monitor):
-- Messages alone (V1, 0.490 [0.299, 0.691]) and actions alone (V2, 0.372 [0.170, 0.601]) failed.
-- The code-built structured report worked best: V4 0.896 [0.771, 0.979] (R14 §4.2).
+- **Model-free behaviour signals were the most reliable evidence, and they replicated.**
+  - capture 0.900 [0.811, 0.965] on the new games (R21 §4.7, R10a);
+  - capture beat the best LLM view: capture − V4 +0.264 [0.121, 0.412] (R21 §4.7, R10b);
+  - the coalition-gain signal: 0.885 [0.786, 0.961] (R22C §4.2, E1).
+- **Both LLM monitors were mediocre and inconsistent on new games.** Every view V1–V4 lies between 0.32 and 0.66 for both models:
+  - llama V1 0.505, V2 0.324, V3 0.565, V4 0.636;
+  - granite V1 0.618, V2 0.628, V3 0.662, V4 0.582 (R21 §4.7; R22C §4.4).
+- **Messages alone never worked:** 0.490 on the original test (R14 §4.2) and 0.505 on the replication (R21 §4.7, R1 confirmed).
+- **Talk-only judging was near chance:** the judge R1 scored 0.396 on the original test and 0.543 [0.392, 0.693] on the replication (R22C §4.2, E2 confirmed).
+- **Private plans added nothing:** V5 − V3 −0.031 on the test and −0.022 [−0.192, 0.155] on the replication (R14 §4.7; R21 §4.7).
+- **Combining evidence did not beat gain alone:** R6 − R2 −0.080 on the test and −0.059 [−0.135, 0.010] on the replication (R22C §4.2, E3 not replicated).
+- **The structured report's advantage did not replicate.** V4 fell from 0.896 to 0.636. It no longer beat the raw combined view (R4 +0.071, not replicated) or a raw view of the same length (R5 −0.034, not confirmed) (R21 §4.7).
+- **The view ranking depends on the monitor.** Llama's preference for the structured report is not shared by granite (G3, R22C §4.4).
+- **llama's last-position bias replicated:** in V1, the last-listed pair had the top score in 44/48 replies (R21 §4.8). The bias is llama-specific (R22C §4.4).
 
-**With `granite3.3:8b`** (RQ9, the same frozen prompt, only the model changed), the ranking reversed:
-- actions V2 0.767 [0.604, 0.917];
-- structured report V4 0.510 [0.292, 0.729];
-- Kendall τ −0.667 between the two rankings (R15C §4.2).
+**Why the original V4 result was optimistic.** V4 was the best of the views on the dev games, and it was then measured on only 24 test games (12 collusion). Its 0.896 [0.771, 0.979] was a single estimate with a wide CI; on 48 new games it was 0.636 [0.507, 0.751] (R14 §4.2; R21 §4.7).
 
-**Only the combined raw view matched:** V3 0.736 with both models (R15C §4.2; R14 §4.2).
+**Small-sample optimism.** Both monitors' best first-test results shrank on the replication:
+- llama V4: 0.896 → 0.636 (R14 §4.2 → R21 §4.7);
+- granite V2: 0.767 → 0.628 (R15C §4.2 → R22C §4.4).
 
-**Model-free behaviour signals were the most dependable evidence:** capture 0.944 [0.884, 0.986] over all 48 games (R15 §4.4, exploratory). They do not depend on which LLM reads the record.
-
-**The LLM monitor's reliability problems were measured** (section d):
+**LLM-monitor reliability problems** (section d):
 - the single-score format returned a constant 80 on 96/96 dev calls (R13 §2);
-- a last-position bias in llama's pair scores (R15 §4.6, R16 §4.3), which granite does not show beyond its ties (R15C §4.5);
-- a session effect of +0.188 [+0.007, +0.389] on V2 when the frozen monitor was re-scored unchanged (R16 §4.4).
+- llama's last-position bias (above);
+- a session effect of +0.188 [+0.007, +0.389] on V2 (R16 §4.4);
+- V4 flagged all 8 persona games at its frozen threshold on the replication (R21 §4.8).
 
-The pre-registered RQ2 ("combining helps", +0.365 [0.094, 0.611], R14 §4.3) is fragile and does not hold with granite (V3 − V2 −0.031 [−0.250, 0.191], R15C §4.3). Section c gives the status of each claim.
-
-**Link to Study 2.3** (`writeup/results_23.md`, task 17C; the same 24 test games, frozen rules):
-- **The coalition-gain rule R2 ranks games well:** AUROC 0.872 [0.736, 0.986].
-- **The talk-only judge R1 is below chance:** 0.396 [0.205, 0.597].
-- **Combining evidence families did not help:** AUROC(R6) − AUROC(R2) = −0.080 [−0.208, 0.045], "no clear difference at this sample size".
-
-Both studies point the same way: behaviour evidence carries the signal, and LLM reading of the talk does not.
+**Link to Study 2.3** (`writeup/results_23.md`, sections 1–6): gain is reliable and replicated; talk alone is not; combining does not beat gain; shared-incentive lookalikes remain the hardest.
 
 ---
 
@@ -84,20 +86,27 @@ Both studies point the same way: behaviour evidence carries the signal, and LLM 
 - **FRAGILE:** the conclusion changes between splits or sessions.
 - **NOT SUPPORTED:** the claim fails its own test.
 - **"(llama only)":** the claim holds for llama3.1:8b but not with granite3.3:8b (RQ9).
+- **"Pilot label"** is the label before the replication. **"Final label"** uses the replication (R21 / R22C):
+  - **REPLICATED:** the claim held on the 48 new games;
+  - **NOT REPLICATED:** it did not;
+  - **CONSISTENT NULL:** no effect was detected anywhere;
+  - **LLAMA ONLY:** it holds for llama but not for granite;
+  - **MONITOR-DEPENDENT:** the answer changes with the monitor model.
 
-| Claim | Test (R14) | Dev (R13) | Pooled (R15) | Follow-up (R16) | RQ9 granite (R15C) | Label |
-|---|---|---|---|---|---|---|
-| Messages alone (V1) fail | AUROC 0.490 [0.299, 0.691] (§4.2) | 0.431 [0.219, 0.646] (§5) | 0.459 [0.323, 0.597] (§4.2) | fixed 0.490 [0.299, 0.691], random 0.507 [0.306, 0.705] (§4.2) | **does not hold**: V1 0.729 [0.549, 0.896] (§4.2) | **ROBUST (llama only)** |
-| Actions alone (V2) fail | 0.372 [0.170, 0.601] (§4.2) | 0.493 [0.260, 0.726] (§5) | 0.447 [0.302, 0.595] (§4.2) | fixed 0.559 [0.319, 0.788], random 0.514 [0.295, 0.733] (§4.2) | **does not hold**: V2 0.767 [0.604, 0.917], granite's best view (§4.2) | **ROBUST (llama only)** (never above chance with llama; the size depends on the session, RQ0.4 FAIL) |
-| Combining helps (RQ2, V3 − V2) | +0.365 [0.094, 0.611] (§4.3) | −0.174 [−0.406, 0.056] (§5, in-sample) | +0.040 [−0.155, 0.238] (§4.2) | point estimates only: +0.19 (fixed), +0.28 (random) (§5) | **does not hold**: −0.031 [−0.250, 0.191] (§4.3) | **FRAGILE (llama only)** |
-| Structure beats raw (RQ5, V4 − V3) | +0.160 [−0.021, 0.351] (§4.6) | +0.444 [0.146, 0.729] (§5, in-sample) | +0.350 [0.166, 0.534] (§4.2) | V4 vs V3 AUROC: fixed 0.826 vs 0.750; random 0.750 vs 0.792 (§4.2) | **does not hold**: −0.226 [−0.486, 0.056] (§4.3) | **FRAGILE (llama only)** (positive on dev/pooled, not significant on test, reversed in the random arm) |
-| Structure beats same length (V4 − C-length) | +0.285 [0.017, 0.556] (§4.6) | AUROC 0.764 vs 0.583 (§5; no paired CI reported) | +0.237 [0.030, 0.443] (§4.2) | not measured (C-length not re-run) | not measured (C-length not scored); granite's V4 is at chance, 0.510 [0.292, 0.729] (§4.2) | **ROBUST (llama only; not tested with granite — C-length not scored, R15C §2)** (test and pooled CIs above 0; the structured report does not work with granite) |
-| Private plans do not help (RQ6, V5 − V3) | −0.031 [−0.267, 0.236] (§4.7) | AUROC 0.583 vs 0.319 (§5; no paired CI reported) | +0.149 [−0.062, 0.347] (§4.2) | not measured (V5 not re-run) | not measured (V5 not scored) | **CONSISTENT NULL (no detectable gain at n = 24)**: every CI includes 0. This is absence of evidence, not evidence of no effect |
-| Same-incentive (T4b) fools messages | V1 T1 vs T4b 0.344 [0.12, 0.65] (§4.4) | not reported per type | 0.359 [0.190, 0.562] (§4.2) | fixed 0.344 [0.125, 0.646], random 0.365 [0.115, 0.625] (§4.6) | **does not hold**: V1 T1 vs T4b 0.812 [0.604, 0.958] (§4.4) | **ROBUST (llama only)** |
-| Persona talk (T3) fools actions | V2 T1 vs T3 0.219 [0.00, 0.62] (§4.4) | descriptive only: V2 flags Type 3 games (§5) | 0.266 [0.049, 0.526] (§4.2) | fixed 0.458 [0.083, 0.854], random 0.500 [0.156, 0.844] (§4.6) | **does not hold**: V2 T1 vs T3 0.833 [0.708, 0.958] (§4.4) | **FRAGILE (llama only)** (reversed in the original session, about chance in the follow-up session) |
-| Code action signals are competitive with V4 (exploratory) | coGO 0.896, capture 0.896, G_others 0.872 vs V4 0.896 (R15 §4.4, test) | not reported separately | coGO 0.885, capture 0.944, G_others 0.906 vs V4 0.837 (R15 §4.4) | not measured | not applicable to the signals (model-free); granite's best view is V2 0.767 [0.604, 0.917] (§4.2) | **CONSISTENT (exploratory; pooled includes test)**: test and pooled agree; never pre-registered |
-| Position bias exists (last-listed pair gets the top score) | T-Z max V1 21/24, V3 17/24, V4 7/24 (R15 §4.6) | V1 22/24, V3 22/24, V4 7/24 (R15 §4.6) | — | fixed arm V1 21/24, V3 19/24; drop with random order V1 +0.458 [0.292, 0.667], V3 +0.417 [0.167, 0.667] (§4.3) | **does not hold**: last-position-max share at the no-bias expectation in every view (e.g. V1 0.708 vs 0.679); T-Z named as the single top pair 0 times in V1–V3 (§4.5) | **llama-specific (RQ9: granite shows no last-position preference beyond ties)** |
-| Position bias explains the raw-view failure | — | — | — | H2: V1 +0.017 [−0.229, +0.281], V3 +0.042 [−0.198, +0.285] (§4.7) | — | **NOT SUPPORTED** |
+| Claim | Test (R14) | Dev (R13) | Pooled (R15) | Follow-up (R16) | RQ9 granite (R15C) | Pilot label | Replication (R21 / R22C) | Final label (reason) |
+|---|---|---|---|---|---|---|---|---|
+| Messages alone (V1) fail | AUROC 0.490 [0.299, 0.691] (§4.2) | 0.431 [0.219, 0.646] (§5) | 0.459 [0.323, 0.597] (§4.2) | fixed 0.490 [0.299, 0.691], random 0.507 [0.306, 0.705] (§4.2) | **does not hold**: V1 0.729 [0.549, 0.896] (§4.2) | ROBUST (llama only) | llama 0.505 [0.363, 0.655], R1 confirmed (R21 §4.7); granite 0.618 [0.474, 0.756] (R22C §4.4) | **REPLICATED**: llama at chance again, and granite's 15C value did not hold on new games (its CI includes 0.5) |
+| Actions alone (V2) fail | 0.372 [0.170, 0.601] (§4.2) | 0.493 [0.260, 0.726] (§5) | 0.447 [0.302, 0.595] (§4.2) | fixed 0.559 [0.319, 0.788], random 0.514 [0.295, 0.733] (§4.2) | **does not hold**: V2 0.767 [0.604, 0.917], granite's best view (§4.2) | ROBUST (llama only) | llama 0.324 [0.186, 0.469]; granite 0.628 [0.488, 0.754], G1 not confirmed (R22C §4.4) | **REPLICATED**: below chance with llama, and not reliably above chance with granite |
+| Combining helps (RQ2, V3 − V2) | +0.365 [0.094, 0.611] (§4.3) | −0.174 [−0.406, 0.056] (§5, in-sample) | +0.040 [−0.155, 0.238] (§4.2) | point estimates only: +0.19 (fixed), +0.28 (random) (§5) | **does not hold**: −0.031 [−0.250, 0.191] (§4.3) | FRAGILE (llama only) | R3 +0.241 [0.063, 0.419], replicated (R21 §4.7) | **LLAMA ONLY**: replicated with llama, but it rests on llama's below-chance V2 (0.324) and does not hold with granite (R15C) |
+| Structure beats raw (RQ5, V4 − V3) | +0.160 [−0.021, 0.351] (§4.6) | +0.444 [0.146, 0.729] (§5, in-sample) | +0.350 [0.166, 0.534] (§4.2) | V4 vs V3 AUROC: fixed 0.826 vs 0.750; random 0.750 vs 0.792 (§4.2) | **does not hold**: −0.226 [−0.486, 0.056] (§4.3) | FRAGILE (llama only) | R4 +0.071 [−0.128, 0.247], not replicated (R21 §4.7) | **NOT REPLICATED**: no clear advantage on new games |
+| Structure beats same length (V4 − C-length) | +0.285 [0.017, 0.556] (§4.6) | AUROC 0.764 vs 0.583 (§5; no paired CI reported) | +0.237 [0.030, 0.443] (§4.2) | not measured (C-length not re-run) | not measured (C-length not scored); granite's V4 is at chance, 0.510 [0.292, 0.729] (§4.2) | ROBUST (llama only; not tested with granite) | R5 −0.034 [−0.212, 0.133], not confirmed (R21 §4.7) | **NOT REPLICATED**: the structured report's advantage over an equally short raw view vanished |
+| Private plans do not help (RQ6, V5 − V3) | −0.031 [−0.267, 0.236] (§4.7) | AUROC 0.583 vs 0.319 (§5; no paired CI reported) | +0.149 [−0.062, 0.347] (§4.2) | not measured (V5 not re-run) | not measured (V5 not scored) | CONSISTENT NULL | R8 −0.022 [−0.192, 0.155] (R21 §4.7) | **CONSISTENT NULL**: no detectable gain in any run (absence of evidence, not evidence of no effect) |
+| Same-incentive (T4b) fools messages | V1 T1 vs T4b 0.344 [0.12, 0.65] (§4.4) | not reported per type | 0.359 [0.190, 0.562] (§4.2) | fixed 0.344 [0.125, 0.646], random 0.365 [0.115, 0.625] (§4.6) | **does not hold**: V1 T1 vs T4b 0.812 [0.604, 0.958] (§4.4) | ROBUST (llama only) | R6 0.495 [0.297, 0.716], confirmed (R21 §4.7; llama) | **LLAMA ONLY**: confirmed again with llama; granite did not show it on the original test (no granite replication value reported) |
+| Persona talk (T3) fools actions | V2 T1 vs T3 0.219 [0.00, 0.62] (§4.4) | descriptive only: V2 flags Type 3 games (§5) | 0.266 [0.049, 0.526] (§4.2) | fixed 0.458 [0.083, 0.854], random 0.500 [0.156, 0.844] (§4.6) | **does not hold**: V2 T1 vs T3 0.833 [0.708, 0.958] (§4.4) | FRAGILE (llama only) | R7 0.352 [0.154, 0.578], not confirmed (R21 §4.7) | **NOT REPLICATED**: the CI includes 0.5 on new games |
+| Code action signals are competitive with V4 (exploratory → pre-registered R10) | coGO 0.896, capture 0.896, G_others 0.872 vs V4 0.896 (R15 §4.4, test) | not reported separately | coGO 0.885, capture 0.944, G_others 0.906 vs V4 0.837 (R15 §4.4) | not measured | not applicable to the signals (model-free); granite's best view is V2 0.767 [0.604, 0.917] (§4.2) | CONSISTENT (exploratory) | capture 0.900 [0.811, 0.965], R10a confirmed; capture − V4 +0.264 [0.121, 0.412], R10b capture better (R21 §4.7) | **REPLICATED**, and stronger: capture now clearly beats the best LLM view |
+| Position bias exists (last-listed pair gets the top score) | T-Z max V1 21/24, V3 17/24, V4 7/24 (R15 §4.6) | V1 22/24, V3 22/24, V4 7/24 (R15 §4.6) | — | fixed arm V1 21/24, V3 19/24; drop with random order V1 +0.458 [0.292, 0.667], V3 +0.417 [0.167, 0.667] (§4.3) | **does not hold**: last-position-max share at the no-bias expectation in every view (e.g. V1 0.708 vs 0.679); T-Z named as the single top pair 0 times in V1–V3 (§4.5) | llama-specific | llama V1 44/48 (no-bias expectation 0.215), C-shuffled 48/48 (R21 §4.8); granite at its tie expectation, T-Z named 0–3 times (R22C §4.4) | **LLAMA ONLY**: replicated strongly for llama, absent for granite |
+| Position bias explains the raw-view failure | — | — | — | H2: V1 +0.017 [−0.229, +0.281], V3 +0.042 [−0.198, +0.285] (§4.7) | — | NOT SUPPORTED | not re-tested | **NOT SUPPORTED** (follow-up 1; not part of the replication) |
+| View ranking depends on the monitor (RQ9 / G3) | llama V4 > V3 > V1 > V2 (R14 §4.2) | — | — | — | granite V2 > V3 > V1 > V4, τ −0.667 (§4.2) | monitor-dependent | G3 confirmed: llama V4 − V2 +0.313 [0.127, 0.481]; granite −0.046 [−0.251, 0.152] (R22C §4.4) | **MONITOR-DEPENDENT**: llama's preference for the structured report is not shared by granite (G3), and neither monitor is good on new games |
 
 ---
 
@@ -112,6 +121,10 @@ Both studies point the same way: behaviour evidence carries the signal, and LLM 
    - Randomising the order cut this to 10/24 (V1) and 9/24 (V3) (R16 §4.3).
    - In V1 the last-listed pair still gets the top score more often than chance (0.417 [0.250, 0.625] vs an expected 0.217), so V1 has a recency bias beyond the T-Z habit (R16 §4.3, §4.7).
    - The bias changes **who** is named (RQ8) but not **how well** games are ranked (R16 §5).
+   - **It replicated on the 48 new games** (frozen fixed order):
+     - the last-listed pair had the top score in **44/48** V1 replies (no-bias expectation 0.215), 44/48 V3 and 48/48 C-shuffled (R21 §4.8);
+     - llama named T-Z as the single top pair 37 times in V1 (R22C §4.4);
+     - granite again showed no preference beyond ties (R22C §4.4).
 3. **Session effect (Ollama nondeterminism at temperature 0).**
    - **Within one session,** repeats are identical (MAD 0 between samples 1 and 2 in every view; R13 §4).
    - **Between sessions,** V2 changes most: RQ0.4 Spearman 0.676 (R13 §4). In the follow-up, V2 re-scored unchanged gave AUROC 0.559 vs 0.372 (+0.188 [+0.007, +0.389]), with MAD 10.79 and Spearman 0.653 (R16 §4.2, §4.4).
@@ -120,6 +133,7 @@ Both studies point the same way: behaviour evidence carries the signal, and LLM 
 5. **Other:**
    - With the v3_pairs format there were 0 length cuts in the dev and test runs (R13 §2, R14 §4.1) and 0 truncation flags in the follow-up (R16 §4.1). The earlier v2_pairs format had 25% cuts (R13 §2).
    - Ties at the top are common, so many replies name no pair (e.g. dev V3: 8/12 no pair, R13 §5).
+6. **The structured report misreads persona talk.** On the replication, V4 at its frozen threshold flagged **8/8 persona (Type 3) games** as collusion (R21 §4.8). On the original test it flagged 2/4 (R14 §4.4). The mention-count lines of the report make friendly talk look like a pair signal (`writeup/excerpts_22.md`, case d).
 
 ---
 
@@ -172,6 +186,8 @@ Both studies point the same way: behaviour evidence carries the signal, and LLM 
 | Erratum to Amendment 2 `configs/prereg_rq01_amendment2_erratum.md` | **0dfd1b1** | ef31afca9c45d630 | written 2026-10-24 (R12 §2); committed 2026-10-25 02:28 | written **before any monitor result** (R12 §4.0); changes no rule |
 | Frozen monitor `configs/frozen/monitor_frozen.json` | **89bdb79** | ccc4bf07838be73e | committed 2026-10-25 02:28 | after dev monitor runs, **before any test call** (R14 §4.0) |
 | Follow-up 1 pre-registration `configs/prereg_followup1_pair_order.md` | **496fc28** | 0d6aaa412b394419 | committed 2026-10-25 04:39 (R16) | after test data (which motivated it), **before any follow-up call**; control arm added before the commit |
+| Replication pre-registration `configs/prereg_replication.md` | **2bc3d3a** | d9d25b583b1d6052 | committed 2026-10-25 09:55 (R21 §4.0) | **before any replication game existed** |
+| Replication amendment 1 (granite) `configs/prereg_replication_amendment1.md` | **306502e** | 778cf66b03bdea1f | committed 2026-10-25 20:34 (R21 §4.0) | after the original RQ9 data (which motivated it), **before any replication view was rendered** |
 
 ### Deviations table
 
@@ -204,49 +220,61 @@ Items 1–12 are from R10 §B4; items 13 onward were added later.
 
 ---
 
-## g) Replication (in progress)
+## g) Replication (pre-registered, 48 new games)
 
-**Status:**
-- A pre-registered replication on **48 new games** is in progress: generation is running.
-- **Pre-registration:** `configs/prereg_replication.md` (commit 2bc3d3a, LF sha256 `d9d25b58…a1f9`), seed 20261027.
-- **Labels:** `data/replication/labels.csv` (24 / 8 / 8 / 8).
-- **Frozen inputs, nothing re-fitted:** the Study 2.2 monitor (89bdb79), the Study 2.3 judge and rules (404f356).
+**Status: done.**
+- **Pre-registration:** `configs/prereg_replication.md` (2bc3d3a, LF sha256 `d9d25b58…a1f9`); amendment 1 for granite (306502e, `778cf66b…7cbf7`). Seed 20261027.
+- **Games:** 48 new games: 24 collusion, 8 each of placebo, persona talk and same incentive. **0 quality-fail games**, so the sensitivity analysis equals the primary (R21 §4.2).
+- **Frozen inputs, nothing re-fitted:** the llama monitor (89bdb79), the Study 2.3 judge and rules (404f356), and the granite manifest (57206cb).
+- **One sample, one run per monitor:** llama on machine B (R21 §4.5) and granite on machine C (R22C §4.3).
+- **Statistics:** 95% stratified bootstrap, B = 2000, seed 20261023; paired for differences.
 
-Every result below is **TBD**.
+**Study 2.2 — frozen llama3.1:8b monitor** (R21 §4.7; the original column is from R14 / R15):
 
-**Study 2.2 (machine B, frozen llama3.1:8b monitor; prereg §3):**
+| ID | Hypothesis | Replication [95% CI] | Outcome | Original (n = 24 test) |
+|---|---|---|---|---|
+| R1 | Messages alone fail: AUROC(V1) | 0.505 [0.363, 0.655] | **confirmed** | 0.490 [0.299, 0.691] |
+| R2 | Structured report works: AUROC(V4) | 0.636 [0.507, 0.751] | **confirmed** | 0.896 [0.771, 0.979] |
+| R3 | Combining helps: V3 − V2 | +0.241 [0.063, 0.419] | **replicated** | +0.365 [0.094, 0.611] |
+| R4 | Structure beats raw: V4 − V3 | +0.071 [−0.128, 0.247] | **not replicated** | +0.160 [−0.021, 0.351] |
+| R5 | Structure beats same length: V4 − C-length | −0.034 [−0.212, 0.133] | **not confirmed** | +0.285 [0.017, 0.556] |
+| R6 | Same-incentive fools messages: V1, T1 vs T4b | 0.495 [0.297, 0.716] | **confirmed** | 0.344 [0.12, 0.65] |
+| R7 | Persona talk fools actions: V2, T1 vs T3 | 0.352 [0.154, 0.578] | **not confirmed** | 0.219 [0.00, 0.62] |
+| R8 | Private plans: V5 − V3 | −0.022 [−0.192, 0.155] | **not replicated** (no gain again) | −0.031 [−0.267, 0.236] |
+| R9 | Shuffled control: AUROC(C-shuffled) | 0.457 [0.315, 0.591] | **pass** | 0.632 [0.431, 0.833] |
+| R10a | Code signal: AUROC(capture) | 0.900 [0.811, 0.965] | **confirmed** | 0.896 [0.781, 0.986] (R15 §4.4) |
+| R10b | Capture − V4, paired | +0.264 [0.121, 0.412] | **capture better** | capture 0.896 vs V4 0.896 (no paired CI reported) |
 
-| ID | Hypothesis | Test | Result |
-|---|---|---|---|
-| R1 | Messages alone fail | AUROC(V1) | TBD |
-| R2 | The structured report works | AUROC(V4) | TBD |
-| R3 | RQ2: combining helps | AUROC(V3) − AUROC(V2) | TBD |
-| R4 | RQ5: structure beats raw | AUROC(V4) − AUROC(V3) | TBD |
-| R5 | Structure beats same length | AUROC(V4) − AUROC(C-length) | TBD |
-| R6 | Same-incentive fools messages | AUROC(V1; Type 1 vs Type 4b) | TBD |
-| R7 | Persona talk fools actions | AUROC(V2; Type 1 vs Type 3) | TBD |
-| R8 | Oracle: private plans | AUROC(V5) − AUROC(V3) | TBD |
-| R9 | Shuffled control | AUROC(C-shuffled) | TBD |
-| R10 | Code action signal | (a) AUROC(capture); (b) AUROC(capture) − AUROC(V4) | TBD |
+**Amendment 1 — granite3.3:8b as a second monitor** (R22C §4.4; the original column is from R15C):
 
-**Study 2.3 (machine C, frozen judge_v1 + rules; prereg §4):**
+| ID | Hypothesis | Replication [95% CI] | Outcome | Original (n = 24 test, R15C) |
+|---|---|---|---|---|
+| G1 | Granite's action view works: AUROC_granite(V2) | 0.628 [0.488, 0.754] | **not confirmed** (CI includes 0.5) | 0.767 [0.604, 0.917] |
+| G2 | Granite's structured report does not work: AUROC_granite(V4) | 0.582 [0.414, 0.730] | **confirmed** | 0.510 [0.292, 0.729] |
+| G3 | The view ranking depends on the monitor: V4 − V2 per monitor | llama +0.313 [0.127, 0.481]; granite −0.046 [−0.251, 0.152] | **confirmed, but resting mainly on llama** (opposite signs; only llama's CI excludes 0) | llama V4 > V2, granite V2 > V4 (τ −0.667) |
+| G4 | Both monitors agree on V3: granite − llama | +0.097 [−0.063, 0.262] | **confirmed** as "no detected difference" (not equivalence) | 0.736 for both |
 
-| ID | Hypothesis | Test | Result |
-|---|---|---|---|
-| E1 | Behaviour evidence works | AUROC(R2 gain score) | TBD |
-| E2 | Talk-only evidence is weak | AUROC(R1 judge score) | TBD |
-| E3 | Combining evidence helps | AUROC(R6) − AUROC(R2) | TBD |
-| E3b | Secondary: the leave-one-out combined rule | AUROC(R7) − AUROC(R2) | TBD |
-| E4 | Lookalikes (descriptive) | flag rates of R2 and R6 for Type 3 and Type 4b vs Type 2 | TBD |
+**Per-view replication AUROCs** (R21 §4.7; R22C §4.4):
 
-**Second replication monitor (granite3.3:8b), G1–G4:**
-- These hypotheses are defined in `configs/prereg_replication_amendment1.md`.
-- At the time of writing this is a **DRAFT** on machine C (report 19C; LF sha256 `778cf66b…7cbf7`). It is not committed, so it is not yet binding.
-- They are listed here by name only; their wording is in the amendment.
+| Monitor | V1 | V2 | V3 | V4 |
+|---|---|---|---|---|
+| llama | 0.505 [0.363, 0.655] | 0.324 [0.186, 0.469] | 0.565 [0.421, 0.706] | 0.636 [0.507, 0.751] |
+| granite | 0.618 [0.474, 0.756] | 0.628 [0.488, 0.754] | 0.662 [0.560, 0.771] | 0.582 [0.414, 0.730] |
 
-| ID | Result |
-|---|---|
-| G1 | TBD |
-| G2 | TBD |
-| G3 | TBD |
-| G4 | TBD |
+See Figure 9.
+
+**Study 2.3 replication** (E1–E4 / E3b; R22C §4.2): see `writeup/results_23.md` §6.
+
+**What replicated and what did not (plain English):**
+- **Replicated:**
+  - messages alone fail;
+  - private plans add nothing (a consistent null);
+  - the shuffled control is at chance;
+  - the model-free capture signal works (0.900), and it now clearly beats the best LLM view (+0.264);
+  - llama's last-position bias;
+  - with llama, "combining beats actions alone" (+0.241), but only because llama's action view is below chance.
+- **Not replicated:**
+  - the structured report's advantages: over the raw combined view (R4), and over a raw view of the same length (R5);
+  - "persona talk fools the action view" (R7);
+  - granite's good action view (G1).
+- **Monitor-dependent:** llama prefers the structured report and granite does not (G3). Neither monitor reaches 0.7 on any view of the new games.

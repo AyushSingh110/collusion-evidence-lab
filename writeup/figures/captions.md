@@ -49,3 +49,19 @@
 **Figure 8 — `fig8_rq9_granite.png`. RQ9: the same frozen monitor prompt with a second model (granite3.3:8b)** *(task 15C, machine C; test set n = 24, one sample, one session).*
 - **Left:** test AUROC per view with 95% CIs (stratified bootstrap, B = 2000, seed 20261023): llama3.1:8b from the frozen test run (report 14, machine B, NVIDIA) vs granite3.3:8b (Apple M4). The ranking of the views does not carry over (Kendall tau-b −0.67, a coarse measure with 4 views): only V3 is the same (0.736 for both), and V4, best with llama, is at chance with granite.
 - **Right:** share of replies in which the last-listed pair (T-Z) has the top score, ties included; the black ticks show granite's no-bias expectation given its many ties (most granite replies give all pairs the same score). Granite sits at its expectation in every view and names T-Z as the single top pair only twice (V4), so the strong last-position pattern looks specific to llama, not to the prompt format.
+
+**Figure 9 — `fig9_replication_22.png`. Study 2.2: original test vs pre-registered replication** *(replication pre-registered: `configs/prereg_replication.md`, 2bc3d3a, and amendment 1, 306502e; frozen prompts; one sample per call, one run per monitor).*
+- **Series:** AUROC with 95% CIs (stratified bootstrap, B = 2000, seed 20261023).
+  - Grey: llama3.1:8b on the original 24 test games (report 14 §4.2).
+  - Dark: llama on the 48 replication games (report 21 §4.7; V2 / V3 from report 22C §4.4).
+  - Red: granite3.3:8b on the same 48 games (report 22C §4.4).
+- **Capture:** the model-free capture signal (test: report 15 §4.4; replication: report 21 §4.7, R10a).
+- **Views not shown:** V5 and the controls; their replication AUROCs are not in the reports except C-shuffled, which passed (R9, 0.457).
+- **Main result:** the structured report's original 0.896 shrank to 0.636. No LLM view of either monitor reaches 0.7 on the new games, while capture stays at about 0.90.
+
+**Figure 10 — `fig10_replication_23.png`. Study 2.3: frozen decision rules, original test vs replication** *(pre-registered: `configs/prereg_replication.md` §4; frozen rules `ce0b8840…`, not refit; one judge sample).*
+- **Series:** AUROC with 95% CIs.
+  - Grey: the 24 original test games (report 17C, as in `writeup/results_23.md` §1–2; values copied from the report, since that results file is on machine C).
+  - Dark: the 48 replication games (report 22C §4.2, from `runs/replication_23/results.json`).
+- **Not shown:** R4 and R5 are binary rules, so they have no AUROC.
+- **Main result:** the gain rule R2 replicates (0.872 → 0.885), and the talk-only judge R1 stays near chance (0.396 → 0.543). The combined rules R6 / R7 do not beat R2.

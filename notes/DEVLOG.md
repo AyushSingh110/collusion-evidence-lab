@@ -2609,3 +2609,68 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 
 ### Open questions for the team
 - Lead: combined replication write-up (Study 2.2 R1–R10, Study 2.3 E1–E4, amendment 1 G1–G4).
+
+---
+
+## 2026-10-26 — [machine: B] Merge-conflict repair in this DEVLOG (recorded late, as promised)
+
+### What was implemented or executed
+- During the lead's merge of f2224fb (machine C, Task 20C) into ab5c0ce (machine B, Task 21), notes/DEVLOG.md had 2
+  conflict regions.
+  - Both sides were pure appends to the merge base 306502e (checked byte for byte): ours +124 lines, theirs +59.
+  - Rebuilt the file as base + machine C's entries + machine B's entries. `git diff` vs each parent showed only
+    additions (+59 / +124, 0 removed).
+- The conflicted file and the three source versions were backed up in the scratchpad (merge21/). The lead completed
+  the merge (4db4659). No git command was run by Claude.
+- The committed DEVLOG is now LF throughout (0 CR bytes), so the old CRLF problem is gone. Appends are LF from now
+  on.
+
+### Errors and problems faced
+- My earlier "CRLF lines" counts were wrong in this shell (grep with $'\r$'); `tr -cd '\r' | wc -c` is reliable.
+
+### How each problem was solved
+- As above.
+
+### Decisions taken
+- Order: machine C's entries (already pushed) before machine B's.
+
+### Open questions for the team
+- None.
+
+---
+
+## 2026-10-26 — [machine: B] Task 23: final results integration, original + replication (no model calls)
+
+### What was implemented or executed
+- Stop condition checked: the 22C G1–G4 addendum and runs/replication_granite/results.json +
+  runs/replication_23/results.json are present on B.
+- `writeup/results_22.md`:
+  - §a final headline (lead addendum), why V4 was optimistic, small-sample optimism;
+  - §c "Replication (R21 / R22C)" column + final labels + a new "view ranking" row;
+  - §d last-position replication (V1 44/48) and V4 persona FP 8/8;
+  - §f two replication pre-registration rows;
+  - §g R1–R10 + G1–G4 next to the originals.
+- `writeup/results_23.md` §6 replication + final standard of evidence. New `writeup/results_summary.md`. README final
+  headline.
+- `scratch/p23_figures.py` → fig9 (llama test vs llama / granite replication, plus capture) and fig10 (17C vs
+  replication rules). The llama V1 / V4 values in C's file are asserted equal to B's report-21 analysis. Captions
+  appended.
+- Audit-20B triplet checker re-run over all six write-up files: 170 CI triplets, all in a report, 0 not found.
+- New `notes/reports/23_final_results.md`.
+
+### Errors and problems faced
+- §d item 6 was first inserted in the wrong place (before item 3). Moved to after item 5.
+- Figure 9 legend covered data. Moved.
+
+### How each problem was solved
+- As above.
+
+### Decisions taken
+- The old robustness labels are kept as "Pilot label"; the final label has a one-line reason.
+- "Position bias explains failure" stays NOT SUPPORTED (not re-tested).
+- Figure 10's 17C values are copied from report 17C (that results file is on C only).
+- V5 and the controls are not plotted: no replication AUROC is reported for them.
+
+### Open questions for the team
+- Lead review of the final labels and results_summary.md.
+- Add replication-phase deviations to §f's table?
