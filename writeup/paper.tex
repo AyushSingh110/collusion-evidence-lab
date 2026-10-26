@@ -54,12 +54,12 @@ Apart Research
 
 \begin{center}\textbf{\large Abstract}\end{center}
 \begin{quote}\small\itshape
-Two AI agents can secretly agree to coordinate against the others they interact with. We ask two questions
-from the AI Collusion Research Sprint: which view of a game record lets an LLM monitor detect such
-collusion (Track 2.2), and what evidence should count as convincing (Track 2.3). We built a pre-registered,
-zero-cost testbed: five \texttt{qwen2.5:7b} agents play an 8-round El Farol bar game. In collusion games two
-agents receive an alliance note and a private channel; three lookalike types (placebo, friendly persona talk,
-and a shared private incentive) contain no collusion. Ground truth comes only from the generation config.
+LLM agents that interact repeatedly can secretly agree to coordinate against the others. We study two
+questions about auditing such collusion from logged trajectories: which view of a game record lets an LLM
+monitor detect it, and what evidence should count as convincing. We built a pre-registered testbed with
+locally run open models: five \texttt{qwen2.5:7b} agents play an 8-round El Farol bar game. In collusion games
+two agents receive an alliance note and a private channel; three lookalike types (placebo, friendly persona
+talk, and a shared private incentive) contain no collusion. Ground truth comes only from the generation config.
 LLM monitors (\texttt{llama3.1:8b}; \texttt{granite3.3:8b} as a second model) score five views of each game,
 and an LLM judge plus code-computed signals feed fixed decision rules. Everything was frozen on 24 dev games,
 tested once on 24 test games, and re-tested on 48 new games under a pre-registered replication.
