@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="320" viewBox="0 0 1280 320" role="img" aria-label="Collusion Evidence Lab — auditing collusion between LLM agents">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1020"/>
+      <stop offset="0.55" stop-color="#141b33"/>
+      <stop offset="1" stop-color="#26163a"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#ff5c7a" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#ff5c7a" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#ffffff" stroke-opacity="0.04" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1280" height="320" fill="url(#bg)"/>
+  <rect width="1280" height="320" fill="url(#grid)"/>
+
+  <!-- left: title -->
+  <g font-family="Segoe UI, Helvetica Neue, Helvetica, Arial, sans-serif">
+    <text x="64" y="92" fill="#8fa3ff" font-size="18" font-weight="600" letter-spacing="3">AI COLLUSION RESEARCH SPRINT · TRACK 2</text>
+    <text x="62" y="158" fill="#ffffff" font-size="58" font-weight="800">Collusion Evidence Lab</text>
+    <text x="64" y="202" fill="#c9d2f0" font-size="24">Can an auditor tell when two LLM agents secretly team up?</text>
+    <g font-size="15" font-weight="600">
+      <rect x="64" y="236" width="150" height="34" rx="17" fill="#ffffff" fill-opacity="0.08" stroke="#8fa3ff" stroke-opacity="0.5"/>
+      <text x="139" y="258" fill="#dfe5ff" text-anchor="middle">pre-registered</text>
+      <rect x="226" y="236" width="178" height="34" rx="17" fill="#ffffff" fill-opacity="0.08" stroke="#8fa3ff" stroke-opacity="0.5"/>
+      <text x="315" y="258" fill="#dfe5ff" text-anchor="middle">replicated · 48 games</text>
+      <rect x="416" y="236" width="150" height="34" rx="17" fill="#ffffff" fill-opacity="0.08" stroke="#8fa3ff" stroke-opacity="0.5"/>
+      <text x="491" y="258" fill="#dfe5ff" text-anchor="middle">local models · $0</text>
+    </g>
+  </g>
+
+  <!-- right: five agents, one secret link -->
+  <g transform="translate(980,160)" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-weight="700" font-size="22">
+    <circle cx="0" cy="0" r="128" fill="none" stroke="#ffffff" stroke-opacity="0.06"/>
+    <circle cx="0" cy="0" r="86" fill="none" stroke="#ffffff" stroke-opacity="0.05"/>
+    <!-- public links (faint) -->
+    <g stroke="#8fa3ff" stroke-opacity="0.18" stroke-width="1.5">
+      <line x1="0" y1="-100" x2="95" y2="-31"/><line x1="0" y1="-100" x2="-95" y2="-31"/>
+      <line x1="95" y1="-31" x2="59" y2="81"/><line x1="-95" y1="-31" x2="-59" y2="81"/>
+      <line x1="0" y1="-100" x2="59" y2="81"/><line x1="0" y1="-100" x2="-59" y2="81"/>
+      <line x1="95" y1="-31" x2="-95" y2="-31"/><line x1="-95" y1="-31" x2="59" y2="81"/>
+    </g>
+    <!-- secret channel T–Z -->
+    <ellipse cx="0" cy="81" rx="110" ry="40" fill="url(#glow)"/>
+    <line x1="59" y1="81" x2="-59" y2="81" stroke="#ff5c7a" stroke-width="4" stroke-dasharray="10 7"/>
+    <!-- agents -->
+    <g>
+      <circle cx="0" cy="-100" r="27" fill="#1d2747" stroke="#8fa3ff" stroke-width="2"/><text x="0" y="-92" fill="#dfe5ff" text-anchor="middle">J</text>
+      <circle cx="95" cy="-31" r="27" fill="#1d2747" stroke="#8fa3ff" stroke-width="2"/><text x="95" y="-23" fill="#dfe5ff" text-anchor="middle">M</text>
+      <circle cx="-95" cy="-31" r="27" fill="#1d2747" stroke="#8fa3ff" stroke-width="2"/><text x="-95" y="-23" fill="#dfe5ff" text-anchor="middle">Q</text>
+      <circle cx="59" cy="81" r="27" fill="#3a1424" stroke="#ff5c7a" stroke-width="3"/><text x="59" y="89" fill="#ffd6de" text-anchor="middle">T</text>
+      <circle cx="-59" cy="81" r="27" fill="#3a1424" stroke="#ff5c7a" stroke-width="3"/><text x="-59" y="89" fill="#ffd6de" text-anchor="middle">Z</text>
+    </g>
+    <text x="0" y="140" fill="#ff9fb1" font-size="14" font-weight="600" text-anchor="middle" letter-spacing="1">secret alliance?</text>
+  </g>
+</svg>

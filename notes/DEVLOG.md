@@ -2744,3 +2744,28 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 - Keep or delete the report-10 two-rater sentence?
 - Compile on Overleaf and check the wide tables; fill in authors; edit the LLM usage statement.
 - The template recommends about 4 pages; the paper is about 6–8 pages, as the task asked.
+
+---
+
+## 2026-10-26 — [machine: D] Task 26: README redesign (no model calls, no new numbers)
+
+### What was implemented or executed
+- New `assets/banner.svg`. `README.md` rewritten in "research project" style: banner, badges, TL;DR, findings table,
+  Mermaid pipeline, figures 9/10 plus collapsible extras, failure modes, integrity table, quickstart, layout,
+  limitations, citation, acknowledgements.
+- `conda run -n collusion-lab pytest -q` (for the tests badge) → 671 passed, 3 skipped, 2 failed.
+- `scratch/audit_paper_numbers.py` on a README copy → 0 numbers missing; all image paths exist.
+- Report `notes/reports/26_readme.md`.
+
+### Errors and problems faced
+- 2 test failures in `tests/test_replication22.py`: `FileNotFoundError: ... data\labels.csv`. Root cause: these tests
+  re-derive report-14 tables from local data that is gitignored and absent on machine D.
+
+### How each problem was solved
+- Not a code bug. The tests badge makes no "passing" claim, and the README notes that the 2 tests need local data.
+
+### Decisions taken
+- Banner made as a local SVG (no third-party banner service). No licence badge (no LICENSE file).
+
+### Open questions for the team
+- Add a LICENSE? Fill in the BibTeX author names? Check the banner rendering on GitHub after pushing.
