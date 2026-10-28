@@ -52,3 +52,6 @@ desktop.ini
 .idea/
 *.swp
 *~
+
+# ---- Explainer video renders (task 39) ----
+brag-output*/

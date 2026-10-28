@@ -3031,3 +3031,72 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 ### Open questions for the team
 - `external/llm-trust-breaking` has no LICENSE file in our copy; check the upstream licence before keeping it in a public repo.
 - This change narrows Rule E ("external/ is committed"); update CLAUDE.md if the lead agrees.
+
+---
+
+## 2026-10-28 — [machine: D] Task 38: explainer video script and storyboard
+
+### What was implemented or executed
+- `writeup/video_script.md`: a 5:00 scene-by-scene script for an explainer video, in 6 phases (hook, research, architecture, decisions, code walkthrough, conclusion), 4 columns per scene (visual action, animation/overlay, voiceover, asset reference). Assets are real repo files: `assets/banner.svg`, figures 1, 2, 9 and 10 (plus 4, 6, 7 and 8 as optional B-roll), excerpts_22.md cases (a) and (d), pre-registrations, frozen configs, and code files (runner.py, client.py, views.py, signals.py, cleaner.py).
+- The `/brag` video workflow was interrupted by the user; no video was rendered.
+- Number audit run on the script (`scratch/audit_paper_numbers.py`).
+
+### Errors and problems faced
+- Figures 9 and 10 still carry "Study 2.2 / 2.3" titles inside the images.
+
+### How each problem was solved
+- The script tells the editor to crop or cover those titles.
+
+### Decisions taken
+- The voiceover uses plain language ("coin flip") for AUROC; every number is copied from the write-up files.
+
+### Open questions for the team
+- Who records the voiceover, and should the code walkthrough be screen-recorded live or animated?
+
+---
+
+## 2026-10-28 — [machine: D] Task 39: rendered the 5-minute explainer video
+
+### What was implemented or executed
+- `brag-output/work/render.py`: draws every frame in Python (Pillow) as a pure function of time; scene timings and caption text are parsed from `writeup/video_script.md` (22 scenes, 300 s). Uses figures 1, 2, 9 and 10 (9 and 10 retitled "Study 1" / "Study 2" on the fly), real quotes from `writeup/excerpts_22.md` (games g_77be9e68db, g_86fc72895e, g_4e868953d1) and real code read from `core/generate/runner.py`, `core/llm/client.py`, `study_2_2_views/views.py`, `core/evidence/signals.py`, `core/evidence/rq01.py`.
+- Soundtrack generated in numpy (A-minor pad, arpeggio, in-key transition swells): `brag-output/work/music.wav`.
+- Rendered as 20 parallel H.264 segments (10 workers), concatenated and muxed with AAC: `brag-output/brag.mp4`; poster `brag-output/brag.jpg` baked in as frame 0; `brag-output/share-copy.txt`; plan `brag-output/brag-plan.md`.
+- New dependency: `imageio-ffmpeg==0.5.1` in `collusion-lab` (ships an ffmpeg 4.2.2 binary with libx264; no system ffmpeg on machine D). Added to `environment.yml`.
+- `.gitignore`: `brag-output*/` (render outputs, Rule E).
+- Stills from all 22 scenes and one mid-transition frame were checked before the full render; fixed: code bleeding through the quote card, end-card title touching the link, an overflowing view-card label, a lock icon overlapping its box, an arrow crossing a connector, code panels too close to headings.
+
+### Errors and problems faced
+- No ffmpeg on the machine. Solved with `imageio-ffmpeg` inside the project env (Rule B).
+
+### How each problem was solved
+- See above.
+
+### Decisions taken
+- No voice: the script's voiceover runs as on-screen captions, so the video works muted and a team member can record narration over it later.
+- The per-pair bars in the "always said 80" scene are labelled "illustration" (no real per-pair numbers shown).
+- Report 38 corrected by a new line here: the script has 22 scenes, not 24.
+
+### Open questions for the team
+- Record a human voiceover over the captions?
+- Addendum to Task 39 (same day): the first concat step failed (`[concat] Impossible to open 'seg_000.mp4'`; ffmpeg 4.2.2 on Windows did not resolve relative paths in the list file). Fixed by writing absolute POSIX paths and adding a `render.py mux` step that re-joins the 20 finished segments without re-rendering. Verified: duration 00:05:00.00, 9000 frames, 1920×1080 H.264 30 fps, AAC 44.1 kHz stereo, mean −21.2 dB / max −7.0 dB; frame 0 = poster.
+
+---
+
+## 2026-10-28 — [machine: D] Task 40: explainer video linked from the README
+
+### What was implemented or executed
+- Copied `brag-output/brag.mp4` → `assets/explainer_video.mp4` (19.3 MB) and `brag-output/brag.jpg` → `assets/explainer_thumbnail.jpg`.
+- `README.md`: new "Video walkthrough" section after the summary (clickable thumbnail + "Watch or download" link to the MP4); added to the links row and the Contents list.
+- Checked that neither asset file is gitignored.
+
+### Errors and problems faced
+- GitHub READMEs do not play repository-relative videos inline.
+
+### How each problem was solved
+- A clickable thumbnail opens the MP4 file page on GitHub, where it can be played or downloaded.
+
+### Decisions taken
+- The video is committed on the user's request (an explicit exception to Rule E for this one final asset; render intermediates in `brag-output/` stay ignored). 19.3 MB is below GitHub's 100 MB per-file limit.
+
+### Open questions for the team
+- If the video is re-rendered, copy the new file to `assets/` again.

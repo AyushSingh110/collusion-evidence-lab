@@ -18,6 +18,8 @@ dependencies:
       - pytest==8.4.2
       - pluggy==1.7.0
       - iniconfig==2.3.1
+      # Explainer video render (task 39): ships an ffmpeg binary; Pillow comes with matplotlib.
+      - imageio-ffmpeg==0.5.1
 # Optional, only needed to import the harness's own settings/clients (our code does not):
 #   poseidon-compute 0.1.0 from external/util. Install from a COPY of that folder so nothing
 #   is written into external/ (Rule F):

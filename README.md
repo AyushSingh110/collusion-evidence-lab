@@ -16,7 +16,7 @@
   <img alt="Tests" src="https://img.shields.io/badge/tests-pytest-0ca678?style=flat-square&logo=pytest&logoColor=white"/>
 </p>
 
-[Paper](writeup/paper.md) · [LaTeX](writeup/paper.tex) · [Study 1 results](writeup/results_22.md) · [Study 2 results](writeup/results_23.md) · [Figures](writeup/figures/) · [Reports](notes/reports/)
+[Video](#video-walkthrough) · [Paper](writeup/paper.md) · [LaTeX](writeup/paper.tex) · [Study 1 results](writeup/results_22.md) · [Study 2 results](writeup/results_23.md) · [Figures](writeup/figures/) · [Reports](notes/reports/)
 
 </div>
 
@@ -33,8 +33,21 @@
 > - **Reading the messages alone did not work,** and neither did a talk-only LLM judge.
 > - **Outcome evidence is necessary but not sufficient:** a shared private incentive produces the same outcomes.
 
+## Video walkthrough
+
+<div align="center">
+
+<a href="assets/explainer_video.mp4"><img src="assets/explainer_thumbnail.jpg" alt="Video walkthrough: Behaviour Beats Judgement (5 min)" width="80%"/></a>
+
+**[Watch or download the 5-minute walkthrough (MP4, 19 MB)](assets/explainer_video.mp4)**
+
+<sub>The problem, the results, how the system is built, the tough calls along the way, and a tour of the code. Narration runs as captions, so it also works muted.</sub>
+
+</div>
+
 ## Contents
 
+- [Video walkthrough](#video-walkthrough)
 - [Motivation](#motivation)
 - [Key findings](#key-findings)
 - [Method](#method)
