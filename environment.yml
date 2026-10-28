@@ -20,6 +20,10 @@ dependencies:
       - iniconfig==2.3.1
       # Explainer video render (task 39): ships an ffmpeg binary; Pillow comes with matplotlib.
       - imageio-ffmpeg==0.5.1
+      # Explainer voiceover (task 41): Kokoro open-weights TTS, run locally on CPU (model files are not in git).
+      - kokoro-onnx==0.4.9
+      - onnxruntime==1.31.1
+      - soundfile==0.14.0
 # Optional, only needed to import the harness's own settings/clients (our code does not):
 #   poseidon-compute 0.1.0 from external/util. Install from a COPY of that folder so nothing
 #   is written into external/ (Rule F):

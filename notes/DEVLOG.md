@@ -3100,3 +3100,29 @@ This entry gives the lead's official wording; it supersedes the reasoning wordin
 
 ### Open questions for the team
 - If the video is re-rendered, copy the new file to `assets/` again.
+
+---
+
+## 2026-10-28 — [machine: D] Task 41: male voiceover added to the explainer video
+
+### What was implemented or executed
+- `brag-output/work/voice.py`: narration with Kokoro v1.0 (open weights, local CPU), male voice `am_michael`; one clip per scene starting 0.45 s into the scene; speed 1.0–1.15 only when needed; never cuts a line (old version did — see errors). Model files downloaded to `brag-output/work/tts/` (kokoro-v1.0.onnx sha256 7d5df8ec…, voices-v1.0.bin sha256 bca610b8…), not in git.
+- `writeup/video_script.md`: voiceover column tightened for 17 of 22 scenes (`brag-output/work/update_vo.py`) so the narration fits 5:00 at a natural pace; every number kept (number audit: 0 missing).
+- `render.py`: captions now follow the spoken timings (`voice_times.json`); new `mix` step ducks the music about 16 dB under the voice (`final_mix.wav`); mux uses the mix.
+- Final `brag-output/brag.mp4` re-rendered and copied to `assets/explainer_video.mp4` (19.0 MB); thumbnail refreshed.
+- New deps in `collusion-lab` and `environment.yml`: kokoro-onnx 0.4.9, onnxruntime 1.31.1, soundfile 0.14.0.
+
+### Errors and problems faced
+- First synthesis: 15 of 22 lines did not fit their scene even at 1.25× and the script truncated them (speech cut mid-sentence).
+- `mix` used `np.convolve` with 2,205- and 26,460-sample kernels over 13 M samples and ran > 10 min.
+
+### How each problem was solved
+- Narration lines tightened; speed capped at 1.15×; truncation removed; three lines (8, 12, 16) trimmed again and re-voiced alone (`voice.py am_michael 8,12,16`).
+- Moving average replaced by a running-sum version (7 s).
+
+### Decisions taken
+- Kokoro instead of Windows "Microsoft David" (robotic). Free, local, open weights (Rule H).
+- Scene 16 ends 0.05 s after its slot; the next line still starts 0.4 s later, so no overlap.
+
+### Open questions for the team
+- Prefer a human voiceover? The captions and timings would stay.
